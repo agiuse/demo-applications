@@ -12,9 +12,9 @@
   </modules>
   
   <scm>
-    <connection>scm:svn:http://hote/svn/cme/tags/1.0</connection>
-    <developerConnection>scm:svn:http://hote/svn/cme/tags/1.0</developerConnection>
-    <url>scm:svn:http://localhost/hote/svn/cme/tags/1.0</url>
+    <connection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</connection>
+    <developerConnection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</developerConnection>
+    <url>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</url>
   </scm>
 
 
