@@ -7,38 +7,56 @@
   </parent>
 
   <artifactId>cme-package</artifactId>
-  <packaging>rpm</packaging>
+  <packaging>pom</packaging>
   <name>CME-Package RPM</name>
   <url>http://maven.apache.org</url>
 
-<build>
-	<plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>rpm-maven-plugin</artifactId>
-                <version>2.1-alpha-2</version>
-                <extensions>true</extensions>
-		<configuration>
-			<copyright>2012, Valtech (c)</copyright>
-			<distribution>Valtech</distribution>
-			<group>developpement</group>
-			<packager>CME</packager>
-			<mappings>
-				<mapping>
-					<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${version}</directory>
-					<filemode>755</filemode>
-					<username>cmeadm</username>
-					<groupname>cme</groupname>
-					<sources>
-						<source>
-							<location>../cme-webapp/target/cme-ihm-${version}</location>
-						</source>
-					</sources>
-				</mapping>
-			</mappings>
-		</configuration>
-            </plugin>
-	</plugins>
-</build>
+<profiles>
+	<profile>
+		<id>rpmbuild</id>
+		<activation>
+			<file>
+				<exists>/usr/bin/rpmbuild</exists>
+			</file>
+		</activation>
+		<build>
+			<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<version>2.1-alpha-2</version>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>attached-rpm</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<copyright>2012, Valtech (c)</copyright>
+							<distribution>Valtech</distribution>
+							<group>developpement</group>
+							<packager>CME</packager>
+							<mappings>
+								<mapping>
+									<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${version}</directory>
+									<filemode>755</filemode>
+									<username>cmeadm</username>
+									<groupname>cme</groupname>
+									<sources>
+										<source>
+											<location>../cme-webapp/target/cme-ihm-${version}</location>
+										</source>
+									</sources>
+								</mapping>
+							</mappings>
+						</configuration>
+					</plugin>
+			</plugins>
+		</build>
+	</profile>
+</profiles>
 
 </project>
