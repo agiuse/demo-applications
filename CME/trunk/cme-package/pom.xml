@@ -28,9 +28,8 @@
 						<extensions>true</extensions>
 						<executions>
 							<execution>
-								<phase>package</phase>
 								<goals>
-									<goal>rpm</goal>
+									<goal>attached-rpm</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -39,6 +38,7 @@
 							<distribution>Valtech</distribution>
 							<group>developpement</group>
 							<packager>CME</packager>
+							<classifier></classifier>
 							<mappings>
 								<mapping>
 									<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${version}</directory>
