@@ -7,7 +7,7 @@ CME est une application Web écrite en Java.
 
 = Details =
 
-# 1.0
+ # Version 1.0
   * Build Maven
   * Multi-module
   * Packaging RPM avec l'installation en shell
