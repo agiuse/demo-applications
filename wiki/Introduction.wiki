@@ -2,9 +2,9 @@
 
 = Introduction =
 
-Projet contenant un ensemble d'application Demo
+Projet contenant un ensemble d'applications Demo
 
 
 = Details =
 
-* CME : Application Web Hotel [CME]
+* CME : Application Web Hotel écrite en Java [CME]
