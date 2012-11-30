@@ -21,39 +21,77 @@
 		</activation>
 		<build>
 			<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>rpm-maven-plugin</artifactId>
-						<version>2.1-alpha-2</version>
-						<extensions>true</extensions>
-						<executions>
-							<execution>
-								<goals>
-									<goal>attached-rpm</goal>
-								</goals>
-							</execution>
-						</executions>
-						<configuration>
-							<copyright>2012, Valtech (c)</copyright>
-							<distribution>Valtech</distribution>
-							<group>developpement</group>
-							<packager>CME</packager>
-							<classifier></classifier>
-							<mappings>
-								<mapping>
-									<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${version}</directory>
-									<filemode>755</filemode>
-									<username>cmeadm</username>
-									<groupname>cme</groupname>
-									<sources>
-										<source>
-											<location>../cme-webapp/target/cme-ihm-${version}</location>
-										</source>
-									</sources>
-								</mapping>
-							</mappings>
-						</configuration>
-					</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>regex-property</id>
+							<goals>
+								<goal>regex-property</goal>
+							</goals>
+							<configuration>
+								<name>rpm.version</name>
+								<value>${project.version}</value>
+								<regex>(.*)-SNAPSHOT</regex>
+								<replacement>$1</replacement>
+								<failIfNoMatch>false</failIfNoMatch>
+							</configuration>
+						</execution>
+						<execution>
+							<id>timestamp-property</id>
+							<goals>
+								<goal>timestamp-property</goal>
+							</goals>
+							<configuration>
+								<name>rpm.release</name>
+								<pattern>ddMMyyyyHHmmss</pattern>
+								<timeZone>GMT+1</timeZone>
+								<locale>fr</locale>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>rpm-maven-plugin</artifactId>
+					<version>2.1-alpha-2</version>
+					<extensions>true</extensions>
+					<executions>
+						<execution>
+							<goals>
+								<goal>attached-rpm</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<copyright>2012, Valtech (c)</copyright>
+						<distribution>Valtech</distribution>
+						<group>developpement</group>
+						<packager>CME</packager>
+						<description>CME - Application Hotel - no db</description>
+						<preinstallScriptlet>
+							<script>su - cmeadm -c "/home/cmeadm/tomcat/sto"</script>
+							<fileEncoding>utf-8</fileEncoding>
+						</preinstallScriptlet>
+						<mappings>
+							<mapping>
+								<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${rpm.version}-${rpm.release}</directory>
+								<filemode>755</filemode>
+								<username>cmeadm</username>
+								<groupname>cme</groupname>
+								<sources>
+									<source>
+										<location>../cme-webapp/target/cme-ihm-${version}</location>
+									</source>
+								</sources>
+							</mapping>
+						</mappings>
+						<postinstallScriptlet>
+							<script>su - cmeadm -c "/home/cmeadm/tomcat/sta cme-ihm-${rpm.version}-${rpm.release}"</script>
+						</postinstallScriptlet>
+					</configuration>
+				</plugin>
 			</plugins>
 		</build>
 	</profile>
