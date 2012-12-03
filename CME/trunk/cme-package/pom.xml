@@ -41,7 +41,7 @@
 					<artifactId>build-helper-maven-plugin</artifactId>
 					<executions>
 						<execution>
-							<id>regex-property</id>
+							<id>rpm-regex-property</id>
 							<goals>
 								<goal>regex-property</goal>
 							</goals>
@@ -54,7 +54,7 @@
 							</configuration>
 						</execution>
 						<execution>
-							<id>timestamp-property</id>
+							<id>rpm-timestamp-property</id>
 							<goals>
 								<goal>timestamp-property</goal>
 							</goals>
@@ -67,12 +67,11 @@
 						</execution>
 						<execution>
 							<id>rpm-install</id>
-							<phase>install</phase>
+							<phase>verify</phase>
 							<goals>
 								<goal>attach-artifact</goal>
 							</goals>
 							<configuration>
-								<skipAttach>true</skipAttach>
 								<artifacts>
 									<artifact>
 										<file>${rpm.build.directory}/RPMS/${rpm.build.arch}/${project.artifactId}-${rpm.version}-${rpm.release}.${rpm.build.arch}.rpm</file>
@@ -94,7 +93,7 @@
 					</configuration>
 					<executions>
 						<execution>
-							<id>package-rpm</id>
+							<id>rpm-package</id>
 							<phase>package</phase>
 							<goals>
 								<goal>single</goal>
