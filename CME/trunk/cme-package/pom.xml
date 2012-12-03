@@ -11,6 +11,13 @@
   <name>CME-Package RPM</name>
   <url>http://maven.apache.org</url>
 
+<properties>
+	<rpm.build.directory>${project.build.directory}/${project.build.finalName}/rpm</rpm.build.directory>
+	<rpm.build.arch>noarch</rpm.build.arch>
+	<tomcat.version>7.0.32</tomcat.version>
+	<trigramme>cme</trigramme>
+</properties>
+
 <dependencies>
 	<dependency>
 		<groupId>fr.si2m.cme</groupId>
@@ -19,12 +26,20 @@
 		<type>war</type>
 		<scope>runtime</scope>
 	</dependency>
+	<dependency>
+		<groupId>org.apache.tomcat</groupId>
+		<artifactId>tomcat-catalina-jmx-remote</artifactId>
+		<version>${tomcat.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>*</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+		</exclusions>
+		<type>jar</type>
+		<scope>runtime</scope>
+	</dependency>
 </dependencies>
-
-<properties>
-	<rpm.build.directory>${project.build.directory}/${project.build.finalName}/rpm</rpm.build.directory>
-	<rpm.build.arch>noarch</rpm.build.arch>
-</properties>
 
 <profiles>
 	<profile>
