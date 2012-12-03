@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.si2m.cme</groupId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <artifactId>cme-parent</artifactId>
   <name>CME-Pom Parent</name>
   <packaging>pom</packaging>
@@ -12,9 +12,9 @@
   </modules>
   
   <scm>
-    <connection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</connection>
-    <developerConnection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</developerConnection>
-    <url>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</url>
+    <connection>scm:svn:https://demo-applications.googlecode.com/svn/CME/tags/1.1</connection>
+    <developerConnection>scm:svn:https://demo-applications.googlecode.com/svn/CME/tags/1.1</developerConnection>
+    <url>scm:svn:https://demo-applications.googlecode.com/svn/CME/tags/1.1</url>
   </scm>
 
 
