@@ -11,6 +11,21 @@
   <name>CME-Package RPM</name>
   <url>http://maven.apache.org</url>
 
+<dependencies>
+	<dependency>
+		<groupId>fr.si2m.cme</groupId>
+		<artifactId>cme-ihm</artifactId>
+		<version>${project.version}</version>
+		<type>war</type>
+		<scope>runtime</scope>
+	</dependency>
+</dependencies>
+
+<properties>
+	<rpm.build.directory>${project.build.directory}/${project.build.finalName}/rpm</rpm.build.directory>
+	<rpm.build.arch>noarch</rpm.build.arch>
+</properties>
+
 <profiles>
 	<profile>
 		<id>rpmbuild</id>
@@ -50,51 +65,64 @@
 								<locale>fr</locale>
 							</configuration>
 						</execution>
+						<execution>
+							<id>rpm-install</id>
+							<phase>install</phase>
+							<goals>
+								<goal>attach-artifact</goal>
+							</goals>
+							<configuration>
+								<skipAttach>true</skipAttach>
+								<artifacts>
+									<artifact>
+										<file>${rpm.build.directory}/RPMS/${rpm.build.arch}/${project.artifactId}-${rpm.version}-${rpm.release}.${rpm.build.arch}.rpm</file>
+										<type>rpm</type>
+									</artifact>
+								</artifacts>
+							</configuration>						
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<configuration>
+						<appendAssemblyId>false</appendAssemblyId>
+						<descriptors>
+							<descriptor>src/main/assembly/descripteur.xml</descriptor>
+						</descriptors>
+					</configuration>
+					<executions>
+						<execution>
+							<id>package-rpm</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+						</execution>
 					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>rpm-maven-plugin</artifactId>
-					<version>2.1-alpha-2</version>
-					<extensions>true</extensions>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.2.1</version>
 					<executions>
 						<execution>
+							<id>rpm-execution</id>
+							<phase>package</phase>
 							<goals>
-								<goal>attached-rpm</goal>
+								<goal>exec</goal>
 							</goals>
 						</execution>
 					</executions>
 					<configuration>
-						<copyright>2012, Valtech (c)</copyright>
-						<distribution>Valtech</distribution>
-						<group>developpement</group>
-						<packager>CME</packager>
-						<description>CME - Application Hotel - no db</description>
-						<preinstallScriptlet>
-							<script>su - cmeadm -c "/home/cmeadm/tomcat/sto"</script>
-							<fileEncoding>utf-8</fileEncoding>
-						</preinstallScriptlet>
-						<mappings>
-							<mapping>
-								<directory>/home/cmeadm/tomcat/delivery/cme-ihm-${rpm.version}-${rpm.release}</directory>
-								<filemode>755</filemode>
-								<username>cmeadm</username>
-								<groupname>cme</groupname>
-								<sources>
-									<source>
-										<location>../cme-webapp/target/cme-ihm-${version}</location>
-									</source>
-								</sources>
-							</mapping>
-						</mappings>
-						<postinstallScriptlet>
-							<script>su - cmeadm -c "/home/cmeadm/tomcat/sta cme-ihm-${rpm.version}-${rpm.release}"</script>
-						</postinstallScriptlet>
+							<executable>/usr/bin/rpmbuild</executable>
+							<workingDirectory>${rpm.build.directory}</workingDirectory>
+							<commandlineArgs>-bb --define="_topdir ${rpm.build.directory}" --define="_tmpdir ${rpm.build.directory}/TEMP" ${rpm.build.directory}/SPECS/${project.artifactId}.spec</commandlineArgs>
 					</configuration>
 				</plugin>
 			</plugins>
 		</build>
 	</profile>
 </profiles>
-
 </project>
