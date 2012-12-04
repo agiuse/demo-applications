@@ -8,3 +8,4 @@ Projet contenant un ensemble d'applications Demo
 = Details =
 
 * CME : Application Web Hotel écrite en Java [CME]
+* BOL : Application Web Bank Of Line écrite en Java [BOL]
