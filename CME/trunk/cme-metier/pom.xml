@@ -3,7 +3,7 @@
   <parent>
 	<groupId>fr.si2m.cme</groupId>
 	<artifactId>cme-parent</artifactId>
-	<version>2.0</version>
+	<version>2.1-SNAPSHOT</version>
   </parent>
   
   <artifactId>cme-metier</artifactId>
