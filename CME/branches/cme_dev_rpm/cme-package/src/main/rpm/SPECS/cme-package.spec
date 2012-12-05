@@ -219,7 +219,7 @@ if [ "$1" == "1" ]; then
   popd >/dev/null
 
   # start application at first install (uncomment next line this behaviour not expected)
-  # %{_initrddir}/%{name} start
+  %{_initrddir}/%{my_app} start
 else
 
 #
@@ -228,7 +228,7 @@ else
   if [ "$1" == "2" ]; then
     if [ -f %{my_applogdir}/rpm-update-stop ]; then
       # restart application after update (comment next line this behaviour not expected)
-      %{_initrddir}/%{name} start
+      %{_initrddir}/%{my_app} start
       rm -f %{my_applogdir}/rpm-update-stop
     fi
   fi
