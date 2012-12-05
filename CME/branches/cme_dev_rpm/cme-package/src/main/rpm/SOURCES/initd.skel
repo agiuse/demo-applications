@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 #
 #
 ### BEGIN INIT INFO
@@ -25,8 +25,9 @@ export CATALINA_OPTS CATALINA_OUT CATALINA_PID
 
 RETVAL=0
 prog="@@MYAPP_APP@@"
-user="@@MYAPP_USER@@"
-exec="@@MYAPP_EXEC@@"
+user="${cme.username}"
+group="${cme.groupname}"
+exec="/opt/@@MYAPP_APP@@/bin/catalina.sh"
 lockdir=/var/lock/subsys
 lockfile=$lockdir/@@MYAPP_APP@@
 config=/etc/sysconfig/@@MYAPP_APP@@
@@ -34,7 +35,7 @@ config=/etc/sysconfig/@@MYAPP_APP@@
 start() {
     echo -n $"Starting $prog: "
     touch $CATALINA_PID
-    chown $user:$user $CATALINA_PID
+    chown $user:$group $CATALINA_PID
 
     ALL_VARS=$(compgen -A variable | grep APP_)
 
@@ -43,10 +44,7 @@ start() {
       XREPLACE="$XREPLACE | sed 's|@${RES_KEY}@|$RES_VAL|g'"
     done
 
-    for XFILE in $CATALINA_HOME/conf/server.xml.skel $CATALINA_HOME/conf/jmxremote.access.skel $CATALINA_HOME/conf/jmxremote.password.skel; do
-      DXFILE=${XFILE%.skel}
-      eval "cat ${XFILE} $XREPLACE > ${DXFILE}"
-    done
+    eval "cat $CATALINA_HOME/conf/server.xml.skel $XREPLACE > $CATALINA_HOME/conf/server.xml"
 
     # start_daemon on Suse, daemon on RH
     if [ -x /sbin/start_daemon ]; then
@@ -73,7 +71,20 @@ stop() {
 }
 
 status() {
-    $exec status
+
+	if [ -f $CATALINA_PID ]; then
+		ps -p $( cat $CATALINA_PID) >/dev/null
+		if [ $? -eq 1 ]; then
+			echo "$prog is run"
+			RETVAL=0
+		else
+			echo "$prog is stopped but $CATALINA_PID existe!"
+			RETVAT=1
+		fi
+	else
+		echo "$prog is stopped"
+		RETVAL=1
+	fi
 }
 
 restart() {
@@ -102,11 +113,12 @@ case "$1" in
         start
         ;;
     version)
-        echo "${prog} @@MYAPP_VERSION@@"
+        echo "${prog} version 2.1 manuelle"
         ;;
   *)
         echo $"Usage: $prog {start|stop|restart|force-reload|reload|status|version}"
         RETVAL=2
+	;;
 esac
 
 exit $RETVAL

@@ -12,21 +12,23 @@
 	</formats>
 	<baseDirectory>rpm</baseDirectory>
  
-	<files> 
-		<file>
-			<source>src/main/rpm/SPECS/${project.artifactId}.spec</source>
-			<outputDirectory>/SPECS/</outputDirectory>
-			<filtered>true</filtered>
-		</file>
-	</files> 
 	<fileSets>
 		<fileSet>
 			<directory>src/main/rpm/</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
-				<exclude>**/*.spec</exclude>
+				<exclude>**/*.tar.gz</exclude>
 			</excludes>
-			
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/rpm/</directory>
+			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<exclude>**/*.spec</exclude>
+				<exclude>**/*.skel</exclude>
+			</excludes>
+			<filtered>false</filtered>
 		</fileSet>
 	</fileSets>
 
