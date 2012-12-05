@@ -75,8 +75,7 @@ status() {
 	if [ -f $CATALINA_PID ]; then
 		ps -p $( cat $CATALINA_PID) >/dev/null
 		if [ $? -eq 1 ]; then
-			echo "$prog is run (pid $(CATALINA_PID)):w
-"
+			echo "$prog is run (pid $(CATALINA_PID))"
 			RETVAL=0
 		else
 			echo "$prog is stopped but $CATALINA_PID existe!"
