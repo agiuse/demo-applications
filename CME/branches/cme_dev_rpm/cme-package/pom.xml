@@ -13,6 +13,7 @@
 
 <properties>
 	<rpm.build.directory>${project.build.directory}/${project.build.finalName}/rpm</rpm.build.directory>
+	<rpm.build.arch>noarch</rpm.build.arch>
 </properties>
 
 <dependencies>
