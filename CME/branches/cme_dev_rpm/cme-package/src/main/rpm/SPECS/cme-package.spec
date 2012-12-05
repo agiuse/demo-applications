@@ -135,21 +135,21 @@ cp %{SOURCE1}  $RPM_BUILD_ROOT%{my_appwebappdir}/%{my_trigramme}.war
 
 # init.d
 cp  %{SOURCE2} $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
+%{__portsed} 's|@@MY_SYSCONFIGDIR@@|%{_sysconfdir}/sysconfig|g' $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
 %{__portsed} 's|@@MYAPP_APP@@|%{my_app}|g' $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
 %{__portsed} 's|@@MYAPP_EXEC@@|%{my_appexec}|g' $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
-%{__portsed} 's|@@MY_JAVA_HOME@@|%{_jvmdir}|g' $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
 
 # sysconfig
 cp  %{SOURCE3}  $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
 %{__portsed} 's|@@MYAPP_APP@@|%{my_app}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
 %{__portsed} 's|@@MYAPP_APPDIR@@|%{my_appdir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
-%{__portsed} 's|@@MYAPP_DATADIR@@|%{my_appdatadir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
 %{__portsed} 's|@@MYAPP_LOGDIR@@|%{my_applogdir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
-%{__portsed} 's|@@MYAPP_CONFDIR@@|%{my_appconfdir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
-%{__portsed} 's|@@MY_JAVA_HOME@@|%{_jvmdir}|g' $RPM_BUILD_ROOT%{_initrddir}/%{my_app}
+%{__portsed} 's|@@MY_JAVA_HOME@@|%{_jvmdir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
+%{__portsed} 's|@@MY_RUNDIR@@|%{_rundir}|g' $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/%{my_app}
 
 # Our custom setenv.sh to get back env variables
 cp  %{SOURCE4} $RPM_BUILD_ROOT%{my_appdir}/bin/setenv.sh
+%{__portsed} 's|@@MY_SYSCONFIGDIR@@|%{_sysconfdir}/sysconfig|g' $RPM_BUILD_ROOT%{my_appdir}/bin/setenv.sh
 %{__portsed} 's|@@MYAPP_APP@@|%{my_app}|g' $RPM_BUILD_ROOT%{my_appdir}/bin/setenv.sh
 
 # Install logrotate

@@ -17,8 +17,8 @@ if [ -r /etc/init.d/functions ]; then
 fi
 
 # Read config file
-if [ -r "/etc/sysconfig/@@MYAPP_APP@@" ]; then
-    . /etc/sysconfig/@@MYAPP_APP@@
+if [ -r "@@MY_SYSCONFIGDIR@@/@@MYAPP_APP@@" ]; then
+    . @@MY_SYSCONFIGDIR@@/@@MYAPP_APP@@
 fi
 
 export CATALINA_OPTS CATALINA_OUT CATALINA_PID
@@ -27,10 +27,10 @@ RETVAL=0
 prog="@@MYAPP_APP@@"
 user="${cme.username}"
 group="${cme.groupname}"
-exec="/opt/@@MYAPP_APP@@/bin/catalina.sh"
+exec="@@MYAPP_EXEC@@"
 lockdir=/var/lock/subsys
 lockfile=$lockdir/@@MYAPP_APP@@
-config=/etc/sysconfig/@@MYAPP_APP@@
+config=@@MY_SYSCONFIGDIR@@/@@MYAPP_APP@@
 
 start() {
     echo -n $"Starting $prog: "
@@ -75,7 +75,8 @@ status() {
 	if [ -f $CATALINA_PID ]; then
 		ps -p $( cat $CATALINA_PID) >/dev/null
 		if [ $? -eq 1 ]; then
-			echo "$prog is run"
+			echo "$prog is run (pid $(CATALINA_PID)):w
+"
 			RETVAL=0
 		else
 			echo "$prog is stopped but $CATALINA_PID existe!"
