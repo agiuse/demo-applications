@@ -28,7 +28,7 @@ Version: ${rpm.version}
 Release: ${rpm.release}
 Summary: CME-Package RPM powered by Apache Tomcat %{tomcat_rel}
 Group: Applications/Communications
-URL: http://FRPAR-VTC11:10001/cme
+URL: http://FRPAR-VTC11:10002/cme
 Vendor: Valtech
 Packager: %{my_appusername}
 License: AGPLv1
@@ -83,7 +83,7 @@ Source6: server.xml.skel
 Source7: limits.conf.skel
 
 %description
-MyApp %{my_app_rel} powered by Apache Tomcat %{tomcat_rel}
+%{my_app} %{my_app_rel} powered by Apache Tomcat %{tomcat_rel}
 
 # -------------------------------------------------------------------------------------------------------------------
 #
