@@ -12,9 +12,9 @@
   </modules>
   
   <scm>
-    <connection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</connection>
-    <developerConnection>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</developerConnection>
-    <url>scm:svn:https://demo-applications.googlecode.com/svn/CME/trunk</url>
+    <connection>scm:svn:https://demo-applications.googlecode.com/svn/CME/branches/cme_dev_rpmchef</connection>
+    <developerConnection>scm:svn:https://demo-applications.googlecode.com/svn/CME/branches/cme_dev_rpmchef</developerConnection>
+    <url>scm:svn:https://demo-applications.googlecode.com/svn/CME/branches/cme_dev_rpmchef</url>
   </scm>
 
 
