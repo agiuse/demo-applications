@@ -83,7 +83,33 @@ On utilise le plugin Maven `assembly` pour copier cette arborescence dans le ré
   * La gestion de paramétrage :
 
   Le RPM contient les fichiers de paramétrage _variabilisé_ : (@@`variable`@@).
-  La variabilisation s'effectue lors de l'installation du RPM. Pour l'instant, les valeurs sont contenues uniquement dans des variables RPM valorisées lors de la construction du RPM.
+  La valorisation s'effectue lors de l'installation du RPM. Pour l'instant, les valeurs sont contenues uniquement dans des variables RPM valorisées lors de la construction du RPM.
+
+  Il y a un deuxième niveau de variables (@`variable`@) qui sont des variables techniques. Les fichiers sont variabilisés dans Subversion. Un fichier nommé `sysconfig.skel`, géré également dans Subversion, est livré par défaut dans le RPM
+
+  Lors de l'installation, le fichier `sysconfig.skel`est installé dans `/etc/sysconfig/cme-ihm`. La valorisation s'effectue lors de lancement de l'application `cme-ihm`. Ce fichier est `sourcé` dans le fichier ìnit.d.skel :
+  {{{
+  ...
+  # Read config file
+  if [ -r "/etc/sysconfig/@@MYAPP_APP@@" ]; then
+    . /etc/sysconfig/@@MYAPP_APP@@
+  fi
+  ...
+  ALL_VARS=$(compgen -A variable | grep APP_)
+
+  for RES_KEY in $ALL_VARS; do
+      eval RES_VAL=\$${RES_KEY}
+      XREPLACE="$XREPLACE | sed 's|@${RES_KEY}@|$RES_VAL|g'"
+  done
+
+  for XFILE in $CATALINA_HOME/conf/server.xml.skel $CATALINA_HOME/conf/jmxremote.access.skel $CATALINA_HOME/conf/jmxremote.password.skel; do
+      DXFILE=${XFILE%.skel}
+      eval "cat ${XFILE} $XREPLACE > ${DXFILE}"
+  done
+  ...
+  }}}
+
+  Il est possible avec RPM de ne plus effacer le `/etc/sysconfig/cme-ihm` une fois installé. On peut imaginer ce fichier comme un fichier lié à l'environnement. Mais ce n'est pas le cas dans cette Release.
 
   * Conclusion:
 
