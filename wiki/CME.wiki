@@ -1,13 +1,91 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
+=Introduction=
 
 CME est une application Web écrite en Java.
 
+=Contexte=
+Le but est de créer un RPM qui permet d'installer Tomcat 7 et de déployer la Web app nommé `cme-ihm.war`. L'environnement d'exécution est `/home/cmeadm/tomcat`.
+La Web app ne nécessite pas de paramétrage particulier.
 
-= Details =
+Le plugin Nexus Yum a été installé sur le Nexus et les dépôts Nexus _Releases_ et _Snapshots_ sont de type _maven2yum_.
 
- # Version 1.0
-  * Build Maven
-  * Multi-module
-  * Packaging RPM avec l'installation en shell
+Une fois que le package RPM est généré et déployé dans Nexus, il suffit de l'installer via la commande `yum`.
+
+=RPM=
+Le format RPM est le package natif de Redhat utilisé depuis par la plupart des distributions. La contrainte est que le package ne peut être installé qu'une seule fois sur le serveur dans une seule version.
+L'installation d'un package se fait à l'aide de l'outil RPM. Dans ce cas le package doit être télécharger en local sur le serveur cible. L'outil permet également de désinstaller ou de consulter le contenu d'un package. 
+
+Yum est un outil qui permet d'installer des RPM depuis un dépôt distant. Dans l'entreprise, on peut envisager d'utiliser Nexus comme dépôt Yum.
+Yum permet également de gérer les mises à jours.
+
+Remarque : Seul le compte `root` peut être utilisé pour gérer .
+
+=Details des Releases=
+
+==Release 1.0==
+  * Contexte :
+
+L'environnement tomcat doit être pre-installé sur le serveur.
+Un lien `~cmeadm/tomcat/webapp/cme.war` point vers le répertoire `~cmeadm/delivery/cme-ihm-${version}.war`. Le rpm installe la webapp dans ce répertoire.
+
+Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettant le lien `~cmeadm/tomcat/webapp/cme.war` sur la dernière version installée.
+
+  * Description du module package :
+
+  # La balise `<package>` est de type RPM ; RPM devient un nouveau type Maven 
+  # Maven génère et met à disposition dans le dépôt Nexus un artifact de type RPM.
+  # Le SPECS est décrit dans la configuration du plugin et il est généré de manière automatique par le plugin Maven RPM.
+  # Le package RPM contient uniquement la Webapp qui sera déployé dans le répertoire `delivery/`.
+  
+  * Note :
+
+  # Le plugin ne peut etre exécuté que sur Linux car il utilise la commande `rpmbuild`. Par défaut, il le cherche dans `/usr/bin`.
+
+  * Conclusion :
+
+  # Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
+  # La balise `<packaging>rpm</packaging>` est limité...
+
+
+ ==Release 1.1==
+  * Contexte :
+
+L'environnement tomcat doit être pre-installé sur le serveur.
+Un lien `~cmeadm/tomcat/webapp/cme.war` point vers le répertoire `~cmeadm/delivery/cme-ihm-${version}.war`. Le rpm installe la webapp dans ce répertoire.
+
+Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettant le lien `~cmeadm/tomcat/webapp/cme.war` sur la dernière version installée.
+
+  * Description du module package :
+
+  # La balise `<package>` est de type POM; On utilise le goal `attached-rpm` pour créer un deuxième artifact.
+  # Maven génère et met à disposition dans le dépôt Nexus le pom généré et l'artifact de type RPM.
+  # Le SPECS est décrit dans la configuration du plugin et il est généré de manière automatique par le plugin Maven RPM.
+  # Le package RPM contient uniquement la Webapp qui sera déployé dans le répertoire `delivery/`.
+  # Les macro RPM `preinstallScriptlet` et `postinstallScriptlet` ont été ajoutées à la description pour arrêter et relancer le serveur Tomcat.
+
+
+
+  * Conclusion :
+
+  # Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
+  # Pourquoi utilise le goal 'attached-rpm' au lieu de 'rpm' ? Je ne sais plus la raison.
+
+
+==Release 2.0==
+  * Principe:
+
+On n'utilise plus le plugin Maven RPM. Le principe est de mettre dans Subversion la structure de travail packaging RPM pré-remplie avec un fichier SPECS que l'on souhaite.
+On utilise le plugin Maven `assembly` pour copier cette arborescence dans le répertoire TARGET lors de phase `packaging`. Ensuite, on utilise le plugin Maven `exec` pour lancer la commande `rpmbuild` en commande en ligne pour construire le RPM. Lors de phase Maven  `verify`, on utilise le plugin le goal `attach-artifact` du plugin `build-helper-maven-plugin` pour attacher le rpm au pom lors du déploiement dans Nexus (Ce plugin remplace le goal "attached-rpm" du plugin Maven `RPM`.).
+
+ Le RPM crée le compte `cmeadm` lors de la première installation, installe et configure tomcat dans le répertoire `/opt/cme_ihm`, installe webapp , configure le service de démarrage Linux, les logs, le service JMX.  Ceci est possible grâce au fichier `SPECS`.
+ 
+  * La gestion de paramétrage :
+
+  Le RPM contient les fichiers de paramétrage _variabilisé_ : (@@`variable`@@).
+  La variabilisation s'effectue lors de l'installation du RPM. Pour l'instant, les valeurs sont contenues uniquement dans des variables RPM valorisées lors de la construction du RPM.
+
+  * Conclusion:
+
+  # Pom package plus complexe
+  # Maitrise complète du contenu de RPM.
