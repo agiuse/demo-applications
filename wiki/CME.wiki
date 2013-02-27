@@ -12,6 +12,8 @@ Le plugin Nexus Yum a été installé sur le Nexus et les dépôts Nexus _Releas
 Une fois que le package RPM est généré et déployé dans Nexus, il suffit de l'installer via la commande `yum`.
 
 =RPM=
+
+==Introduction==
 Le format RPM est le package natif de Redhat utilisé depuis par la plupart des distributions. La contrainte est que le package ne peut être installé qu'une seule fois sur le serveur dans une seule version.
 L'installation d'un package se fait à l'aide de l'outil RPM. Dans ce cas le package doit être télécharger en local sur le serveur cible. L'outil permet également de désinstaller ou de consulter le contenu d'un package.
 
@@ -20,10 +22,23 @@ Le package RPM a un cycle de vie : installation, update, suppression. Dans les s
 Yum est un outil qui permet d'installer des RPM depuis un dépôt distant. Dans l'entreprise, on peut envisager d'utiliser Nexus comme dépôt Yum.
 Yum permet également de gérer les mises à jours.
 
+Dans notre exemple, le rpm se nomme *`cme-package-<version>.rpm`*.
+
  * Limites :
  # Une seule version est possible à la fois sur le serveur.
  # Obliger de resynchroniser le dépôt Yum local avec celui de Nexus manuellement. Problème de paramétrage.
  # Seul le compte `root` peut être utilisé pour les installations/suppressions. Mettre en place un sudo fin - sur le nom de l'application par exemple - si on souhaite limiter les installations à des comptes particuliers.
+
+==Commandes de bases==
+|| *Description* || *Commande* ||
+||Synchronisation entre Nexus et la base RPM local||`sudo yum clean all`||
+||Installer la dernière version||$ sudo yum install cme-package`||
+||Avoir de l'information sur le package||`sudo yum info cme-package`||
+||Mettre à jour avec la dernière version||`sudo yum install cme-package`||
+||Consulter les packages disponibles dans Nexus||`sudo yum --showduplicates list cme-package`||
+||Suppression d'un package||`sudo yum erase cme-package`||
+
+
 
 =Details des Releases=
 
@@ -70,6 +85,7 @@ Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettan
 
   * Description du module package :
 
+  # Mise en place de profile pour exécuter uniquement sur Unix le plugin Maven RPM
   # La balise `<package>` est de type POM; On utilise le goal `attached-rpm` pour créer un deuxième artifact.
   # Maven génère et met à disposition dans le dépôt Nexus le pom généré et l'artifact de type RPM.
   # Le SPECS est décrit dans la configuration du plugin et il est généré de manière automatique par le plugin Maven RPM.
@@ -80,8 +96,7 @@ Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettan
   * Conclusion :
 
   # Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
-  # Pourquoi utilise le goal 'attached-rpm' au lieu de 'rpm' ? Je ne sais plus la raison.
-
+  # Pourquoi utilise le goal 'attached-rpm' au lieu de 'rpm' ? En  raison de l'utilisation de profile pour exécuter ou non rpm suivant l'environnement, l'utilisation de rpm comme `<package>` n'est plus possible. Car de dernier génère un rpm quel que soit le profile et sort en erreur sur Windows.
 
 ==Release 2.0==
 
@@ -154,7 +169,9 @@ On utilise le plugin Maven `assembly` pour copier cette arborescence dans le ré
  # Créer de manière automatique le LV/FS (à implémenter)
  # Mettre en place le fichier `sysconfig.skel` comme non écrasable si le fichier est déjà installé. (à implémenter)
  # Suppression des répertoires de la suppression du package. (à implémenter)
- # Prévoir un package avec la possibilité d'installer dans un autre répertoire que `/opt/cme`.
+ # Prévoir un package avec la possibilité d'installer dans un autre répertoire que `/opt/cme`. (à implémenter)
+ # Mettre un profile de plus haut niveau (pom parent) pour insérer ou non le module `cme-package` pour simplifier la construire ou non du rpm en utilisant le `<package>` rpm. (à implémenter)
+
 
 ==Branche branche/cme_dev_rpmchef==
 
