@@ -2,11 +2,10 @@
 
 =Introduction=
 
-CME est une application Web écrite en Java.
+CME est une application Web écrite en Java déployable avec un package RPM.
 
 =Contexte=
-Le but est de créer un RPM qui permet d'installer Tomcat 7 et de déployer la Web app nommé `cme-ihm.war`. L'environnement d'exécution est `/home/cmeadm/tomcat`.
-La Web app ne nécessite pas de paramétrage particulier.
+Le but est de créer un RPM qui permet d'installer Tomcat 7 et de déployer la Web app nommé `cme-ihm.war`. L'environnement d'exécution est `/home/cmeadm/tomcat`. Le choix est que le RPM installe complètement l'application avec tomcat, paramétrage système pour le démarrer/arrêter l'application.
 
 Le plugin Nexus Yum a été installé sur le Nexus et les dépôts Nexus _Releases_ et _Snapshots_ sont de type _maven2yum_.
 
@@ -14,16 +13,25 @@ Une fois que le package RPM est généré et déployé dans Nexus, il suffit de 
 
 =RPM=
 Le format RPM est le package natif de Redhat utilisé depuis par la plupart des distributions. La contrainte est que le package ne peut être installé qu'une seule fois sur le serveur dans une seule version.
-L'installation d'un package se fait à l'aide de l'outil RPM. Dans ce cas le package doit être télécharger en local sur le serveur cible. L'outil permet également de désinstaller ou de consulter le contenu d'un package. 
+L'installation d'un package se fait à l'aide de l'outil RPM. Dans ce cas le package doit être télécharger en local sur le serveur cible. L'outil permet également de désinstaller ou de consulter le contenu d'un package.
+
+Le package RPM a un cycle de vie : installation, update, suppression. Dans les scripts d'installation/suppression, il est possible de gérer ses différents états et d'avoir des actions particulières.
 
 Yum est un outil qui permet d'installer des RPM depuis un dépôt distant. Dans l'entreprise, on peut envisager d'utiliser Nexus comme dépôt Yum.
 Yum permet également de gérer les mises à jours.
 
-Remarque : Seul le compte `root` peut être utilisé pour gérer .
+ * Limites :
+ # Une seule version est possible à la fois sur le serveur.
+ # Obliger de resynchroniser le dépôt Yum local avec celui de Nexus manuellement. Problème de paramétrage.
+ # Seul le compte `root` peut être utilisé pour les installations/suppressions. Mettre en place un sudo fin - sur le nom de l'application par exemple - si on souhaite limiter les installations à des comptes particuliers.
 
 =Details des Releases=
 
-==Release 1.0==
+==Release 1.0 ==
+  * Subversion :
+
+  Révision : r11
+
   * Contexte :
 
 L'environnement tomcat doit être pre-installé sur le serveur.
@@ -49,6 +57,10 @@ Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettan
 
 
  ==Release 1.1==
+  * Subversion :
+
+  Révision : r24
+
   * Contexte :
 
 L'environnement tomcat doit être pre-installé sur le serveur.
@@ -65,7 +77,6 @@ Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettan
   # Les macro RPM `preinstallScriptlet` et `postinstallScriptlet` ont été ajoutées à la description pour arrêter et relancer le serveur Tomcat.
 
 
-
   * Conclusion :
 
   # Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
@@ -73,6 +84,11 @@ Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettan
 
 
 ==Release 2.0==
+
+  * Subversion:
+
+  Révision : r30
+
   * Principe:
 
 On n'utilise plus le plugin Maven RPM. Le principe est de mettre dans Subversion la structure de travail packaging RPM pré-remplie avec un fichier SPECS que l'on souhaite.
@@ -115,3 +131,35 @@ On utilise le plugin Maven `assembly` pour copier cette arborescence dans le ré
 
   # Pom package plus complexe
   # Maitrise complète du contenu de RPM.
+
+=Versions en développement=
+
+==Branche trunk==
+ * Version : 3.0-SNAPSHOT
+ * Révision : 
+ * Evolutions :
+ # Version correspondant à la version 2.0 ; pas de changement
+
+==Branche branche/cme_dev_rpm (dernière version)==
+
+ * Version : 2.1-SNAPSHOT
+ * Evolutions :
+
+ # Séparation des fichiers de resources et de maven assembly.
+   Les fichiers de resources sont mis dans le répertoire cme-conf.
+   Le maven assembly s'occupe de les mettre dans l'arborescence `target/rpm`.
+ # Mise en place de mécanisme de filtre Maven pour les properties propre à l'application afin de le centraliser dans un fichier unique et facilement modifiable.
+ # Corriger des bogues d'installation de la source 6 dans le fichier .spec
+ # Supprimer la configuration de JMX et le démarrage automatique  - fichier `systemd.skel` - qui n'est pas nécessaire pour une démo.
+ # Créer de manière automatique le LV/FS (à implémenter)
+ # Mettre en place le fichier `sysconfig.skel` comme non écrasable si le fichier est déjà installé. (à implémenter)
+ # Suppression des répertoires de la suppression du package. (à implémenter)
+ # Prévoir un package avec la possibilité d'installer dans un autre répertoire que `/opt/cme`.
+
+==Branche branche/cme_dev_rpmchef==
+
+ * Version : 3.0-SNAPSHOT
+ * Révision : 
+ * Evolutions :
+
+ # Version correspondant à la version 2.0/trunk ; pas de changement
