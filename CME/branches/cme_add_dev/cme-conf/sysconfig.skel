@@ -1,0 +1,45 @@
+#
+# MyApp Configuration
+#
+
+#
+# If a common myforge profile is available use it to initialize envs, like JAVA_HOME and PATHs
+#
+
+if [ -f /etc/profile.d/myforge.sh ]; then
+	source /etc/profile.d/myforge.sh
+fi
+
+#
+# Vars starting with APP_ are used to replace contents in skeletons files
+#
+
+APP_SERVER_PORT=${cme.APP_SERVER_PORT}
+APP_HTTP_PORT=${cme.APP_HTTP_PORT}
+APP_HTTPS_PORT=${cme.APP_HTTPS_PORT}
+APP_AJP_PORT=${cme.APP_AJP_PORT}
+
+APP_HTTP_MAX_THREADS=${cme.APP_MAX_THREADS}
+APP_HTTP_MIN_SPARE_THREADS=${cme.APP_MIN_SPARE_THREADS}
+
+APP_HTTPS_MAX_THREADS=${cme.APP_MAX_THREADS}
+APP_HTTPS_MIN_SPARE_THREADS=${cme.APP_MIN_SPARE_THREADS}
+
+APP_AJP_MAX_THREADS=${cme.APP_MAX_THREADS}
+APP_AJP_MIN_SPARE_THREADS=${cme.APP_MIN_SPARE_THREADS}
+
+#
+# Linux Service variables
+#
+CATALINA_HOME="@@MYAPP_APPDIR@@"
+CATALINA_OUT="@@MYAPP_LOGDIR@@/catalina.out"
+CATALINA_PID="@@MY_RUNDIR@@/@@MYAPP_APP@@.pid"
+SHUTDOWN_WAIT=10
+
+#
+# JVM Settings
+#
+APP_JAVA_HOME=@@MY_JAVA_HOME@@
+APP_JAVA_OPTS="-Xms32m -Xmx64m -XX:MaxPermSize=32m -Xss256k -XX:+UseCompressedOops"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -Djava.security.egd=file:/dev/./urandom"
+APP_JAVA_OPTS="$APP_JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=@@MYAPP_LOGDIR@@"

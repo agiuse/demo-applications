@@ -1,0 +1,10 @@
+#
+# set limit for @@MYAPP_USER@@
+#
+
+@@MYAPP_USER@@        soft nofile 2048
+@@MYAPP_USER@@        hard nofile 4096
+
+@@MYAPP_USER@@        soft nproc  8192
+@@MYAPP_USER@@        hard nproc  8192
+
