@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.javaworld.hotels.businessobjects.Hotel;
+import com.javaworld.hotels.businessobjects.Residence;
 
 /**
  * Une classe simple proposant quelques services pour la base de données
