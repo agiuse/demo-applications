@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hotels>
+	<hotel>
+		<name>Hotel Latin</name>
+		<address>Quartier latin</address>
+		<city>Paris</city>
+		<rate>3</rate>
+	</hotel>
+	<hotel>
+        <name>Hotel Etoile</name>
+		<address>Place de l'Etoile</address>
+		<city>Paris</city>
+		<rate>4</rate>
+	</hotel>
+	<hotel>
+        <name>Hotel Vendome</name>
+		<address>Place Vendome</address>
+		<city>Paris</city>
+		<rate>5</city>
+	</hotel>
+	<hotel>
+        <name>Hotel Hilton</name>
+		<address>Trafalgar Square</address>
+		<city>Londres</city>
+		<rate>4</rate>
+	</hotel>
+	<hotel>
+        <name>Hotel Ibis</name>
+		<address>The City</address>
+		<city>Londres</city>
+		<rate>3</rate>
+	</hotel>
+</hotels>
