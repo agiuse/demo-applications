@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
 // HotelModelTest: $Source$
-// TODO Class summary goes here
 //
 // Created : 15 nov. 2005 by jfsmart
 // Last modified $Date$ by $Author$
@@ -15,44 +14,50 @@ import java.util.List;
 
 import com.javaworld.hotels.businessobjects.Hotel;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class HotelModelTest extends TestCase {
+public class HotelModelTest {
 
+	@Test
 	public void testTrouveHotelsParVille1() {
 		HotelModel finder = new HotelModel();
 		List<Hotel> hotels = finder.trouveHotelsParVille("Paris");
-		assertTrue(hotels.size() > 0);
+		Assert.assertTrue(hotels.size() > 0);
 		for(Hotel h : hotels) {
-			assertEquals(h.getVille(),"Paris");
+			Assert.assertEquals(h.getVille(),"Paris");
 		}
 	}
 
+	@Test
 	public void testTrouveHotelsParVille2() {
 		HotelModel finder = new HotelModel();
 		List<Hotel> hotels = finder.trouveHotelsParVille("Londres");
-		assertTrue(hotels.size() > 0);
+		Assert.assertTrue(hotels.size() > 0);
 		for(Hotel h : hotels) {
-			assertEquals(h.getVille(),"Londres");
+			Assert.assertEquals(h.getVille(),"Londres");
 		}
 	}
 
+	@Test
 	public void testTrouveHotelsParVilleVide() {
 		HotelModel finder = new HotelModel();
 		List<Hotel> hotels = finder.trouveHotelsParVille("");
-		assertTrue(hotels.size() == 0);
+		Assert.assertTrue(hotels.size() == 0);
 	}
 
+	@Test
 	public void testTrouveHotelsParVilleNull() {
 		HotelModel finder = new HotelModel();
 		List<Hotel> hotels = finder.trouveHotelsParVille(null);
-		assertTrue(hotels.size() == 0);
+		Assert.assertTrue(hotels.size() == 0);
 	}
-
+	
+	@Test
 	public void testTrouveVillesDiponibles() {
 		HotelModel trouveur = new HotelModel();
 		String[] villes = trouveur.trouveVillesDiponibles();
-		assertEquals(villes.length, 2);
+		Assert.assertEquals(villes.length, 2);
 	}
 
 }
