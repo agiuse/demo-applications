@@ -18,19 +18,19 @@ import com.javaworld.hotels.businessobjects.Hotel;
 import com.javaworld.hotels.businessobjects.Residence;
 
 /**
- * Une classe simple proposant quelques services pour la base de données
+ * Une classe simple proposant quelques services pour la base de donnÃ©es
  * d'hotels.
  * @author jfsmart
  */
 public class HotelModel {
 
     /**
-     * La liste de toutes les villes connues dans la base de données.
+     * La liste de toutes les villes connues dans la base de donnÃ©es.
      */
     private static String[] villes = { "Paris", "Londres" };
 
     /**
-     * La liste de tous les hotels de la base de données.
+     * La liste de tous les hotels de la base de donnÃ©es.
      */
     private static Hotel[] hotels = {
             new Hotel("Hotel Latin", "Quartier latin", "Paris", 3),
@@ -40,7 +40,7 @@ public class HotelModel {
             new Hotel("Hotel Ibis", "The City", "Londres", 3), };
 
     /**
-     * Retourne les hôtels dans une ville donnée.
+     * Retourne les hÃ´tels dans une ville donnÃ©e.
      * @param ville le nom de la ville
      * @return une liste d'objets Hotel
      */
@@ -55,7 +55,7 @@ public class HotelModel {
     }
 
     /**
-     * Retourne la liste des villes de la base de données qui ont un hôtel.
+     * Retourne la liste des villes de la base de donnÃ©es qui ont un hÃ´tel.
      * @return une liste des noms de villes
      */
     public String[] trouveVillesDiponibles() {
