@@ -12,7 +12,7 @@
 package com.javaworld.hotels.businessobjects;
 
 /**
- * Une classe métier Hotel simplifiée
+ * Une classe mÃ©tier Hotel simplifiÃ©e
  * @author jfsmart
  */
 public class Hotel {
@@ -25,14 +25,14 @@ public class Hotel {
     private int etoiles;
 
     /**
-     * Constructeur par défaut.
+     * Constructeur par dÃ©faut.
      */
     public Hotel() {
         super();
     }
 
     /**
-     * Constructeur initialisant complétement l'objet
+     * Constructeur initialisant complÃ©tement l'objet
      * @param nom
      * @param adresse
      * @param ville
@@ -61,14 +61,14 @@ public class Hotel {
     }
 
     /**
-     * @return le nombre d'étoiles de cet hotel
+     * @return le nombre d'Ã©toiles de cet hotel
      */
     public int getEtoiles() {
         return etoiles;
     }
 
     /**
-     * @param etoiles le nombre d'étoiles de cet hotel
+     * @param etoiles le nombre d'Ã©toiles de cet hotel
      */
     public void setEtoiles(int etoiles) {
         this.etoiles = etoiles;
@@ -89,14 +89,14 @@ public class Hotel {
     }
 
     /**
-     * @return la ville dans laquelle est situé cet hotel
+     * @return la ville dans laquelle est situÃ© cet hotel
      */
     public String getVille() {
         return ville;
     }
 
     /**
-     * @param ville la ville dans laquelle est situé cet hotel
+     * @param ville la ville dans laquelle est situÃ© cet hotel
      */
     public void setVille(String ville) {
         this.ville = ville;
