@@ -1,12 +1,10 @@
 // //////////////////////////////////////////////////////////////////////////////
 // Hotel: $Source$
-// TODO Class summary goes here
 //
 // Created : 15 nov. 2005 by jfsmart
 // Last modified $Date$ by $Author$
 // Revision: $Revision$
 // Version : $ID$
-// Copyright (c) 2005
 // //////////////////////////////////////////////////////////////////////////////
 
 package com.javaworld.hotels.businessobjects;
@@ -101,7 +99,5 @@ public class Hotel {
     public void setVille(String ville) {
         this.ville = ville;
     }
-
-
 
 }

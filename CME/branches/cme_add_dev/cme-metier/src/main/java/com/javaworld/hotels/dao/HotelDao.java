@@ -5,45 +5,43 @@
 // Last modified $Date$ by $Author$
 // Revision: $Revision$
 // Version : $ID$
-// Copyright (c) 2013
 // //////////////////////////////////////////////////////////////////////////////
 
 package com.javaworld.hotels.dao;
 
 import com.javaworld.hotels.businessobjects.Hotel;
 
-import java.io.*;
-import org.jdom2.*;
-import org.jdom2.input.*;
-import org.jdom2.filter.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-
 /**
  * Une classe simple proposant quelques services pour la base de données
- * d'hotels gérés dans des fichiers xml
+ * d'hotels
  * @author eagius
  */
 public class HotelDao {
 
-   static org.jdom2.Document document;
-   static Element racine;
+    /**
+     * La liste de toutes les villes connues dans la base de données.
+     */
+    private static String[] villes = { "Paris", "Londres" };
 
-   public static void HotelDao(String xml_file)
-   {		
-		//On crée une instance de SAXBuilder
-		SAXBuilder sxb = new SAXBuilder();
-		try
-		{
-			//On crée un nouveau document JDOM avec en argument le fichier XML
-			//Le parsing est terminé ;)
-			document = sxb.build(new File(xml_file));
-		}
-		catch(Exception e){}
+    /**
+     * La liste de tous les hotels de la base de données.
+     */
+    private static Hotel[] hotels = {
+            new Hotel("Hotel Latin", "Quartier latin", "Paris", 3),
+            new Hotel("Hotel Etoile", "Place de l'Etoile", "Paris", 4),
+            new Hotel("Hotel Vendome", "Place Vendome", "Paris", 5),
+            new Hotel("Hotel Hilton", "Trafalgar Square", "Londres", 4),
+            new Hotel("Hotel Ibis", "The City", "Londres", 3), };
 
-		//On initialise un nouvel élément racine avec l'élément racine du document.
-		racine = document.getRootElement();
-
-   }
+	public HotelDao() {
+		super();
+	};
+	
+	public Hotel[] getHotels() {
+		return hotels;
+	};
+	
+	public String[] getVilles() {
+		return villes;
+	};
 }
