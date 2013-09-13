@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.javaworld.hotels.businessobjects.Hotel;
-import com.javaworld.hotels.dao.HotelDao;
+import com.javaworld.hotels.dao.*;
 
 /**
  * Une classe simple proposant quelques services d'hotels.
@@ -25,6 +25,8 @@ public class HotelModel {
      * La liste de tous les hotels de la base de données.
      */
     private HotelDao hotels = new HotelDao();
+	
+	private VillesDao villes = new VillesDao();
     /**
      * Retourne les hôtels dans une ville donnée.
      * @param ville le nom de la ville
@@ -45,6 +47,6 @@ public class HotelModel {
      * @return une liste des noms de villes
      */
     public String[] trouveVillesDiponibles() {
-        return hotels.getVilles();
+        return villes.getVilles();
     }
 }

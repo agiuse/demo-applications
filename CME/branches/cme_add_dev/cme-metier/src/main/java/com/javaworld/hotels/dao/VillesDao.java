@@ -16,24 +16,18 @@ import com.javaworld.hotels.businessobjects.Hotel;
  * d'hotels
  * @author eagius
  */
-public class HotelDao {
+public class VillesDao {
 
     /**
-     * La liste de tous les hotels de la base de données.
+     * La liste de toutes les villes connues dans la base de données.
      */
-    private static Hotel[] hotels = {
-            new Hotel("Hotel Latin", "Quartier latin", "Paris", 3),
-            new Hotel("Hotel Etoile", "Place de l'Etoile", "Paris", 4),
-            new Hotel("Hotel Vendome", "Place Vendome", "Paris", 5),
-            new Hotel("Hotel Hilton", "Trafalgar Square", "Londres", 4),
-            new Hotel("Hotel Ibis", "The City", "Londres", 3), };
+    private static String[] villes = { "Paris", "Londres" };
 
-	public HotelDao() {
+	public VillesDao() {
 		super();
 	};
 	
-	public Hotel[] getHotels() {
-		return hotels;
+	public String[] getVilles() {
+		return villes;
 	};
-
 }
