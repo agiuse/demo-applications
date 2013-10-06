@@ -1,39 +1,26 @@
-// //////////////////////////////////////////////////////////////////////////////
-// HotelDAO: $Source$
-//
-// Created : Sept 11 2013 by eagius
-// Last modified $Date$ by $Author$
-// Revision: $Revision$
-// Version : $ID$
-// //////////////////////////////////////////////////////////////////////////////
-
 package com.javaworld.hotels.dao;
 
 import com.javaworld.hotels.businessobjects.Hotel;
+import com.javaworld.hotels.values.Ville;
 
-/**
- * Une classe simple proposant quelques services pour la base de données
- * d'hotels
- * @author eagius
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class HotelDao {
 
-    /**
-     * La liste de tous les hotels de la base de données.
-     */
-    private static Hotel[] hotels = {
-            new Hotel("Hotel Latin", "Quartier latin", "Paris", 3),
-            new Hotel("Hotel Etoile", "Place de l'Etoile", "Paris", 4),
-            new Hotel("Hotel Vendome", "Place Vendome", "Paris", 5),
-            new Hotel("Hotel Hilton", "Trafalgar Square", "Londres", 4),
-            new Hotel("Hotel Ibis", "The City", "Londres", 3), };
+    private static List<Hotel> hotels = new ArrayList <Hotel>();;
 
 	public HotelDao() {
-		super();
-	};
-	
-	public Hotel[] getHotels() {
-		return hotels;
+		 super();
+         hotels.add (new Hotel("Hotel Latin", "Quartier latin", Ville.PARIS, 3));
+         hotels.add (new Hotel("Hotel Etoile", "Place de l'Etoile", Ville.PARIS, 4));
+         hotels.add ( new Hotel("Hotel Vendome", "Place Vendome", Ville.PARIS, 5));
+         hotels.add (new Hotel("Hotel Hilton", "Trafalgar Square", Ville.LONDRES, 4));
+         hotels.add (new Hotel("Hotel Ibis", "The City", Ville.LONDRES, 3));
+		};
+		 
+	public List<Hotel> getHotels() {
+		 	return hotels;
 	};
 
 }
