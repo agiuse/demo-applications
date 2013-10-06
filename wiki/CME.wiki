@@ -185,4 +185,4 @@ On utilise le plugin Maven `assembly` pour copier cette arborescence dans le ré
 
 * Version : 4.0-SNAPSHOT
 
-[details about it|CMEJavaDevelopment]
+[CMEJavaDevelopment]
