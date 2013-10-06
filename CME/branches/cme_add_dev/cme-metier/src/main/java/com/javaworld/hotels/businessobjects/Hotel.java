@@ -20,7 +20,7 @@ public class Hotel {
 
     private String adresse;
 
-    private Ville ville;
+    private String ville;
 
     private int etoiles;
 
@@ -38,7 +38,7 @@ public class Hotel {
      * @param ville
      * @param etoiles
      */
-    public Hotel(String nom, String adresse, Ville ville, int etoiles) {
+    public Hotel(String nom, String adresse, String ville, int etoiles) {
         super();
         this.nom = nom;
         this.adresse = adresse;
@@ -91,7 +91,7 @@ public class Hotel {
     /**
      * @return la ville dans laquelle est situé cet hotel
      */
-    public Ville getVille() {
+    public String getVille() {
         return ville;
     }
 
@@ -99,14 +99,14 @@ public class Hotel {
      * @param ville la ville dans laquelle est situé cet hotel
      */
     public void setVille(String ville) {
-        this.ville.setVille(ville);
+        this.ville = ville;
     }
 
     /**
      * @param ville la ville dans laquelle est situé cet hotel
      */
     public void setVille(Ville ville) {
-        this.ville = ville;
+        this.ville = ville.toString();
     }
 
 }

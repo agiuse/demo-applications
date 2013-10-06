@@ -12,6 +12,7 @@ package com.javaworld.hotels.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
+import java.net.URL;
 
 import com.javaworld.hotels.businessobjects.Hotel;
 import com.javaworld.hotels.values.Ville;
@@ -26,9 +27,15 @@ public class HotelModel {
     /**
      * La liste de tous les hotels de la base de données.
      */
-    private HotelDao hotels = new HotelDao();
+    private HotelDao hotels;
 	
 	private VilleDao villes = new VilleDao();
+	
+	
+	public HotelModel(URL hotelResource) {
+		this.hotels = new HotelDao(hotelResource);
+	}
+	
     /**
      * Retourne les hôtels dans une ville donnée.
      * @param ville le nom de la ville
@@ -45,7 +52,7 @@ public class HotelModel {
 			Hotel hotel = (Hotel)iHotel.next();
 
 
-            if (hotel.getVille().equals(ville) ) {
+            if (hotel.getVille().equals(ville.toString()) ) {
                 hotelsTrouves.add(hotel);
             }
         }
