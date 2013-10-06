@@ -1,24 +1,78 @@
 package com.javaworld.hotels.dao;
 
 import com.javaworld.hotels.businessobjects.Hotel;
-import com.javaworld.hotels.values.Ville;
 
+import java.io.IOException;
+import java.net.URL;
+import org.jdom2.*;
+import org.jdom2.input.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 public class HotelDao {
 
-    private static List<Hotel> hotels = new ArrayList <Hotel>();;
+    private List<Hotel> hotels = new ArrayList <Hotel>();
+	private org.jdom2.Document document;
+	private Element racine;
 
-	public HotelDao() {
+	public HotelDao(URL hotelResource) {
 		 super();
-         hotels.add (new Hotel("Hotel Latin", "Quartier latin", Ville.PARIS, 3));
-         hotels.add (new Hotel("Hotel Etoile", "Place de l'Etoile", Ville.PARIS, 4));
-         hotels.add ( new Hotel("Hotel Vendome", "Place Vendome", Ville.PARIS, 5));
-         hotels.add (new Hotel("Hotel Hilton", "Trafalgar Square", Ville.LONDRES, 4));
-         hotels.add (new Hotel("Hotel Ibis", "The City", Ville.LONDRES, 3));
-		};
-		 
+		 core(hotelResource);
+		 loadHotels();
+	};
+
+	
+	private void core(URL hotelResource) {
+		//On crée une instance de SAXBuilder
+		SAXBuilder sxb = new SAXBuilder();
+		
+		//On crée un nouveau document JDOM avec en argument le fichier XML
+		//Le parsing est terminé ;)
+		try {
+			document = sxb.build(hotelResource);
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//On initialise un nouvel élément racine avec l'élément racine du document.
+		racine = document.getRootElement();
+		
+	};
+
+    /**
+     * Construit la liste des hotels à partir du DOM Hotel
+     */
+    private void loadHotels()
+	{
+		//On crée une List contenant tous les noeuds "hotel" de l'Element racine
+		List<Element> listHotelXml = racine.getChildren("hotel");
+
+		//On crée un Iterator sur notre liste
+		Iterator<Element> i = listHotelXml.iterator();
+		
+		while(i.hasNext())
+		{
+			//On recrée l'Element courant à chaque tour de boucle afin de
+			//pouvoir utiliser les méthodes propres aux Element comme :
+			//sélectionner un nœud fils, modifier du texte, etc...
+			Element courant = (Element)i.next();
+
+			// créer l'object Hotel
+
+			hotels.add( new Hotel(
+				courant.getChild("name").getText(),
+				courant.getChild("address").getText(),
+				courant.getChild("city").getText(),
+				Integer.valueOf( courant.getChild("rate").getText() ) )
+			);
+		}
+    };
+
 	public List<Hotel> getHotels() {
 		 	return hotels;
 	};

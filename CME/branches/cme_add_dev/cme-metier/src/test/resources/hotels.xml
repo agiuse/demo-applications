@@ -16,7 +16,7 @@
         <name>Hotel Vendome</name>
 		<address>Place Vendome</address>
 		<city>Paris</city>
-		<rate>5</city>
+		<rate>5</rate>
 	</hotel>
 	<hotel>
         <name>Hotel Hilton</name>

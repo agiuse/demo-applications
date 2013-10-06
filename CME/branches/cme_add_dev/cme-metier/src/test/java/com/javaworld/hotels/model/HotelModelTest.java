@@ -18,14 +18,19 @@ import com.javaworld.hotels.values.Ville;
 
 import org.junit.Assert;
 import org.junit.Test;
+import java.net.URL;
 
 public class HotelModelTest {
 
 	@Test
 	public void testTrouveHotelsParVille1() {
-		HotelModel finder = new HotelModel();
+		
+		URL  hotelsXml = ClassLoader.getSystemResource("hotels.xml");
+
+		HotelModel finder = new HotelModel(hotelsXml);
 		List<Hotel> hotels = finder.trouveHotelsParVille(Ville.PARIS);
 		Assert.assertTrue(hotels.size() > 0);
+		
 		
 		Iterator<Hotel> iHotel = hotels.iterator();
 		while(iHotel.hasNext())
@@ -37,7 +42,11 @@ public class HotelModelTest {
 
 	@Test
 	public void testTrouveHotelsParVille2() {
-		HotelModel finder = new HotelModel();
+
+		URL hotelsXml = ClassLoader.getSystemResource("hotels.xml");
+
+
+		HotelModel finder = new HotelModel(hotelsXml);
 		List<Hotel> hotels = finder.trouveHotelsParVille(Ville.LONDRES);
 		Assert.assertTrue(hotels.size() > 0);
 
@@ -52,7 +61,10 @@ public class HotelModelTest {
 
 	@Test
 	public void testTrouveVillesDiponibles() {
-		HotelModel trouveur = new HotelModel();
+
+		URL hotelsXml = ClassLoader.getSystemResource("hotels.xml");
+
+		HotelModel trouveur = new HotelModel(hotelsXml);
 		List<String> villes = trouveur.trouveVillesDisponibles();
 		Assert.assertEquals(villes.size(), 2);
 	}
