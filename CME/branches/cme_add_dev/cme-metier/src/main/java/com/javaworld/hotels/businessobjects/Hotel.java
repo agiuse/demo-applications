@@ -9,6 +9,8 @@
 
 package com.javaworld.hotels.businessobjects;
 
+import com.javaworld.hotels.values.Ville;
+
 /**
  * Une classe métier Hotel simplifiée
  * @author jfsmart
@@ -18,7 +20,7 @@ public class Hotel {
 
     private String adresse;
 
-    private String ville;
+    private Ville ville;
 
     private int etoiles;
 
@@ -36,7 +38,7 @@ public class Hotel {
      * @param ville
      * @param etoiles
      */
-    public Hotel(String nom, String adresse, String ville, int etoiles) {
+    public Hotel(String nom, String adresse, Ville ville, int etoiles) {
         super();
         this.nom = nom;
         this.adresse = adresse;
@@ -89,7 +91,7 @@ public class Hotel {
     /**
      * @return la ville dans laquelle est situé cet hotel
      */
-    public String getVille() {
+    public Ville getVille() {
         return ville;
     }
 
@@ -97,6 +99,13 @@ public class Hotel {
      * @param ville la ville dans laquelle est situé cet hotel
      */
     public void setVille(String ville) {
+        this.ville.setVille(ville);
+    }
+
+    /**
+     * @param ville la ville dans laquelle est situé cet hotel
+     */
+    public void setVille(Ville ville) {
         this.ville = ville;
     }
 
