@@ -180,3 +180,9 @@ On utilise le plugin Maven `assembly` pour copier cette arborescence dans le ré
  * Evolutions :
 
  # Version correspondant à la version 2.0/trunk ; pas de changement
+
+==Branche branches/cme_dev_add==
+
+* Version : 4.0-SNAPSHOT
+
+[details about it|CMEJavaDevelopment]
