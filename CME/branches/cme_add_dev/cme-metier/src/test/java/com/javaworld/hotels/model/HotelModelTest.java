@@ -29,7 +29,7 @@ public class HotelModelTest {
 
 		HotelModel finder = new HotelModel(hotelsXml);
 		List<Hotel> hotels = finder.trouveHotelsParVille(Ville.PARIS);
-		Assert.assertTrue(hotels.size() > 0);
+		Assert.assertTrue(hotels.size() == 3);
 		
 		
 		Iterator<Hotel> iHotel = hotels.iterator();
@@ -48,7 +48,7 @@ public class HotelModelTest {
 
 		HotelModel finder = new HotelModel(hotelsXml);
 		List<Hotel> hotels = finder.trouveHotelsParVille(Ville.LONDRES);
-		Assert.assertTrue(hotels.size() > 0);
+		Assert.assertTrue(hotels.size() == 2);
 
 		Iterator<Hotel> iHotel = hotels.iterator();
 		while(iHotel.hasNext())
