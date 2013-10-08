@@ -36,7 +36,7 @@ public class HotelModelTest {
 		while(iHotel.hasNext())
 		{
 			Hotel h = (Hotel)iHotel.next();
-			Assert.assertEquals(h.getVille(),Ville.PARIS);
+			Assert.assertEquals(h.getVille(),Ville.PARIS.toString());
 		}
 	}
 
@@ -54,7 +54,7 @@ public class HotelModelTest {
 		while(iHotel.hasNext())
 		{
 			Hotel h = (Hotel)iHotel.next();
-			Assert.assertEquals(h.getVille(),Ville.LONDRES);
+			Assert.assertEquals(h.getVille(),Ville.LONDRES.toString());
 		}
 	}
 

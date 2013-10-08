@@ -52,7 +52,7 @@ public class HotelModel {
 			Hotel hotel = (Hotel)iHotel.next();
 
 
-            if (hotel.getVille().equals(ville.toString()) ) {
+            if (hotel.getVille().equalsIgnoreCase(ville.toString()) ) {
                 hotelsTrouves.add(hotel);
             }
         }
