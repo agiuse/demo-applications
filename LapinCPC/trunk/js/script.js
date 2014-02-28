@@ -18,6 +18,9 @@
 	var img_saucisse = [ new Image(), new Image() ];
 	var obj_saucisse = [];
 
+	var score = 0;
+	var scoreTexte;
+
 // Gestion du clavier
 addEventListener("keydown",
 	function(e)
@@ -88,6 +91,11 @@ function launchGame()
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
 
+	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
+	scoreTexte.x = 8;
+	scoreTexte.y = 450;
+	stage.addChild(scoreTexte);
+
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
 }
@@ -122,6 +130,20 @@ function mainTick()
 		obj_saucisse[i].x -=4;
 		if ( obj_saucisse[i].x < -64 )
 			preparerSaucisse(i);
+		else if (	( obj_saucisse[i].x > obj_joueur.x - 40 ) &&
+				( obj_saucisse[i].x < obj_joueur.x + 96 ) &&
+				( obj_saucisse[i].y > obj_joueur.y -16 ) &&
+				( obj_saucisse[i].y < obj_joueur.y + 44 )
+			)
+			{
+				if ( obj_saucisse[i].pourrie )
+					score -= 2;
+				else
+					score++;
+
+				scoreTexte.text = "Score : " + score;
+				preparerSaucisse(i);
+			}
 	}
 	
 	stage.update();
