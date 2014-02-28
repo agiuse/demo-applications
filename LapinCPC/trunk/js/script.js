@@ -85,5 +85,14 @@ function mainTick()
 	else if ( (39 in touches ) && (obj_joueur.y < 576 ) )
 		obj_joueur.x += PLAYERSPEED;
 
+	// animation du ciel
+	obj_sky[1].x--;
+	obj_sky[2].x -= 4;
+	for ( var i = 1 ; i < 3 ; i++)
+	{
+		if (obj_sky[i].x < -640)
+			obj_sky[i].x = +640;
+	}
+
 	stage.update();
 }
