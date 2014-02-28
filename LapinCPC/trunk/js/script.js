@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 4;  // nombre de ressources à charger
+	var PRELOADTOTAL = 6;  // nombre de ressources à charger
 
 	var img_joueur= new Image();
 	var obj_joueur;
@@ -10,6 +10,13 @@
 
 	var PLAYERSPEED = 6;
 	var touches = {};
+
+	var SAUCISSE_COUNT = 10;
+	var SAUCISSE_TYPE_NUMBER = 2;
+	var SAUCISSE_TYPE_POURRIE = 1;
+	var SAUCISSE_TYPE_BONNE = 0;
+	var img_saucisse = [ new Image(), new Image() ];
+	var obj_saucisse = [];
 
 // Gestion du clavier
 addEventListener("keydown",
@@ -47,6 +54,12 @@ function preloadAssets()
 		img_sky[i].onload = preloadUpdate();
 		img_sky[i].src = "images/ciel" + i + ".png";
 	}
+
+	for ( var i=0; i < SAUCISSE_TYPE_NUMBER; i++)
+	{
+		img_saucisse[i].onload = preloadUpdate();
+		img_saucisse[i].src = "images/saucisse" + i + ".png";
+	}
 }
 
 function preloadUpdate()
@@ -64,12 +77,21 @@ function launchGame()
 		obj_sky[i] = new createjs.Bitmap(img_sky[i]);
 		stage.addChild(obj_sky[i]);
 	}
+
+	for ( var i=0; i < SAUCISSE_COUNT; i++)
+	{
+		obj_saucisse[i] = new createjs.Bitmap(img_saucisse[SAUCISSE_TYPE_BONNE]);
+		stage.addChild(obj_saucisse[i]);
+		preparerSaucisse(i);
+	}
+	
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
 }
+
 
 function mainTick()
 {
@@ -93,6 +115,28 @@ function mainTick()
 		if (obj_sky[i].x < -640)
 			obj_sky[i].x = +640;
 	}
-
+	
+	// animation des saucisses
+	for ( var i=0; i < SAUCISSE_COUNT; i++)
+	{
+		obj_saucisse[i].x -=4;
+		if ( obj_saucisse[i].x < -64 )
+			preparerSaucisse(i);
+	}
+	
 	stage.update();
+}
+
+// permet de creer un saucisse au hasard a droite du canvas
+// permet de creer une saucisse bonne et de temps en temps une saucisse pourrie
+function preparerSaucisse(index)
+{
+	obj_saucisse[index].x = Math.floor( ( Math.random() * 448 ) + 640 );
+	obj_saucisse[index].y = Math.floor( ( Math.random() * 448 ) );
+
+	obj_saucisse[index].pourrie = ( Math.random() < .5 );
+	if (obj_saucisse[index].pourrie)
+		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_POURRIE];
+	else
+		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_BONNE];
 }
