@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 6;  // nombre de ressources à charger
+	var PRELOADTOTAL = 9;  // nombre de ressources à charger
 
 	var img_joueur= new Image();
 	var obj_joueur;
@@ -63,6 +63,12 @@ function preloadAssets()
 		img_saucisse[i].onload = preloadUpdate();
 		img_saucisse[i].src = "images/saucisse" + i + ".png";
 	}
+
+	createjs.Sound.registerPlugins( [ createjs.WebAudioPlugin, createjs.HTMLAudioPlugin ] );
+	createjs.Sound.addEventListener( "loadComplete", preloadUpdate );
+	createjs.Sound.registerSound( "sounds/boing.mp3|sounds/boing.ogg", "boing" );
+	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
+	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
 }
 
 function preloadUpdate()
@@ -98,6 +104,8 @@ function launchGame()
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
+
+	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.4 );
 }
 
 
@@ -137,9 +145,15 @@ function mainTick()
 			)
 			{
 				if ( obj_saucisse[i].pourrie )
+				{
 					score -= 2;
+					createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE );
+				}
 				else
+				{
 					score++;
+					createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE );
+				}
 
 				scoreTexte.text = "Score : " + score;
 				preparerSaucisse(i);
