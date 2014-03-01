@@ -24,6 +24,9 @@
 	var score = 0;
 	var scoreTexte;
 
+	var sound_musique = 0.1;
+	var sound_bruitage = 0.4;
+
 // Gestion du clavier
 addEventListener("keydown",
 	function(e)
@@ -116,7 +119,7 @@ function launchGame()
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
 
-	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.1 );
+	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, sound_musique );
 }
 
 
@@ -137,7 +140,7 @@ function mainTick()
 	// Lance un tir 
 	if ( (32 in touches) && ( obj_tir.x > 640 ) )
 	{
-		createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE);
+		createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
 		obj_tir.x = obj_joueur.x + 64;
 		obj_tir.y = obj_joueur.y;
 	}
@@ -171,12 +174,12 @@ function mainTick()
 				if ( obj_saucisse[i].pourrie )
 				{
 					score -= 2;
-					createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE );
+					createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 				}
 				else
 				{
 					score++;
-					createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE );
+					createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 				}
 
 				scoreTexte.text = "Score : " + score;
