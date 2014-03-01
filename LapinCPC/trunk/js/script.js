@@ -21,6 +21,12 @@
 	var img_tir = new Image();
 	var obj_tir;
 
+	var img_bonus_lapin = new Image();
+	var obj_bonus_lapin;
+	var nb_saucisses = 0;
+	var nb_saucisses_bonus_lapin=10;
+	var VITESSE_BONUS_LAPIN=4;
+
 	var score = 0;
 	var scoreTexte;
 
@@ -61,6 +67,9 @@ function preloadAssets()
 	img_tir.onload = preloadUpdate();
 	img_tir.src = "images/tir.png";
 
+	img_bonus_lapin.onload = preloadUpdate();
+	img_bonus_lapin.src = "images/bonus_lapin.png";
+
 	for ( var i=0; i < 3; i++)
 	{
 		img_sky[i].onload = preloadUpdate();
@@ -79,6 +88,7 @@ function preloadAssets()
 	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
 	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
 	createjs.Sound.registerSound( "sounds/panpan.mp3|sounds/panpan.ogg", "panpan" );
+	createjs.Sound.registerSound( "sounds/wowcool.mp3", "wowcool" );
 }
 
 function preloadUpdate()
@@ -106,6 +116,10 @@ function launchGame()
 	
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
+
+	obj_bonus_lapin = new createjs.Bitmap(img_bonus_lapin);
+	stage.addChild(obj_bonus_lapin);
+	obj_bonus_lapin.x = 10000;
 
 	obj_tir = new createjs.Bitmap(img_tir);
 	stage.addChild(obj_tir);
@@ -158,6 +172,41 @@ function mainTick()
 			obj_sky[i].x = +640;
 	}
 	
+	// gestion du bonus Lapin
+	if ( obj_bonus_lapin.x == 10000)
+	{	
+		if ( nb_saucisses > nb_saucisses_bonus_lapin )
+		{
+			nb_saucisses = 0;
+			obj_bonus_lapin.x = 640;
+			obj_bonus_lapin.y = Math.floor( ( Math.random() * 448 ) );
+		}
+	} else {
+		if ( obj_bonus_lapin.x <= 640 )
+			if (	( obj_joueur.x > obj_bonus_lapin.x - 40 ) &&
+				( obj_joueur.x < obj_bonus_lapin.x + 96 ) &&
+				( obj_joueur.y > obj_bonus_lapin.y -16 ) &&
+				( obj_joueur.y < obj_bonus_lapin.y + 44 )
+			)
+			{
+				createjs.Sound.play("wowcool", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
+				obj_bonus_lapin.x = 10000;
+				for ( var i=0; i < SAUCISSE_COUNT; i++)
+				{
+					if ( obj_saucisse[i].pourrie )
+					{
+						createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+						preparerSaucisse[i];
+					}	
+				}
+			}
+			else
+				obj_bonus_lapin.x -= VITESSE_BONUS_LAPIN;
+
+		if ( obj_bonus_lapin.x < 0 )
+			obj_bonus_lapin.x = 10000;
+	}
+
 	// animation des saucisses
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
@@ -198,6 +247,8 @@ function mainTick()
 			}
 		}
 	}
+
+
 	
 	stage.update();
 }
@@ -214,4 +265,8 @@ function preparerSaucisse(index)
 		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_POURRIE];
 	else
 		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_BONNE];
+
+	// compteur de saucisse
+	nb_saucisses++;
 }
+
