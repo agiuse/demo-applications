@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 9;  // nombre de ressources à charger
+	var PRELOADTOTAL = 11;  // nombre de ressources à charger
 
 	var img_joueur= new Image();
 	var obj_joueur;
@@ -18,6 +18,9 @@
 	var img_saucisse = [ new Image(), new Image() ];
 	var obj_saucisse = [];
 
+	var img_tir = new Image();
+	var obj_tir;
+
 	var score = 0;
 	var scoreTexte;
 
@@ -26,7 +29,7 @@ addEventListener("keydown",
 	function(e)
 	{
 		touches[e.keyCode]=true;	// enregistre la touche enfoncée dans le table de hashage "touches"
-		if ( (e.keyCode >= 37) && (e.keyCode <=40) )
+		if ( ( (e.keyCode >= 37) && (e.keyCode <=40) ) || ( e.keyCode == 32 ) )
 			e.preventDefault();
 
 		return false;
@@ -52,6 +55,9 @@ function preloadAssets()
 	img_joueur.onload = preloadUpdate();
 	img_joueur.src = "images/joueur.png";
 
+	img_tir.onload = preloadUpdate();
+	img_tir.src = "images/tir.png";
+
 	for ( var i=0; i < 3; i++)
 	{
 		img_sky[i].onload = preloadUpdate();
@@ -69,6 +75,7 @@ function preloadAssets()
 	createjs.Sound.registerSound( "sounds/boing.mp3|sounds/boing.ogg", "boing" );
 	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
 	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
+	createjs.Sound.registerSound( "sounds/panpan.mp3|sounds/panpan.ogg", "panpan" );
 }
 
 function preloadUpdate()
@@ -97,6 +104,10 @@ function launchGame()
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
 
+	obj_tir = new createjs.Bitmap(img_tir);
+	stage.addChild(obj_tir);
+	obj_tir.x = 10000;
+
 	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
 	scoreTexte.x = 8;
 	scoreTexte.y = 450;
@@ -105,7 +116,7 @@ function launchGame()
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
 
-	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.4 );
+	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, 0.1 );
 }
 
 
@@ -123,6 +134,18 @@ function mainTick()
 	else if ( (39 in touches ) && (obj_joueur.y < 576 ) )
 		obj_joueur.x += PLAYERSPEED;
 
+	// Lance un tir 
+	if ( (32 in touches) && ( obj_tir.x > 640 ) )
+	{
+		createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE);
+		obj_tir.x = obj_joueur.x + 64;
+		obj_tir.y = obj_joueur.y;
+	}
+
+	// Avance l'icone tir a chaque tour de gauche à droite
+	if ( obj_tir.x <= 640 )
+		obj_tir.x += 16;
+
 	// animation du ciel
 	obj_sky[1].x--;
 	obj_sky[2].x -= 4;
@@ -138,7 +161,8 @@ function mainTick()
 		obj_saucisse[i].x -=4;
 		if ( obj_saucisse[i].x < -64 )
 			preparerSaucisse(i);
-		else if (	( obj_saucisse[i].x > obj_joueur.x - 40 ) &&
+		else {
+			if (	( obj_saucisse[i].x > obj_joueur.x - 40 ) &&
 				( obj_saucisse[i].x < obj_joueur.x + 96 ) &&
 				( obj_saucisse[i].y > obj_joueur.y -16 ) &&
 				( obj_saucisse[i].y < obj_joueur.y + 44 )
@@ -157,7 +181,19 @@ function mainTick()
 
 				scoreTexte.text = "Score : " + score;
 				preparerSaucisse(i);
+			} else {
+				
+				if (	( obj_saucisse[i].x > obj_tir.x - 40 ) &&
+					( obj_saucisse[i].x < obj_tir.x + 96 ) &&
+					( obj_saucisse[i].y > obj_tir.y -16 ) &&
+					( obj_saucisse[i].y < obj_tir.y + 44 )
+				)
+				{
+					preparerSaucisse(i);
+					obj_tir.x = 10000;
+				}
 			}
+		}
 	}
 	
 	stage.update();
