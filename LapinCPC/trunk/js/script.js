@@ -109,9 +109,9 @@ function launchGame()
 
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
-		obj_saucisse[i] = new createjs.Bitmap(img_saucisse[SAUCISSE_TYPE_BONNE]);
+		obj_saucisse[i] = new Saucisse;
 		stage.addChild(obj_saucisse[i]);
-		preparerSaucisse(i);
+		nb_saucisses++;
 	}
 	
 	obj_joueur = new createjs.Bitmap(img_joueur);
@@ -196,8 +196,8 @@ function mainTick()
 					if ( obj_saucisse[i].pourrie )
 					{
 						createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-						//preparerSaucisse[i];
-						obj_saucisse[i].x = 800;
+						obj_saucisse[i].preparerSaucisse();
+						nb_saucisses++;
 						score +=2;
 						scoreTexte.text = "Score : " + score;
 					}	
@@ -215,8 +215,10 @@ function mainTick()
 	{
 		obj_saucisse[i].x -=4;
 		if ( obj_saucisse[i].x < -64 )
-			preparerSaucisse(i);
-		else {
+		{
+			obj_saucisse[i].preparerSaucisse();
+			nb_saucisses++;
+		} else {
 			if (	( obj_saucisse[i].x > obj_joueur.x - 40 ) &&
 				( obj_saucisse[i].x < obj_joueur.x + 96 ) &&
 				( obj_saucisse[i].y > obj_joueur.y -16 ) &&
@@ -235,7 +237,8 @@ function mainTick()
 				}
 
 				scoreTexte.text = "Score : " + score;
-				preparerSaucisse(i);
+				obj_saucisse[i].preparerSaucisse();
+				nb_saucisses++;
 			} else {
 				
 				if (	( obj_saucisse[i].x > obj_tir.x - 40 ) &&
@@ -244,7 +247,8 @@ function mainTick()
 					( obj_saucisse[i].y < obj_tir.y + 44 )
 				)
 				{
-					preparerSaucisse(i);
+					obj_saucisse[i].preparerSaucisse();
+					nb_saucisses++;
 					obj_tir.x = 10000;
 				}
 			}
@@ -256,20 +260,30 @@ function mainTick()
 	stage.update();
 }
 
+// Definition du 'constructor' pour Saucisse.
+// C'est un peu comme si on créait une classe 'Saucisse' qui hérite de createjs.Bitmap
+function Saucisse() {
+	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.preparerSaucisse();	// on appelle la méthode preparerSaucisse (pas obligatoire mais autant le faire de suite) 
+}
+
+//Nécessaire afin que Saucisse hérite de createjs.Bitmap
+Saucisse.prototype = new createjs.Bitmap();		
+
+// Définition de la méthode preparerSaucisse pour la classe 'Saucisse'
 // permet de creer un saucisse au hasard a droite du canvas
 // permet de creer une saucisse bonne et de temps en temps une saucisse pourrie
-function preparerSaucisse(index)
+Saucisse.prototype.preparerSaucisse = function ()
 {
-	obj_saucisse[index].x = Math.floor( ( Math.random() * 448 ) + 640 );
-	obj_saucisse[index].y = Math.floor( ( Math.random() * 448 ) );
+	// this représente l'objet 'Saucisse' 
+	this.x = Math.floor(Math.random() * 448 + 640);
+	this.y = Math.floor(Math.random() * 448);
 
-	obj_saucisse[index].pourrie = ( Math.random() < .5 );
-	if (obj_saucisse[index].pourrie)
-		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_POURRIE];
+	this.pourrie = Math.random() < 0.5;
+
+	if (this.pourrie)
+		this.image = img_saucisse[SAUCISSE_TYPE_POURRIE];
 	else
-		obj_saucisse[index].image = img_saucisse[SAUCISSE_TYPE_BONNE];
-
-	// compteur de saucisse
-	nb_saucisses++;
+		this.image = img_saucisse[SAUCISSE_TYPE_BONNE];
 }
 
