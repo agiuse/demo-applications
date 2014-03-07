@@ -116,15 +116,13 @@ function launchGame()
 	{
 		obj_saucisse[i] = new Saucisse;
 		stage.addChild(obj_saucisse[i]);
-		obj_bonus_lapin.countSaucisse();
 	}
 	
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
 
-	obj_tir = new createjs.Bitmap(img_tir);
+	obj_tir = new Tir(img_tir, obj_joueur);
 	stage.addChild(obj_tir);
-	obj_tir.x = 10000;
 
 	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
 	scoreTexte.x = 8;
@@ -153,16 +151,14 @@ function mainTick()
 		obj_joueur.x += PLAYERSPEED;
 
 	// Lance un tir 
-	if ( (32 in touches) && ( obj_tir.x > STAGE_WIDTH ) )
+	if ( (32 in touches) && ( obj_tir.isNotFired()  ) )
 	{
 		createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
-		obj_tir.x = obj_joueur.x + 64;
-		obj_tir.y = obj_joueur.y;
+		obj_tir.fire();
 	}
 
 	// Avance l'icone tir a chaque tour de gauche à droite
-	if ( obj_tir.x <= STAGE_WIDTH )
-		obj_tir.x += 16;
+	obj_tir.moveToRight();
 
 	// animation du ciel
 	obj_sky[1].x--;
@@ -191,7 +187,6 @@ function mainTick()
 				if ( obj_saucisse[i].pourrie )
 				{
 					obj_saucisse[i].preparerSaucisse();
-					obj_bonus_lapin.countSaucisse();
 					score +=2;
 					scoreTexte.text = "Score : " + score;
 				}	
@@ -228,7 +223,7 @@ function mainTick()
 				if ( obj_saucisse[i].isCollision( obj_tir ) )
 				{
 					obj_saucisse[i].preparerSaucisse();
-					obj_tir.x = 10000;
+					obj_tir.preparerTir();
 				}
 			}
 		}
@@ -239,19 +234,49 @@ function mainTick()
 
 // ============================================================================================================================
 // Definition du 'constructor' pour BonusLapin
+function Tir(img_tir, obj_joueur) {
+	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.vitesse = 16;
+	this.image = img_tir;
+	this.preparerTir();
+	this.obj_joueur = obj_joueur;
+}
+
+//Nécessaire afin que Saucisse hérite de createjs.Bitmap
+Tir.prototype = new createjs.Bitmap();
+
+Tir.prototype.moveToRight = function()
+{
+	if  ( ! this.isNotFired() )
+		this.x += this.vitesse;
+}
+
+Tir.prototype.fire = function ()
+{
+		obj_tir.x = this.obj_joueur.x + 64;
+		obj_tir.y = this.obj_joueur.y;
+}
+
+Tir.prototype.preparerTir = function ()
+{
+	this.x = 10000;
+}
+
+Tir.prototype.isNotFired = function ()
+{
+	return ( this.x > STAGE_WIDTH );
+}
+// ============================================================================================================================
+// Definition du 'constructor' pour BonusLapin
 function BonusLapin(img_bonus_lapin) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.vitesse = 4;
 	this.image = img_bonus_lapin;
 	this.preparerBonus();
 }
+
 //Nécessaire afin que Saucisse hérite de createjs.Bitmap
 BonusLapin.prototype = new createjs.Bitmap();
-
-BonusLapin.prototype.countSaucisse = function() 
-{
-	this.nb_saucisses++;
-}
 
 BonusLapin.prototype.preparerBonus = function()
 {
