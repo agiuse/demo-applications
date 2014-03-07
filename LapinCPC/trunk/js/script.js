@@ -196,7 +196,10 @@ function mainTick()
 					if ( obj_saucisse[i].pourrie )
 					{
 						createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-						preparerSaucisse[i];
+						//preparerSaucisse[i];
+						obj_saucisse[i].x = 800;
+						score +=2;
+						scoreTexte.text = "Score : " + score;
 					}	
 				}
 			}
