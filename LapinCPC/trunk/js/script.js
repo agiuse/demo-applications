@@ -28,9 +28,6 @@
 
 	var img_bonus_lapin = new Image();
 	var obj_bonus_lapin;
-	var nb_saucisses = 0;
-	var nb_saucisses_bonus_lapin=10;
-	var VITESSE_BONUS_LAPIN=4;
 
 	var score = 0;
 	var scoreTexte;
@@ -112,19 +109,18 @@ function launchGame()
 		stage.addChild(obj_sky[i]);
 	}
 
+	obj_bonus_lapin = new BonusLapin(img_bonus_lapin);
+	stage.addChild(obj_bonus_lapin);
+
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
 		obj_saucisse[i] = new Saucisse;
 		stage.addChild(obj_saucisse[i]);
-		nb_saucisses++;
+		obj_bonus_lapin.countSaucisse();
 	}
 	
 	obj_joueur = new createjs.Bitmap(img_joueur);
 	stage.addChild(obj_joueur);
-
-	obj_bonus_lapin = new createjs.Bitmap(img_bonus_lapin);
-	stage.addChild(obj_bonus_lapin);
-	obj_bonus_lapin.x = 10000;
 
 	obj_tir = new createjs.Bitmap(img_tir);
 	stage.addChild(obj_tir);
@@ -178,41 +174,29 @@ function mainTick()
 	}
 	
 	// gestion du bonus Lapin
-	if ( obj_bonus_lapin.x == 10000)
-	{	
-		if ( nb_saucisses > nb_saucisses_bonus_lapin )
-		{
-			nb_saucisses = 0;
-			obj_bonus_lapin.x = STAGE_WIDTH;
-			obj_bonus_lapin.y = Math.floor( ( Math.random() * STAGE_HEIGHT ) );
-		}
-	} else {
-		if ( obj_bonus_lapin.x <= STAGE_WIDTH )
-			if (	( obj_joueur.x > obj_bonus_lapin.x - 40 ) &&
-				( obj_joueur.x < obj_bonus_lapin.x + 96 ) &&
-				( obj_joueur.y > obj_bonus_lapin.y -16 ) &&
-				( obj_joueur.y < obj_bonus_lapin.y + 44 )
-			)
-			{
-				createjs.Sound.play("wowcool", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
-				obj_bonus_lapin.x = 10000;
-				for ( var i=0; i < SAUCISSE_COUNT; i++)
-				{
-					if ( obj_saucisse[i].pourrie )
-					{
-						createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-						obj_saucisse[i].preparerSaucisse();
-						nb_saucisses++;
-						score +=2;
-						scoreTexte.text = "Score : " + score;
-					}	
-				}
-			}
-			else
-				obj_bonus_lapin.x -= VITESSE_BONUS_LAPIN;
+	obj_bonus_lapin.moveToLeft();
 
-		if ( obj_bonus_lapin.x < 0 )
-			obj_bonus_lapin.x = 10000;
+	if ( obj_bonus_lapin.isLeftStage() )
+	{
+		obj_bonus_lapin.preparerBonus();
+	} else {
+		if ( obj_bonus_lapin.isCollision( obj_joueur ) )
+		{
+			createjs.Sound.play("wowcool", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
+			obj_bonus_lapin.preparerBonus();
+
+			// Traitement du Bonus
+			for ( var i=0; i < SAUCISSE_COUNT; i++)
+			{
+				if ( obj_saucisse[i].pourrie )
+				{
+					obj_saucisse[i].preparerSaucisse();
+					obj_bonus_lapin.countSaucisse();
+					score +=2;
+					scoreTexte.text = "Score : " + score;
+				}	
+			}
+		}
 	}
 
 	// animation des saucisses
@@ -223,7 +207,6 @@ function mainTick()
 		if ( obj_saucisse[i].isLeftStage() )
 		{
 			obj_saucisse[i].preparerSaucisse();
-			nb_saucisses++;
 		} else {
 			if ( obj_saucisse[i].isCollision( obj_joueur ) )
 			{
@@ -240,22 +223,59 @@ function mainTick()
 
 				scoreTexte.text = "Score : " + score;
 				obj_saucisse[i].preparerSaucisse();
-				nb_saucisses++;
 			} else {
 				
 				if ( obj_saucisse[i].isCollision( obj_tir ) )
 				{
 					obj_saucisse[i].preparerSaucisse();
-					nb_saucisses++;
 					obj_tir.x = 10000;
 				}
 			}
 		}
 	}
 
-
-	
 	stage.update();
+}
+
+// ============================================================================================================================
+// Definition du 'constructor' pour BonusLapin
+function BonusLapin(img_bonus_lapin) {
+	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.vitesse = 4;
+	this.image = img_bonus_lapin;
+	this.preparerBonus();
+}
+//Nécessaire afin que Saucisse hérite de createjs.Bitmap
+BonusLapin.prototype = new createjs.Bitmap();
+
+BonusLapin.prototype.countSaucisse = function() 
+{
+	this.nb_saucisses++;
+}
+
+BonusLapin.prototype.preparerBonus = function()
+{
+	this.x = 10000;
+	this.y = Math.floor( ( Math.random() * STAGE_HEIGHT ) );
+}
+
+BonusLapin.prototype.moveToLeft = function()
+{
+	this.x -= this.vitesse;
+}
+
+BonusLapin.prototype.isCollision = function ( obj_right )
+{
+	return  (( this.x > obj_right.x - 40 ) &&
+		( this.x < obj_right.x + 96 ) &&
+		( this.y > obj_right.y - 16 ) &&
+		( this.y < obj_right.y + 44 )
+		);
+}
+
+BonusLapin.prototype.isLeftStage = function ()
+{
+	return ( this.x < -64 );
 }
 
 // ============================================================================================================================
