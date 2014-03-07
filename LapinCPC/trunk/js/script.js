@@ -11,6 +11,11 @@
 	var PLAYERSPEED = 6;
 	var touches = {};
 
+	var STAGE_WIDTH = 640;
+	var STAGE_HEIGHT = 480;
+	var PLAYER_HALF_WIDTH = 64;
+	var PLAYER_HALF_HEIGHT = 32;
+
 	var SAUCISSE_COUNT = 10;
 	var SAUCISSE_TYPE_NUMBER = 2;
 	var SAUCISSE_TYPE_POURRIE = 1;
@@ -142,7 +147,7 @@ function mainTick()
 	// gestion des touches flèche haut et flèche bas
 	if ( (38 in touches) && (obj_joueur.y > -32) )
 		obj_joueur.y -= PLAYERSPEED;
-	else if ( (40 in touches ) && (obj_joueur.y < 448 ) )
+	else if ( (40 in touches ) && (obj_joueur.y < STAGE_HEIGHT ) )
 		obj_joueur.y += PLAYERSPEED;
 
 	// gestion des touches flèche haut et flèche bas
@@ -152,7 +157,7 @@ function mainTick()
 		obj_joueur.x += PLAYERSPEED;
 
 	// Lance un tir 
-	if ( (32 in touches) && ( obj_tir.x > 640 ) )
+	if ( (32 in touches) && ( obj_tir.x > STAGE_WIDTH ) )
 	{
 		createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
 		obj_tir.x = obj_joueur.x + 64;
@@ -160,7 +165,7 @@ function mainTick()
 	}
 
 	// Avance l'icone tir a chaque tour de gauche à droite
-	if ( obj_tir.x <= 640 )
+	if ( obj_tir.x <= STAGE_WIDTH )
 		obj_tir.x += 16;
 
 	// animation du ciel
@@ -168,8 +173,8 @@ function mainTick()
 	obj_sky[2].x -= 4;
 	for ( var i = 1 ; i < 3 ; i++)
 	{
-		if (obj_sky[i].x < -640)
-			obj_sky[i].x = +640;
+		if (obj_sky[i].x < -STAGE_WIDTH)
+			obj_sky[i].x = +STAGE_WIDTH;
 	}
 	
 	// gestion du bonus Lapin
@@ -178,11 +183,11 @@ function mainTick()
 		if ( nb_saucisses > nb_saucisses_bonus_lapin )
 		{
 			nb_saucisses = 0;
-			obj_bonus_lapin.x = 640;
-			obj_bonus_lapin.y = Math.floor( ( Math.random() * 448 ) );
+			obj_bonus_lapin.x = STAGE_WIDTH;
+			obj_bonus_lapin.y = Math.floor( ( Math.random() * STAGE_HEIGHT ) );
 		}
 	} else {
-		if ( obj_bonus_lapin.x <= 640 )
+		if ( obj_bonus_lapin.x <= STAGE_WIDTH )
 			if (	( obj_joueur.x > obj_bonus_lapin.x - 40 ) &&
 				( obj_joueur.x < obj_bonus_lapin.x + 96 ) &&
 				( obj_joueur.y > obj_bonus_lapin.y -16 ) &&
@@ -213,17 +218,14 @@ function mainTick()
 	// animation des saucisses
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
-		obj_saucisse[i].x -=4;
-		if ( obj_saucisse[i].x < -64 )
+		obj_saucisse[i].moveToLeft();
+
+		if ( obj_saucisse[i].isLeftStage() )
 		{
 			obj_saucisse[i].preparerSaucisse();
 			nb_saucisses++;
 		} else {
-			if (	( obj_saucisse[i].x > obj_joueur.x - 40 ) &&
-				( obj_saucisse[i].x < obj_joueur.x + 96 ) &&
-				( obj_saucisse[i].y > obj_joueur.y -16 ) &&
-				( obj_saucisse[i].y < obj_joueur.y + 44 )
-			)
+			if ( obj_saucisse[i].isCollision( obj_joueur ) )
 			{
 				if ( obj_saucisse[i].pourrie )
 				{
@@ -241,11 +243,7 @@ function mainTick()
 				nb_saucisses++;
 			} else {
 				
-				if (	( obj_saucisse[i].x > obj_tir.x - 40 ) &&
-					( obj_saucisse[i].x < obj_tir.x + 96 ) &&
-					( obj_saucisse[i].y > obj_tir.y -16 ) &&
-					( obj_saucisse[i].y < obj_tir.y + 44 )
-				)
+				if ( obj_saucisse[i].isCollision( obj_tir ) )
 				{
 					obj_saucisse[i].preparerSaucisse();
 					nb_saucisses++;
@@ -260,11 +258,13 @@ function mainTick()
 	stage.update();
 }
 
+// ============================================================================================================================
 // Definition du 'constructor' pour Saucisse.
 // C'est un peu comme si on créait une classe 'Saucisse' qui hérite de createjs.Bitmap
 function Saucisse() {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.preparerSaucisse();	// on appelle la méthode preparerSaucisse (pas obligatoire mais autant le faire de suite) 
+	this.vitesse = 4;
 }
 
 //Nécessaire afin que Saucisse hérite de createjs.Bitmap
@@ -276,14 +276,30 @@ Saucisse.prototype = new createjs.Bitmap();
 Saucisse.prototype.preparerSaucisse = function ()
 {
 	// this représente l'objet 'Saucisse' 
-	this.x = Math.floor(Math.random() * 448 + 640);
-	this.y = Math.floor(Math.random() * 448);
+	this.x = Math.floor(Math.random() * STAGE_HEIGHT + STAGE_WIDTH);
+	this.y = Math.floor(Math.random() * STAGE_HEIGHT);
 
 	this.pourrie = Math.random() < 0.5;
 
-	if (this.pourrie)
-		this.image = img_saucisse[SAUCISSE_TYPE_POURRIE];
-	else
-		this.image = img_saucisse[SAUCISSE_TYPE_BONNE];
+	this.image =  (this.pourrie) ? img_saucisse[SAUCISSE_TYPE_POURRIE] : img_saucisse[SAUCISSE_TYPE_BONNE];
 }
 
+// 
+Saucisse.prototype.isCollision = function ( obj_right )
+{
+	return  (( this.x > obj_right.x - 40 ) &&
+		( this.x < obj_right.x + 96 ) &&
+		( this.y > obj_right.y - 16 ) &&
+		( this.y < obj_right.y + 44 )
+		);
+}
+
+Saucisse.prototype.isLeftStage = function ()
+{
+	return ( this.x < -64 );
+}
+
+Saucisse.prototype.moveToLeft = function ()
+{
+	this.x -= this.vitesse;
+}
