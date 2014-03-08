@@ -8,7 +8,6 @@
 	var img_sky = [ new Image(), new Image(), new Image() ];
 	var obj_sky = [];
 
-	var PLAYERSPEED = 6;
 	var touches = {};
 
 	var STAGE_WIDTH = 640;
@@ -118,7 +117,7 @@ function launchGame()
 		stage.addChild(obj_saucisse[i]);
 	}
 	
-	obj_joueur = new createjs.Bitmap(img_joueur);
+	obj_joueur = new Player(img_joueur);
 	stage.addChild(obj_joueur);
 
 	obj_tir = new Tir(img_tir, obj_joueur);
@@ -139,16 +138,18 @@ function launchGame()
 function mainTick()
 {
 	// gestion des touches flèche haut et flèche bas
-	if ( (38 in touches) && (obj_joueur.y > -32) )
-		obj_joueur.y -= PLAYERSPEED;
-	else if ( (40 in touches ) && (obj_joueur.y < STAGE_HEIGHT ) )
-		obj_joueur.y += PLAYERSPEED;
+	if ( 38 in touches) 
+		obj_joueur.moveToUp();
+
+	if ( 40 in touches )
+		obj_joueur.moveToDown();
 
 	// gestion des touches flèche haut et flèche bas
-	if ( (37 in touches) && (obj_joueur.y > -64) )
-		obj_joueur.x-= PLAYERSPEED;
-	else if ( (39 in touches ) && (obj_joueur.y < 576 ) )
-		obj_joueur.x += PLAYERSPEED;
+	if ( 37 in touches) 
+		obj_joueur.moveToLeft();
+
+	if ( 39 in touches )
+		obj_joueur.moveToRight();
 
 	// Lance un tir 
 	if ( (32 in touches) && ( obj_tir.isNotFired()  ) )
@@ -205,18 +206,8 @@ function mainTick()
 		} else {
 			if ( obj_saucisse[i].isCollision( obj_joueur ) )
 			{
-				if ( obj_saucisse[i].pourrie )
-				{
-					score -= 2;
-					createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-				}
-				else
-				{
-					score++;
-					createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-				}
-
-				scoreTexte.text = "Score : " + score;
+				obj_joueur.mangerSaucisseScore( obj_saucisse[i] );
+				scoreTexte.text = "Score : " + obj_joueur.score;
 				obj_saucisse[i].preparerSaucisse();
 			} else {
 				
@@ -230,6 +221,62 @@ function mainTick()
 	}
 
 	stage.update();
+}
+
+// ============================================================================================================================
+// Definition du 'constructor' pour BonusLapin
+function Player(img_joueur) {
+	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.vitesse = 6;
+	this.image = img_joueur;
+	this.preparerPlayer();
+}
+
+
+//Nécessaire afin que Saucisse hérite de createjs.Bitmap
+Player.prototype = new createjs.Bitmap();
+
+Player.prototype.moveToDown = function()
+{
+	if ( this.y < STAGE_HEIGHT )
+		this.y += this.vitesse;
+}
+
+Player.prototype.moveToRight = function()
+{
+	if ( this.x < STAGE_WIDTH - 64  )
+		this.x += this.vitesse;
+}
+
+Player.prototype.moveToLeft = function()
+{
+	if (this.x > -PLAYER_HALF_HEIGHT ) 
+		this.x -= this.vitesse;
+}
+
+Player.prototype.moveToUp = function()
+{
+	if (this.y > -PLAYER_HALF_WIDTH )
+		this.y -= this.vitesse;
+}
+
+Player.prototype.preparerPlayer = function()
+{
+	this.x = 0;
+	this.y = STAGE_HEIGHT /2;
+	this.score=0;
+}
+
+Player.prototype.mangerSaucisseScore = function (obj_saucisse)
+{
+	if ( obj_saucisse.pourrie )
+	{
+		this.score -= 2;
+		createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+	} else {
+		this.score++;
+		createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+	}
 }
 
 // ============================================================================================================================
@@ -253,7 +300,7 @@ Tir.prototype.moveToRight = function()
 
 Tir.prototype.fire = function ()
 {
-		obj_tir.x = this.obj_joueur.x + 64;
+		obj_tir.x = this.obj_joueur.x + PLAYER_HALF_WIDTH;
 		obj_tir.y = this.obj_joueur.y;
 }
 
@@ -300,7 +347,7 @@ BonusLapin.prototype.isCollision = function ( obj_right )
 
 BonusLapin.prototype.isLeftStage = function ()
 {
-	return ( this.x < -64 );
+	return ( this.x < -PLAYER_HALF_WIDTH );
 }
 
 // ============================================================================================================================
@@ -341,7 +388,7 @@ Saucisse.prototype.isCollision = function ( obj_right )
 
 Saucisse.prototype.isLeftStage = function ()
 {
-	return ( this.x < -64 );
+	return ( this.x < -PLAYER_HALF_WIDTH );
 }
 
 Saucisse.prototype.moveToLeft = function ()
