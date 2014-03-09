@@ -26,6 +26,11 @@
 	var sound_musique = 0.1;
 	var sound_bruitage = 0.4;
 
+	var viesTexte;
+	var highScoreTexte;
+
+	var highScore = 0;
+	
 // Gestion du clavier
 addEventListener("keydown",
 	function(e)
@@ -61,6 +66,8 @@ function preloadAssets()
 	createjs.Sound.registerPlugins( [ createjs.WebAudioPlugin, createjs.HTMLAudioPlugin ] );
 	createjs.Sound.addEventListener( "loadComplete", preloadUpdate );
 	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
+	createjs.Sound.registerSound( "sounds/boing.mp3|sounds/boing.ogg", "boing" );
+	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
 }
 
 function preloadUpdate()
@@ -72,7 +79,7 @@ function preloadUpdate()
 function launchGame()
 {
 	stage = new createjs.Stage(document.getElementById("gameCanvas"));
-	
+
 	obj_sky = new Ciel();
 	for ( var i=0; i < 3; i++)
 	{
@@ -99,6 +106,17 @@ function launchGame()
 	scoreTexte.x = 8;
 	scoreTexte.y = 450;
 	stage.addChild(scoreTexte);
+
+	viesTexte = new createjs.Text("Vies : 3", "24px Arial", "#00000");
+	viesTexte.x = 8;
+	viesTexte.y = 420;
+	stage.addChild(viesTexte);
+
+	highScoreTexte = new createjs.Text("Highscore : 0", "24px Arial", "#00000");
+	highScoreTexte.x = 300;
+	highScoreTexte.y = 450;
+	stage.addChild(highScoreTexte);
+	
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
@@ -154,7 +172,7 @@ function mainTick()
 				if ( obj_saucisse[i].pourrie )
 				{
 					obj_saucisse[i].preparerSaucisse();
-					score +=2;
+					obj_joueur.score +=2;
 					scoreTexte.text = "Score : " + score;
 				}	
 			}
@@ -172,7 +190,31 @@ function mainTick()
 		} else {
 			if ( obj_saucisse[i].isCollision( obj_joueur ) )
 			{
-				obj_joueur.mangerSaucisseScore( obj_saucisse[i] );
+				if ( obj_saucisse[i].pourrie )
+				{
+					createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+					obj_joueur.vies--;
+					if ( obj_joueur.vies < 1 )
+					{
+						if (obj_joueur.score > highScore)
+							highScore = obj_joueur.score;
+
+						highScoreTexte.text = "Highscore : " + highScore;
+
+						// Le joueur a perdu ses n vies
+						// on re-initialise les 6 saucisses
+						for (var j = 0; j < SAUCISSE_COUNT; j++ ) {
+							obj_saucisse[j].preparerSaucisse();
+						}
+
+						obj_joueur.preparerPlayer();
+					}
+
+					viesTexte.text = "Vies : " + obj_joueur.vies;
+				} else {
+					createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+					obj_joueur.score++;
+				}
 				scoreTexte.text = "Score : " + obj_joueur.score;
 				obj_saucisse[i].preparerSaucisse();
 			} else {
@@ -188,3 +230,6 @@ function mainTick()
 
 	stage.update();
 }
+
+
+

@@ -54,19 +54,8 @@ Player.prototype.preparerPlayer = function()
 {
 	this.x = 0;
 	this.y = STAGE_HEIGHT /2;
+	this.vies = 3;
 	this.score=0;
-}
-
-Player.prototype.mangerSaucisseScore = function (obj_saucisse)
-{
-	if ( obj_saucisse.pourrie )
-	{
-		this.score -= 2;
-		createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-	} else {
-		this.score++;
-		createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-	}
 }
 
 // ============================================================================================================================
