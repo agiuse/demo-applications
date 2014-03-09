@@ -3,7 +3,6 @@
 	var SAUCISSE_TYPE_POURRIE = 1;
 	var SAUCISSE_TYPE_BONNE = 0;
 	var img_saucisse = [ new Image(), new Image() ];
-	var obj_saucisse = [];
 
 // Chargement des ressources
 function preloadAssetsSaucisse()
