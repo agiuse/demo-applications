@@ -7,8 +7,7 @@
 
 	var obj_joueur;
 
-	var img_sky = [ new Image(), new Image(), new Image() ];
-	var obj_sky = [];
+	var obj_sky;
 
 	var touches = {};
 
@@ -50,6 +49,7 @@ addEventListener("keyup",
 function startGame()
 {
 	preloadAssets();
+	preloadAssetsDecors();
 	preloadAssetsSaucisse();
 	preloadAssetsPlayer();
 	preloadAssetsBonus();
@@ -58,19 +58,9 @@ function startGame()
 // Chargement des ressources
 function preloadAssets()
 {
-	for ( var i=0; i < 3; i++)
-	{
-		img_sky[i].onload = preloadUpdate();
-		img_sky[i].src = "images/ciel" + i + ".png";
-	}
-
-
 	createjs.Sound.registerPlugins( [ createjs.WebAudioPlugin, createjs.HTMLAudioPlugin ] );
 	createjs.Sound.addEventListener( "loadComplete", preloadUpdate );
-	createjs.Sound.registerSound( "sounds/boing.mp3|sounds/boing.ogg", "boing" );
 	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
-	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
-	createjs.Sound.registerSound( "sounds/panpan.mp3|sounds/panpan.ogg", "panpan" );
 }
 
 function preloadUpdate()
@@ -83,10 +73,11 @@ function launchGame()
 {
 	stage = new createjs.Stage(document.getElementById("gameCanvas"));
 	
+	obj_sky = new Ciel();
 	for ( var i=0; i < 3; i++)
 	{
-		obj_sky[i] = new createjs.Bitmap(img_sky[i]);
-		stage.addChild(obj_sky[i]);
+		obj_sky.image[i] = new createjs.Bitmap(img_sky[i]);
+		stage.addChild(obj_sky.image[i]);
 	}
 
 	obj_bonus_lapin = new BonusLapin(img_bonus_lapin);
@@ -143,13 +134,7 @@ function mainTick()
 	obj_tir.moveToRight();
 
 	// animation du ciel
-	obj_sky[1].x--;
-	obj_sky[2].x -= 4;
-	for ( var i = 1 ; i < 3 ; i++)
-	{
-		if (obj_sky[i].x < -STAGE_WIDTH)
-			obj_sky[i].x = +STAGE_WIDTH;
-	}
+	obj_sky.move();
 	
 	// gestion du bonus Lapin
 	obj_bonus_lapin.moveToLeft();
