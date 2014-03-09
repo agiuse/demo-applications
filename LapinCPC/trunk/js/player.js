@@ -10,6 +10,8 @@ function preloadAssetsPlayer()
 
 	img_tir.onload = preloadUpdate();
 	img_tir.src = "images/tir.png";
+
+	createjs.Sound.registerSound( "sounds/panpan.mp3|sounds/panpan.ogg", "panpan" );
 }
 
 // Definition du 'constructor' pour BonusLapin

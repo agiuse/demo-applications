@@ -12,7 +12,8 @@ function preloadAssetsSaucisse()
 		img_saucisse[i].onload = preloadUpdate();
 		img_saucisse[i].src = "images/saucisse" + i + ".png";
 	}
-
+	createjs.Sound.registerSound( "sounds/boing.mp3|sounds/boing.ogg", "boing" );
+	createjs.Sound.registerSound( "sounds/pouet.mp3|sounds/pouet.ogg", "pouet" );
 }
 
 // ============================================================================================================================
