@@ -3,8 +3,8 @@
 	var PRELOADTOTAL = 11;  // nombre de ressources à charger
 
 	var SAUCISSE_COUNT = 10;
+	var obj_saucisse = [];
 
-	var img_joueur= new Image();
 	var obj_joueur;
 
 	var img_sky = [ new Image(), new Image(), new Image() ];
@@ -17,7 +17,6 @@
 	var PLAYER_HALF_WIDTH = 64;
 	var PLAYER_HALF_HEIGHT = 32;
 
-	var img_tir = new Image();
 	var obj_tir;
 
 	var img_bonus_lapin = new Image();
@@ -52,17 +51,13 @@ addEventListener("keyup",
 function startGame()
 {
 	preloadAssets();
+	preloadAssetsSaucisse();
+	preloadAssetsPlayer();
 }
 
 // Chargement des ressources
 function preloadAssets()
 {
-	img_joueur.onload = preloadUpdate();
-	img_joueur.src = "images/joueur.png";
-
-	img_tir.onload = preloadUpdate();
-	img_tir.src = "images/tir.png";
-
 	img_bonus_lapin.onload = preloadUpdate();
 	img_bonus_lapin.src = "images/bonus_lapin.png";
 
@@ -72,7 +67,6 @@ function preloadAssets()
 		img_sky[i].src = "images/ciel" + i + ".png";
 	}
 
-	preloadAssetsSaucisse();
 
 	createjs.Sound.registerPlugins( [ createjs.WebAudioPlugin, createjs.HTMLAudioPlugin ] );
 	createjs.Sound.addEventListener( "loadComplete", preloadUpdate );
