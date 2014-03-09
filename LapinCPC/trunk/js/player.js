@@ -50,6 +50,10 @@ Player.prototype.moveToUp = function()
 		this.y -= this.vitesse;
 }
 
+Player.prototype.addPoints = function()
+{
+	this.score += this.points;
+}
 Player.prototype.preparerPlayer = function()
 {
 	this.x = 0;
