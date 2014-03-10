@@ -38,6 +38,8 @@ Saucisse.prototype.preparerSaucisse = function ()
 	this.pourrie = Math.random() < 0.5;
 
 	this.image =  (this.pourrie) ? img_saucisse[SAUCISSE_TYPE_POURRIE] : img_saucisse[SAUCISSE_TYPE_BONNE];
+
+	this.rotation = (Math.random() * 10) - 5;
 }
 
 // 
