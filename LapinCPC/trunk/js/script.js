@@ -167,16 +167,18 @@ function mainTick()
 		// gestion des touches flèche haut et flèche bas
 		if ( 38 in touches) 
 			obj_joueur.moveToUp();
-
-		if ( 40 in touches )
-			obj_joueur.moveToDown();
+		else
+			if ( 40 in touches )
+				obj_joueur.moveToDown();
+			else
+				obj_joueur.annulerRotation();
 
 		// gestion des touches flèche haut et flèche bas
 		if ( 37 in touches) 
 			obj_joueur.moveToLeft();
-
-		if ( 39 in touches )
-			obj_joueur.moveToRight();
+		else
+			if ( 39 in touches )
+				obj_joueur.moveToRight();
 
 		// Lance un tir 
 		if ( (32 in touches) && ( obj_tir.isNotFired()  ) )
