@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 12;  // nombre de ressources à charger
+	var PRELOADTOTAL = 13;  // nombre de ressources à charger
 
 	var SAUCISSE_COUNT = 10;
 	var obj_saucisse = [];
@@ -19,6 +19,7 @@
 	var obj_tir;
 
 	var obj_bonus_lapin;
+	var obj_bonus_vie_lapin;
 
 	var score = 0;
 	var scoreTexte;
@@ -95,8 +96,11 @@ function launchGame()
 		stage.addChild(obj_sky.image[i]);
 	}
 
-	obj_bonus_lapin = new BonusLapin(img_bonus_lapin);
+	obj_bonus_lapin = new BonusLapin(img_bonus_lapin, 10000, 4, 10);
 	stage.addChild(obj_bonus_lapin);
+
+	obj_bonus_vie_lapin = new BonusLapin(img_bonus_vie_lapin, 10500, 10, 10);
+	stage.addChild(obj_bonus_vie_lapin);
 
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
@@ -198,12 +202,12 @@ function mainTick()
 
 		if ( obj_bonus_lapin.isLeftStage() )
 		{
-			obj_bonus_lapin.preparerBonus();
+			obj_bonus_lapin.preparerBonus(10000, 4 + Math.random()*2, Math.random()*10);
 		} else {
 			if ( obj_bonus_lapin.isCollision( obj_joueur ) )
 			{
 				createjs.Sound.play("wowcool", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
-				obj_bonus_lapin.preparerBonus();
+				obj_bonus_lapin.preparerBonus(10000, 4 + Math.random()*2, Math.random()*10);
 
 				// Traitement du Bonus
 				for ( var i=0; i < SAUCISSE_COUNT; i++)
@@ -215,6 +219,24 @@ function mainTick()
 						scoreTexte.text = "Score : " + score;
 					}	
 				}
+			}
+		}
+
+		// gestion du bonus Vie Lapin
+		obj_bonus_vie_lapin.moveToLeft();
+
+		if ( obj_bonus_vie_lapin.isLeftStage() )
+		{
+			obj_bonus_vie_lapin.preparerBonus(10000 + Math.random()*500, 4 + Math.random()*2, Math.random()*10);
+		} else {
+			if ( obj_bonus_vie_lapin.isCollision( obj_joueur ) )
+			{
+				createjs.Sound.play("wowcool", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
+				obj_bonus_vie_lapin.preparerBonus(10000 + Math.random()*500, 4 + Math.random()*2, Math.random()*10);
+
+				// Traitement du Bonus
+				obj_joueur.vies++;
+				viesTexte.text = "Vies : " + obj_joueur.vies;
 			}
 		}
 
