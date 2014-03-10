@@ -35,6 +35,9 @@
 	var difficulte = 1;
 	var menuTexte = [];
 	var inMenu = true;
+
+	var nb_saucisses;
+	var nb_saucisses_max;
 	
 // Gestion du clavier
 addEventListener("keydown",
@@ -168,6 +171,15 @@ function mainTick()
 				if  (114 in touches)
 					startNewGame(3);
 	} else {
+
+		if (nb_saucisses > nb_saucisses_max)
+		{
+			for ( var i=0; i < SAUCISSE_COUNT; i++)
+			{
+				obj_saucisse[i].vitesse +=2;
+			}
+			nb_saucisses = 0;
+		}
 		// gestion des touches flèche haut et flèche bas
 		if ( 38 in touches) 
 			obj_joueur.moveToUp();
@@ -275,6 +287,7 @@ function mainTick()
 						viesTexte.text = "Vies : " + obj_joueur.vies;
 					} else {
 						createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+						nb_saucisse++;
 						obj_joueur.addPoints();
 					}
 					scoreTexte.text = "Score : " + obj_joueur.score;
@@ -302,6 +315,7 @@ function startNewGame(diffi)
 	}
 
 	obj_joueur.points = diffi * diffi;
+	nb_saucisses_max = 50 - diffi * diffi;
 
 	inMenu = false;
 	viesTexte.visible = true;
