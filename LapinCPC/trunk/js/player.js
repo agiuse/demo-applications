@@ -29,37 +29,61 @@ Player.prototype = new createjs.Bitmap();
 Player.prototype.moveToDown = function()
 {
 	if ( this.y < STAGE_HEIGHT )
+	{
 		this.y += this.vitesse;
+		if ( this.rotation < 20 )
+			this.rotation +=2;
+	}
 }
 
 Player.prototype.moveToRight = function()
 {
 	if ( this.x < STAGE_WIDTH - 64  )
+	{
 		this.x += this.vitesse;
+	}
 }
 
 Player.prototype.moveToLeft = function()
 {
 	if (this.x > -PLAYER_HALF_HEIGHT ) 
+	{
 		this.x -= this.vitesse;
+	}
 }
 
 Player.prototype.moveToUp = function()
 {
 	if (this.y > -PLAYER_HALF_WIDTH )
+	{
 		this.y -= this.vitesse;
+		if ( this.rotation > -20 )
+			this.rotation -=2;
+	}
 }
 
 Player.prototype.addPoints = function()
 {
 	this.score += this.points;
 }
+
 Player.prototype.preparerPlayer = function()
 {
 	this.x = 0;
 	this.y = STAGE_HEIGHT /2;
 	this.vies = 3;
 	this.score=0;
+	this.rotation=0;
+}
+
+
+Player.prototype.annulerRotation = function()
+{
+	if (this.rotation > 0 )
+		this.rotation--;
+	else
+		if (this.rotation < 0 )
+			this.rotation++;
 }
 
 // ============================================================================================================================
