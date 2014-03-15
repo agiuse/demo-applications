@@ -287,7 +287,7 @@ function mainTick()
 						viesTexte.text = "Vies : " + obj_joueur.vies;
 					} else {
 						createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-						nb_saucisse++;
+						nb_saucisses++;
 						obj_joueur.addPoints();
 					}
 					scoreTexte.text = "Score : " + obj_joueur.score;
