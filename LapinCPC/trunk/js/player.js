@@ -78,8 +78,35 @@ Player.prototype.preparerPlayer = function()
 	this.image = this.img_joueur[0];
 	this.rotation=0;
 	this.vitesse = 6;
+	this.invincibleTimer = 0;
+	this.invincibleCligno = false;
 }
 
+Player.prototype.invincible = function()
+{
+	this.invincibleTimer = 25;
+}
+
+Player.prototype.isNotInvincible = function()
+{
+	return ( this.invincibleTimer <= 0 );	
+}
+
+Player.prototype.manageInvincible = function()
+{
+	if ( this.invincibleTimer > 0 )
+	{
+		this.invincibleTimer--;
+		this.invincibleCligno = ! this.invincibleCligno;
+
+		if ( ( ! this.invincibleCligno ) || ( this.invincibleTimer <= 0 ) )
+		{
+			this.image=this.img_joueur[0];
+		} else {
+			this.image=this.img_joueur[1];
+		}
+	}
+}
 
 Player.prototype.annulerRotation = function()
 {

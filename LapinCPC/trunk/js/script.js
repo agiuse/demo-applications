@@ -180,6 +180,9 @@ function mainTick()
 			}
 			nb_saucisses = 0;
 		}
+
+		obj_joueur.manageInvincible();
+
 		// gestion des touches flèche haut et flèche bas
 		if ( 38 in touches) 
 			obj_joueur.moveToUp();
@@ -265,32 +268,36 @@ function mainTick()
 				{
 					if ( obj_saucisse[i].pourrie )
 					{
-						createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-						obj_joueur.vies--;
-						if ( obj_joueur.vies < 1 )
+						if ( obj_joueur.isNotInvincible() )
 						{
-							if (obj_joueur.score > highScore)
-								highScore = obj_joueur.score;
+							createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+							obj_joueur.vies--;
+							obj_joueur.invincible();
+							if ( obj_joueur.vies < 1 )
+							{
+								if (obj_joueur.score > highScore)
+									highScore = obj_joueur.score;
 
-							highScoreTexte.text = "Highscore : " + highScore;
+								highScoreTexte.text = "Highscore : " + highScore;
 
-							// Le joueur a perdu ses n vies
-							// on re-initialise les 6 saucisses
-							for (var j = 0; j < SAUCISSE_COUNT; j++ ) {
-								obj_saucisse[j].preparerSaucisse();
+								// Le joueur a perdu ses n vies
+								// on re-initialise les 6 saucisses
+								for (var j = 0; j < SAUCISSE_COUNT; j++ ) {
+									obj_saucisse[j].preparerSaucisse();
+								}
+
+								obj_joueur.preparerPlayer();
+								endGame();
 							}
-
-							obj_joueur.preparerPlayer();
-							endGame();
+							viesTexte.text = "Vies : " + obj_joueur.vies;
+							scoreTexte.text = "Score : " + obj_joueur.score;
 						}
-
-						viesTexte.text = "Vies : " + obj_joueur.vies;
 					} else {
 						createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 						nb_saucisses++;
 						obj_joueur.addPoints();
+						scoreTexte.text = "Score : " + obj_joueur.score;
 					}
-					scoreTexte.text = "Score : " + obj_joueur.score;
 					obj_saucisse[i].preparerSaucisse();
 				} else {
 					
