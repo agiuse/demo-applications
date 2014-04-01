@@ -26,13 +26,10 @@
 	var img_bonus;
 
 	var score = 0;
-	var scoreTexte;
 
 	var sound_musique = 0.1;
 	var sound_bruitage = 0.4;
 
-	var viesTexte;
-	var highScoreTexte;
 
 	var highScore = 0;
 
@@ -113,22 +110,9 @@ function launchGame()
 	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
 	obj_tir.visible=false;
 
-	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
-	scoreTexte.x = 8;
-	scoreTexte.y = 450;
-	stage.addChild(scoreTexte);
-	scoreTexte.visible=false;
-
-	viesTexte = new createjs.Text("Vies : 3", "24px Arial", "#00000");
-	viesTexte.x = 8;
-	viesTexte.y = 420;
-	stage.addChild(viesTexte);
-	viesTexte.visible=false;
-
-	highScoreTexte = new createjs.Text("Highscore : 0", "24px Arial", "#00000");
-	highScoreTexte.x = 300;
-	highScoreTexte.y = 450;
-	stage.addChild(highScoreTexte);
+	ViewLife(stage);
+	ViewScore(stage);
+	ViewHighScore(stage);
 	
 	// Menu de difficulté
 	for ( var i = 0; i < 3; i++)
