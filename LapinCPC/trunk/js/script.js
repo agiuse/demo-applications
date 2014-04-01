@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 13;  // nombre de ressources à charger
+	var PRELOADTOTAL = 14  // nombre de ressources à charger
 
 	var SAUCISSE_COUNT = 10;
 	var obj_saucisse = [];
