@@ -25,12 +25,13 @@
 	var obj_bonus_vie_lapin;
 	var img_bonus;
 
-	var score = 0;
-
 	var sound_musique = 0.1;
 	var sound_bruitage = 0.4;
 
 
+	var viesTexte;
+	var scoreTexte;
+	var highScoreTexte;
 	var highScore = 0;
 
 	var difficulte = 1;
@@ -110,9 +111,9 @@ function launchGame()
 	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
 	obj_tir.visible=false;
 
-	ViewLife(stage);
-	ViewScore(stage);
-	ViewHighScore(stage);
+	viesTexte = new ViewLife(stage);
+	scoreTexte = new ViewScore(stage);
+	highScoreTexte = new ViewHighScore(stage);
 	
 	// Menu de difficulté
 	for ( var i = 0; i < 3; i++)
@@ -209,7 +210,7 @@ function mainTick()
 					{
 						obj_saucisse[i].preparerSaucisse();
 						obj_joueur.addPoints();
-						scoreTexte.text = "Score : " + score;
+						scoreTexte.text = "Score : " + obj_joueur.score;
 					}	
 				}
 			}
