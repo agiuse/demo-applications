@@ -1,26 +1,30 @@
-	var img_joueur= [ new Image(), new Image() ];
-	var img_tir = new Image();
-
 // ============================================================================================================================
 // Chargement des ressources
 function preloadAssetsPlayer()
 {
+	var img_joueur= [ new Image(), new Image(), new Image() ];
+
 	img_joueur[0].onload = preloadUpdate();
 	img_joueur[0].src = "images/joueur.png";
 
 	img_joueur[1].onload = preloadUpdate();
 	img_joueur[1].src = "images/joueur_hit.png";
 
-	img_tir.onload = preloadUpdate();
-	img_tir.src = "images/tir.png";
+	img_joueur[2].onload = preloadUpdate();
+	img_joueur[2].src = "images/tir.png";
 
 	createjs.Sound.registerSound( "sounds/panpan.mp3|sounds/panpan.ogg", "panpan" );
+
+	return img_joueur;
 }
 
 // Definition du 'constructor' pour BonusLapin
-function Player(img_joueur) {
+function Player(stage, img_joueur) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.img_joueur = img_joueur;
+	this.stage = stage;
+	this.stage.addChild(this);
+
 	this.preparerPlayer();
 }
 
@@ -119,8 +123,10 @@ Player.prototype.annulerRotation = function()
 
 // ============================================================================================================================
 // Definition du 'constructor' pour BonusLapin
-function Tir(img_tir, obj_joueur) {
+function Tir(stage, img_tir, obj_joueur) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.stage = stage;
+	this.stage.addChild(this);
 	this.vitesse = 16;
 	this.image = img_tir;
 	this.preparerTir();

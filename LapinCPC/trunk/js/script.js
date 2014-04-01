@@ -4,10 +4,14 @@
 
 	var SAUCISSE_COUNT = 10;
 	var obj_saucisse = [];
+	var img_saucisse;
 
 	var obj_joueur;
+	var img_joueur;
+	var obj_tir;
 
 	var obj_sky;
+	var img_decors;
 
 	var touches = {};
 
@@ -16,10 +20,10 @@
 	var PLAYER_HALF_WIDTH = 64;
 	var PLAYER_HALF_HEIGHT = 32;
 
-	var obj_tir;
 
 	var obj_bonus_lapin;
 	var obj_bonus_vie_lapin;
+	var img_bonus;
 
 	var score = 0;
 	var scoreTexte;
@@ -65,10 +69,10 @@ addEventListener("keyup",
 function startGame()
 {
 	preloadAssets();
-	preloadAssetsDecors();
-	preloadAssetsSaucisse();
-	preloadAssetsPlayer();
-	preloadAssetsBonus();
+	img_decors = preloadAssetsDecors();
+	img_saucisse = preloadAssetsSaucisse();
+	img_joueur = preloadAssetsPlayer();
+	img_bonus = preloadAssetsBonus();
 }
 
 // Chargement des ressources
@@ -92,31 +96,21 @@ function launchGame()
 {
 	stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
-	obj_sky = new Ciel();
-	for ( var i=0; i < 3; i++)
-	{
-		obj_sky.image[i] = new createjs.Bitmap(img_sky[i]);
-		stage.addChild(obj_sky.image[i]);
-	}
+	obj_sky = new Ciel(stage, img_decors);
 
-	obj_bonus_lapin = new BonusLapin(img_bonus_lapin, 10000, 4, 10);
-	stage.addChild(obj_bonus_lapin);
+	obj_bonus_lapin = new BonusLapin(stage, img_bonus[0], 10000, 4, 10);
 
-	obj_bonus_vie_lapin = new BonusLapin(img_bonus_vie_lapin, 10500, 10, 10);
-	stage.addChild(obj_bonus_vie_lapin);
+	obj_bonus_vie_lapin = new BonusLapin(stage, img_bonus[1], 10500, 10, 10);
 
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
-		obj_saucisse[i] = new Saucisse;
-		stage.addChild(obj_saucisse[i]);
+		obj_saucisse[i] = new Saucisse(stage, img_saucisse);
 	}
 	
-	obj_joueur = new Player(img_joueur);
-	stage.addChild(obj_joueur);
+	obj_joueur = new Player(stage, img_joueur);
 	obj_joueur.visible=false;
 
-	obj_tir = new Tir(img_tir, obj_joueur);
-	stage.addChild(obj_tir);
+	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
 	obj_tir.visible=false;
 
 	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
