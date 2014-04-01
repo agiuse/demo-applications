@@ -14,3 +14,22 @@ function ViewHighScore(stage)
 //Nécessaire afin que ViewHighScore hérite de createjs.Text
 ViewHighScore.prototype = new createjs.Text();
 
+ViewHighScore.prototype.display = function(obj_highscore) {
+	this.text = "Highscore : " + obj_highscore.get();
+}
+
+// ============================================================================================================================
+function ModelHighScore(observer) {
+	this.highscore = 0;
+	this.observer = observer;
+}
+
+
+ModelHighScore.prototype.get = function() {
+	return this.highscore;
+}
+
+ModelHighScore.prototype.set = function(highscore) {
+	this.highscore = highscore;
+}
+
