@@ -122,29 +122,32 @@ Player.prototype.annulerRotation = function()
 }
 
 // ============================================================================================================================
-var viesTexte;
-function ViewLife(stage)
-{
-	viesTexte = new createjs.Text("Vies : 3", "24px Arial", "#00000");
-	viesTexte.x = 8;
-	viesTexte.y = 420;
-	stage.addChild(viesTexte);
-	viesTexte.visible=false;
+function ViewLife(stage) {
+	createjs.Text.call(this, "Vies : 3", "24px Arial", "#00000");	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.stage = stage;
+	this.x = 8;
+	this.y = 420;
+	this.stage.addChild(this);
+	this.visible=false;
 }
+
+//Nécessaire afin que ViewLife hérite de createjs.Text
+ViewLife.prototype = new createjs.Text();
 
 // ============================================================================================================================
-var scoreTexte;
-
 function ViewScore(stage)
 {
-
-	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
-	scoreTexte.x = 8;
-	scoreTexte.y = 450;
-	stage.addChild(scoreTexte);
-	scoreTexte.visible=false;
+	createjs.Bitmap.call(this, "Score : 0", "24px Arial", "#000000" );	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.stage = stage;
+	this.x = 8;
+	this.y = 450;
+	this.stage.addChild(this);
+	this.visible=false;
 
 }
+
+//Nécessaire afin que ViewScore hérite de createjs.Text
+ViewScore.prototype = new createjs.Text();
 
 // ============================================================================================================================
 // Definition du 'constructor' pour BonusLapin
@@ -158,7 +161,7 @@ function Tir(stage, img_tir, obj_joueur) {
 	this.obj_joueur = obj_joueur;
 }
 
-//Nécessaire afin que Saucisse hérite de createjs.Bitmap
+//Nécessaire afin que Tir hérite de createjs.Bitmap
 Tir.prototype = new createjs.Bitmap();
 
 Tir.prototype.moveToRight = function()
