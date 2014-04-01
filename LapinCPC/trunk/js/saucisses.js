@@ -1,26 +1,26 @@
-	var SAUCISSE_COUNT = 10;
-	var SAUCISSE_TYPE_NUMBER = 2;
-	var SAUCISSE_TYPE_POURRIE = 1;
-	var SAUCISSE_TYPE_BONNE = 0;
-	var img_saucisse = [ new Image(), new Image() ];
-
 // Chargement des ressources
 function preloadAssetsSaucisse()
 {
+	var SAUCISSE_TYPE_NUMBER = 2;
+	var img_saucisse = [ new Image(), new Image() ];
 	for ( var i=0; i < SAUCISSE_TYPE_NUMBER; i++)
 	{
 		img_saucisse[i].onload = preloadUpdate();
 		img_saucisse[i].src = "images/saucisse" + i + ".png";
 	}
+
+	return img_saucisse;
 }
 
 // ============================================================================================================================
 // Definition du 'constructor' pour Saucisse.
 // C'est un peu comme si on créait une classe 'Saucisse' qui hérite de createjs.Bitmap
-function Saucisse() {
+function Saucisse(stage,img_saucisse) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
+	this.stage=stage;
+	this.img_saucisse = img_saucisse;
+	this.stage.addChild(this);
 	this.preparerSaucisse();	// on appelle la méthode preparerSaucisse (pas obligatoire mais autant le faire de suite) 
-	this.vitesse = 4;
 }
 
 //Nécessaire afin que Saucisse hérite de createjs.Bitmap
@@ -31,13 +31,15 @@ Saucisse.prototype = new createjs.Bitmap();
 // permet de creer une saucisse bonne et de temps en temps une saucisse pourrie
 Saucisse.prototype.preparerSaucisse = function ()
 {
+	this.vitesse = 4;
+
 	// this représente l'objet 'Saucisse' 
 	this.x = Math.floor(Math.random() * STAGE_HEIGHT + STAGE_WIDTH);
 	this.y = Math.floor(Math.random() * STAGE_HEIGHT);
 
 	this.pourrie = Math.random() < 0.5;
 
-	this.image =  (this.pourrie) ? img_saucisse[SAUCISSE_TYPE_POURRIE] : img_saucisse[SAUCISSE_TYPE_BONNE];
+	this.image =  (this.pourrie) ? this.img_saucisse[1] : this.img_saucisse[0];
 
 	this.rotation = (Math.random() * 10) - 5;
 }

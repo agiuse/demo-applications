@@ -1,26 +1,31 @@
-	var img_bonus_lapin = new Image();
-	var img_bonus_vie_lapin = new Image();
 
 // Chargement des ressources
 function preloadAssetsBonus()
 {
-	img_bonus_lapin.onload = preloadUpdate();
-	img_bonus_lapin.src = "images/bonus_lapin.png";
+	var BONUS_LAPIN = 0;
+	var BONUS_VIE_LAPIN = 1;
 
-	img_bonus_vie_lapin.onload = preloadUpdate();
-	img_bonus_vie_lapin.src = "images/life_lapin.gif";
-	img_bonus_vie_lapin.width=128;
-	img_bonus_vie_lapin.height=128;
+	var img_bonus = [ new Image(), new Image() ];
+
+	img_bonus[BONUS_LAPIN].onload = preloadUpdate();
+	img_bonus[BONUS_LAPIN].src = "images/bonus_lapin.png";
+
+	img_bonus[BONUS_VIE_LAPIN].onload = preloadUpdate();
+	img_bonus[BONUS_VIE_LAPIN].src = "images/life_lapin.gif";
 
 
 	createjs.Sound.registerSound( "sounds/wowcool.mp3", "wowcool" );
+
+	return img_bonus;
 }
 
 // ==========================================================================================================================
 // Definition du 'constructor' pour BonusLapin
-function BonusLapin(img_bonus_lapin, init_x, vitesse, vitesse_rotation) {
+function BonusLapin(stage, img_bonus_lapin, init_x, vitesse, vitesse_rotation) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.image = img_bonus_lapin;
+	this.stage = stage;
+	this.stage.addChild(this);
 	this.preparerBonus(init_x, vitesse, vitesse_rotation);
 }
 
