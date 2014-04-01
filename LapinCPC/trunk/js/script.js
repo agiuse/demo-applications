@@ -32,7 +32,7 @@
 	var viesTexte;
 	var scoreTexte;
 	var highScoreTexte;
-	var highScore = 0;
+	var highScore;
 
 	var difficulte = 1;
 	var menuTexte = [];
@@ -114,6 +114,7 @@ function launchGame()
 	viesTexte = new ViewLife(stage);
 	scoreTexte = new ViewScore(stage);
 	highScoreTexte = new ViewHighScore(stage);
+	highScore = new ModelHighScore(highScoreTexte);
 	
 	// Menu de difficulté
 	for ( var i = 0; i < 3; i++)
@@ -254,10 +255,10 @@ function mainTick()
 							obj_joueur.invincible();
 							if ( obj_joueur.vies < 1 )
 							{
-								if (obj_joueur.score > highScore)
-									highScore = obj_joueur.score;
+								if (obj_joueur.score > highScore.get() )
+									highScore.set( obj_joueur.score );
 
-								highScoreTexte.text = "Highscore : " + highScore;
+								highScoreTexte.display( highScore );
 
 								// Le joueur a perdu ses n vies
 								// on re-initialise les 6 saucisses
