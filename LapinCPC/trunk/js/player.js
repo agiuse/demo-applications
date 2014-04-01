@@ -1,12 +1,15 @@
-	var img_joueur= new Image();
+	var img_joueur= [ new Image(), new Image() ];
 	var img_tir = new Image();
 
 // ============================================================================================================================
 // Chargement des ressources
 function preloadAssetsPlayer()
 {
-	img_joueur.onload = preloadUpdate();
-	img_joueur.src = "images/joueur.png";
+	img_joueur[0].onload = preloadUpdate();
+	img_joueur[0].src = "images/joueur.png";
+
+	img_joueur[1].onload = preloadUpdate();
+	img_joueur[1].src = "images/joueur_hit.png";
 
 	img_tir.onload = preloadUpdate();
 	img_tir.src = "images/tir.png";
@@ -17,8 +20,7 @@ function preloadAssetsPlayer()
 // Definition du 'constructor' pour BonusLapin
 function Player(img_joueur) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
-	this.vitesse = 6;
-	this.image = img_joueur;
+	this.img_joueur = img_joueur;
 	this.preparerPlayer();
 }
 
@@ -73,7 +75,9 @@ Player.prototype.preparerPlayer = function()
 	this.y = STAGE_HEIGHT /2;
 	this.vies = 3;
 	this.score=0;
+	this.image = this.img_joueur[0];
 	this.rotation=0;
+	this.vitesse = 6;
 }
 
 
