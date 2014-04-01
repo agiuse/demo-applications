@@ -122,6 +122,31 @@ Player.prototype.annulerRotation = function()
 }
 
 // ============================================================================================================================
+var viesTexte;
+function ViewLife(stage)
+{
+	viesTexte = new createjs.Text("Vies : 3", "24px Arial", "#00000");
+	viesTexte.x = 8;
+	viesTexte.y = 420;
+	stage.addChild(viesTexte);
+	viesTexte.visible=false;
+}
+
+// ============================================================================================================================
+var scoreTexte;
+
+function ViewScore(stage)
+{
+
+	scoreTexte = new createjs.Text( "Score : 0", "24px Arial", "#000000" );
+	scoreTexte.x = 8;
+	scoreTexte.y = 450;
+	stage.addChild(scoreTexte);
+	scoreTexte.visible=false;
+
+}
+
+// ============================================================================================================================
 // Definition du 'constructor' pour BonusLapin
 function Tir(stage, img_tir, obj_joueur) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
