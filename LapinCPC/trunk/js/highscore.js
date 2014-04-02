@@ -31,5 +31,6 @@ ModelHighScore.prototype.get = function() {
 
 ModelHighScore.prototype.set = function(highscore) {
 	this.highscore = highscore;
+	this.observer.display(this);
 }
 

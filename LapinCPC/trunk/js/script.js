@@ -29,8 +29,8 @@
 	var sound_bruitage = 0.4;
 
 
-	var viesTexte;
-	var scoreTexte;
+	var obj_view_vies;
+	var obj_view_score;
 	var highScoreTexte;
 	var highScore;
 
@@ -105,14 +105,15 @@ function launchGame()
 		obj_saucisse[i] = new Saucisse(stage, img_saucisse);
 	}
 	
-	obj_joueur = new Player(stage, img_joueur);
+	obj_view_vies = new ViewLife(stage);
+	obj_view_score = new ViewScore(stage);
+
+	obj_joueur = new Player(stage, img_joueur, obj_view_vies, obj_view_score);
 	obj_joueur.visible=false;
 
 	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
 	obj_tir.visible=false;
 
-	viesTexte = new ViewLife(stage);
-	scoreTexte = new ViewScore(stage);
 	highScoreTexte = new ViewHighScore(stage);
 	highScore = new ModelHighScore(highScoreTexte);
 	
@@ -211,7 +212,6 @@ function mainTick()
 					{
 						obj_saucisse[i].preparerSaucisse();
 						obj_joueur.addPoints();
-						scoreTexte.text = "Score : " + obj_joueur.score;
 					}	
 				}
 			}
@@ -230,8 +230,7 @@ function mainTick()
 				obj_bonus_vie_lapin.preparerBonus(10000 + Math.random()*500, 4 + Math.random()*2, Math.random()*10);
 
 				// Traitement du Bonus
-				obj_joueur.vies++;
-				viesTexte.text = "Vies : " + obj_joueur.vies;
+				obj_joueur.addLife();
 			}
 		}
 
@@ -251,14 +250,13 @@ function mainTick()
 						if ( obj_joueur.isNotInvincible() )
 						{
 							createjs.Sound.play("pouet", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
-							obj_joueur.vies--;
+							obj_joueur.delLife();
 							obj_joueur.invincible();
-							if ( obj_joueur.vies < 1 )
+							if ( obj_joueur.getLife() < 1 )
 							{
 								if (obj_joueur.score > highScore.get() )
 									highScore.set( obj_joueur.score );
 
-								highScoreTexte.display( highScore );
 
 								// Le joueur a perdu ses n vies
 								// on re-initialise les 6 saucisses
@@ -269,14 +267,11 @@ function mainTick()
 								obj_joueur.preparerPlayer();
 								endGame();
 							}
-							viesTexte.text = "Vies : " + obj_joueur.vies;
-							scoreTexte.text = "Score : " + obj_joueur.score;
 						}
 					} else {
 						createjs.Sound.play("boing", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 						nb_saucisses++;
 						obj_joueur.addPoints();
-						scoreTexte.text = "Score : " + obj_joueur.score;
 					}
 					obj_saucisse[i].preparerSaucisse();
 				} else {
@@ -305,10 +300,10 @@ function startNewGame(diffi)
 	nb_saucisses_max = 50 - diffi * diffi;
 
 	inMenu = false;
-	viesTexte.visible = true;
+	obj_view_vies.visible = true;
 	obj_joueur.visible = true;
 	obj_tir.visible = true;
-	scoreTexte.visible = true;
+	obj_view_score.visible = true;
 	for ( var i = 0; i < 3; i++)
 	{
 		menuTexte[i].visible = false;
@@ -318,10 +313,10 @@ function startNewGame(diffi)
 function endGame()
 {
 	inMenu = true;
-	viesTexte.visible = false;
+	obj_view_vies.visible = false;
 	obj_joueur.visible = false;
 	obj_tir.visible = false;
-	scoreTexte.visible = false;
+	obj_view_score.visible = false;
 	for ( var i = 0; i < 3; i++)
 	{
 		menuTexte[i].visible = true;
