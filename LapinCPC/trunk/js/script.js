@@ -31,8 +31,8 @@
 
 	var obj_view_vies;
 	var obj_view_score;
-	var highScoreTexte;
-	var highScore;
+	var obj_view_highScore;
+	var obj_highScore;
 
 	var difficulte = 1;
 	var menuTexte = [];
@@ -114,8 +114,8 @@ function launchGame()
 	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
 	obj_tir.visible=false;
 
-	highScoreTexte = new ViewHighScore(stage);
-	highScore = new ModelHighScore(highScoreTexte);
+	obj_view_highScore = new ViewHighScore(stage);
+	obj_highScore = new ModelHighScore(obj_view_highScore);
 	
 	// Menu de difficulté
 	for ( var i = 0; i < 3; i++)
@@ -254,8 +254,8 @@ function mainTick()
 							obj_joueur.invincible();
 							if ( obj_joueur.getLife() < 1 )
 							{
-								if (obj_joueur.score > highScore.get() )
-									highScore.set( obj_joueur.score );
+								if (obj_joueur.score > obj_highScore.get() )
+									obj_highScore.set( obj_joueur.score );
 
 
 								// Le joueur a perdu ses n vies
