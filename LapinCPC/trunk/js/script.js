@@ -102,7 +102,7 @@ function launchGame()
 
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
-		obj_saucisse[i] = new Saucisse(stage, img_saucisse);
+		obj_saucisse[i] = new ModelSaucisse( new ViewSaucisse(stage, img_saucisse ) );
 	}
 	
 	obj_view_vies = new ViewLife(stage);
@@ -316,7 +316,7 @@ function endGame()
 	obj_view_vies.visible = false;
 	obj_joueur.visible = false;
 	obj_tir.visible = false;
-	obj_view_score.visible = false;
+	obj_view_1score.visible = false;
 	for ( var i = 0; i < 3; i++)
 	{
 		menuTexte[i].visible = true;
