@@ -21,7 +21,7 @@ function preloadAssetsBonus()
 
 // ==========================================================================================================================
 // Definition du 'constructor' pour BonusLapin
-function BonusLapin(stage, img_bonus_lapin, init_x, vitesse, vitesse_rotation) {
+function ViewBonusLapin(stage, img_bonus_lapin, init_x, vitesse, vitesse_rotation) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.image = img_bonus_lapin;
 	this.stage = stage;
@@ -30,9 +30,9 @@ function BonusLapin(stage, img_bonus_lapin, init_x, vitesse, vitesse_rotation) {
 }
 
 //Nécessaire afin que Saucisse hérite de createjs.Bitmap
-BonusLapin.prototype = new createjs.Bitmap();
+ViewBonusLapin.prototype = new createjs.Bitmap();
 
-BonusLapin.prototype.preparerBonus = function( init_x, vitesse, vitesse_rotation )
+ViewBonusLapin.prototype.display= function( this )
 {
 	this.x = init_x;
 	this.vitesse = vitesse;
@@ -40,13 +40,30 @@ BonusLapin.prototype.preparerBonus = function( init_x, vitesse, vitesse_rotation
 	this.vitesse_rotation = vitesse_rotation;
 }
 
-BonusLapin.prototype.moveToLeft = function()
+
+// ==========================================================================================================================
+// Definition du 'constructor' pour BonusLapin
+function ModelBonusLapin(observer, init_x, vitesse, vitesse_rotation) {
+	this.observer = observer;
+	this.preparerBonus(init_x, vitesse, vitesse_rotation);
+}
+BonusLapin.prototype.preparerBonus = function( init_x, vitesse, vitesse_rotation )
+{
+	this.x = init_x;
+	this.vitesse = vitesse;
+	this.y = Math.floor( ( Math.random() * STAGE_HEIGHT ) );
+	this.vitesse_rotation = vitesse_rotation;
+	this.observer.display(this);
+}
+
+ModelBonusLapin.prototype.moveToLeft = function()
 {
 	this.x -= this.vitesse;
 	this.rotation += this.vitesse_rotation;
+	this.observer.display(this);
 }
 
-BonusLapin.prototype.isCollision = function ( obj_right )
+ModelBonusLapin.prototype.isCollision = function ( obj_right )
 {
 	return  (( this.x > obj_right.x - 40 ) &&
 		( this.x < obj_right.x + 96 ) &&
@@ -55,7 +72,7 @@ BonusLapin.prototype.isCollision = function ( obj_right )
 		);
 }
 
-BonusLapin.prototype.isLeftStage = function ()
+ModelBonusLapin.prototype.isLeftStage = function ()
 {
 	return ( this.x < -PLAYER_HALF_WIDTH );
 }
