@@ -108,7 +108,7 @@ function launchGame()
 	obj_view_vies = new ViewLife(stage);
 	obj_view_score = new ViewScore(stage);
 
-	obj_joueur = new Player(stage, img_joueur, obj_view_vies, obj_view_score);
+	obj_joueur = new ModelPlayer(new ViewPlayer(stage, img_joueur,"Joueur"), obj_view_vies, obj_view_score);
 	obj_joueur.visible=false;
 
 	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
