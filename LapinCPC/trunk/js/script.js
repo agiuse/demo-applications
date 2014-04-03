@@ -1,6 +1,6 @@
 	var stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 14  // nombre de ressources à charger
+	var PRELOADTOTAL = 14;  // nombre de ressources à charger
 
 	var SAUCISSE_COUNT = 10;
 	var obj_saucisse = [];
@@ -96,13 +96,13 @@ function launchGame()
 
 	obj_sky = new Ciel(stage, img_decors);
 
-	obj_bonus_lapin = new BonusLapin(stage, img_bonus[0], 10000, 4, 10);
+	obj_bonus_lapin = new ModelBonusLapin( new ViewBonusLapin(stage, img_bonus[0],"Bonus Lapin Destroy All Saucisses" ), 10000, 4, 10);
 
-	obj_bonus_vie_lapin = new BonusLapin(stage, img_bonus[1], 10500, 10, 10);
+	obj_bonus_vie_lapin = new ModelBonusLapin(new ViewBonusLapin( stage, img_bonus[1], "Bonus Lapin Live" ), 10500, 10, 10);
 
 	for ( var i=0; i < SAUCISSE_COUNT; i++)
 	{
-		obj_saucisse[i] = new ModelSaucisse( new ViewSaucisse(stage, img_saucisse ) );
+		obj_saucisse[i] = new ModelSaucisse( new ViewSaucisse(stage, img_saucisse, "Saucisse"+i ) );
 	}
 	
 	obj_view_vies = new ViewLife(stage);
@@ -316,7 +316,7 @@ function endGame()
 	obj_view_vies.visible = false;
 	obj_joueur.visible = false;
 	obj_tir.visible = false;
-	obj_view_1score.visible = false;
+	obj_view_score.visible = false;
 	for ( var i = 0; i < 3; i++)
 	{
 		menuTexte[i].visible = true;
