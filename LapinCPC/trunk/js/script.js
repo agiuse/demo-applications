@@ -105,16 +105,14 @@ function launchGame()
 		obj_saucisse[i] = new ModelSaucisse( new ViewSaucisse(stage, img_saucisse, "Saucisse"+i ) );
 	}
 	
-	obj_view_vies = new ViewLife(stage);
-	obj_view_score = new ViewScore(stage);
+	obj_view_vies = new ViewLife(stage, "Vies");
+	obj_view_score = new ViewScore(stage, "Score");
 
 	obj_joueur = new ModelPlayer(new ViewPlayer(stage, img_joueur,"Joueur"), obj_view_vies, obj_view_score);
-	obj_joueur.visible=false;
 
-	obj_tir = new Tir(stage, img_joueur[2], obj_joueur);
-	obj_tir.visible=false;
+	obj_tir = new ModelTir(new ViewTir( stage, img_joueur[2], "Tir" ), obj_joueur); // objet est invisible par défaut
 
-	obj_view_highScore = new ViewHighScore(stage);
+	obj_view_highScore = new ViewHighScore(stage, "High Score");
 	obj_highScore = new ModelHighScore(obj_view_highScore);
 	
 	// Menu de difficulté
@@ -184,7 +182,8 @@ function mainTick()
 		if ( (32 in touches) && ( obj_tir.isNotFired()  ) )
 		{
 			createjs.Sound.play("panpan", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage);
-			obj_tir.fire();
+			obj_tir.fire();	// Tir object visibility is setup to true.
+			console.debug(obj_tir.name + " is activated!");
 		}
 
 		// Avance l'icone tir a chaque tour de gauche à droite
@@ -279,7 +278,7 @@ function mainTick()
 					if ( obj_saucisse[i].isCollision( obj_tir ) )
 					{
 						obj_saucisse[i].preparerSaucisse();
-						obj_tir.preparerTir();
+						obj_tir.preparerTir(); // l'objet Tir devient a nouveau invisble
 					}
 				}
 			}
@@ -300,9 +299,9 @@ function startNewGame(diffi)
 	nb_saucisses_max = 50 - diffi * diffi;
 
 	inMenu = false;
+	obj_joueur.setVisible(true);
+	obj_tir.setVisible(false);
 	obj_view_vies.visible = true;
-	obj_joueur.visible = true;
-	obj_tir.visible = true;
 	obj_view_score.visible = true;
 	for ( var i = 0; i < 3; i++)
 	{
@@ -313,9 +312,9 @@ function startNewGame(diffi)
 function endGame()
 {
 	inMenu = true;
+	obj_joueur.setVisible(false);
+	obj_tir.setVisible(false);
 	obj_view_vies.visible = false;
-	obj_joueur.visible = false;
-	obj_tir.visible = false;
 	obj_view_score.visible = false;
 	for ( var i = 0; i < 3; i++)
 	{
