@@ -26,6 +26,7 @@ function ViewPlayer(stage, img_joueur, name ) {
 	this.img_joueur = img_joueur;
 	this.stage = stage;
 	this.stage.addChild(this);
+	this.visible=false;
 	console.log(this.name + " View Player is created!");
 }
 
@@ -40,6 +41,7 @@ ViewPlayer.prototype.preparer = function(observable)
 	this.image = this.img_joueur[0];
 	this.rotation = observable.rotation;
 	this.invincibleCligno = false;
+	this.visible=false;
 	console.log(this.name + " View Player is ready!");
 }
 
@@ -48,7 +50,9 @@ ViewPlayer.prototype.display = function(observable)
 	this.x = observable.x;
 	this.y = observable.y
 	this.rotation = observable.rotation;
+	this.visible = observable.visible;
 	console.debug(this.name + " View Player is displayed!");
+	
 }
 
 ViewPlayer.prototype.invincible = function(observable)
@@ -72,6 +76,21 @@ function ModelPlayer(observer, observer_life, observer_score) {
 
 	this.preparerPlayer();
 	console.log(this.name + " Model Player is created!");
+}
+
+ModelPlayer.prototype.preparerPlayer = function()
+{
+	this.x = 0;
+	this.y = STAGE_HEIGHT /2;
+	this.vies = 3;
+	this.observer_life.display(this);
+	this.score=0;
+	this.observer_score.display(this);
+	this.rotation=0;
+	this.vitesse = 6;
+	this.invincibleTimer = 0;
+	this.observer.preparer(this);
+	console.log(this.name + " Model Player is ready!");
 }
 
 ModelPlayer.prototype.getScore = function() {
@@ -139,21 +158,6 @@ ModelPlayer.prototype.addPoints = function()
 	this.observer_score.display(this);
 }
 
-ModelPlayer.prototype.preparerPlayer = function()
-{
-	this.x = 0;
-	this.y = STAGE_HEIGHT /2;
-	this.vies = 3;
-	this.observer_life.display(this);
-	this.score=0;
-	this.observer_score.display(this);
-	this.rotation=0;
-	this.vitesse = 6;
-	this.invincibleTimer = 0;
-	this.observer.preparer(this);
-	console.log(this.name + " Model Player is ready!");
-}
-
 ModelPlayer.prototype.invincible = function()
 {
 	this.invincibleTimer = 25;
@@ -186,14 +190,21 @@ ModelPlayer.prototype.annulerRotation = function()
 	}
 }
 
+ModelPlayer.prototype.setVisible = function(visible) {
+	this.visible = visible;
+	this.observer.display(this);
+}
+
 // ============================================================================================================================
-function ViewLife(stage) {
+function ViewLife(stage, name) {
 	createjs.Text.call(this, "Vies : 3", "24px Arial", "#00000" );	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.stage = stage;
+	this.name = name;
 	this.x = 8;
 	this.y = 420;
 	this.stage.addChild(this);
 	this.visible=false;
+	console.log(this.name + " View Life is created!");
 }
 
 //Nécessaire afin que ViewLife hérite de createjs.Text
@@ -201,17 +212,20 @@ ViewLife.prototype = new createjs.Text();
 
 ViewLife.prototype.display = function(obj_joueur) {
 	this.text = "Vies : " + obj_joueur.getLife();;
+	console.debug(this.name + " View saucisse is displayed!");
 }
 
 // ============================================================================================================================
-function ViewScore(stage)
+function ViewScore(stage, name)
 {
 	createjs.Text.call(this, "Score : 0", "24px Arial", "#000000" );	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.stage = stage;
+	this.name = name;
 	this.x = 8;
 	this.y = 450;
 	this.stage.addChild(this);
 	this.visible=false;
+	console.log(this.name + " View Score is created!");
 
 }
 
@@ -220,41 +234,77 @@ ViewScore.prototype = new createjs.Text();
 
 ViewScore.prototype.display = function(obj_joueur) {
 	this.text = "Score : " + obj_joueur.getScore();
+	console.debug(this.name + " View Score is displayed!");
 }
 
-// ============================================================================================================================
-// Definition du 'constructor' pour BonusLapin
-function Tir(stage, img_tir, obj_joueur) {
+// Definition du 'constructor' 
+function ViewTir(stage, img_tir, name) {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandé)
 	this.stage = stage;
+	this.name = name;
 	this.stage.addChild(this);
-	this.vitesse = 16;
 	this.image = img_tir;
-	this.preparerTir();
-	this.obj_joueur = obj_joueur;
+	this.visible=false;
+	console.log(this.name + " View Tir is created!");
 }
 
 //Nécessaire afin que Tir hérite de createjs.Bitmap
-Tir.prototype = new createjs.Bitmap();
+ViewTir.prototype = new createjs.Bitmap();
 
-Tir.prototype.moveToRight = function()
+ViewTir.prototype.display = function( observable ) {
+	this.x = observable.x;
+	this.y = observable.y;
+	this.visible = observable.visible;
+	console.debug(this.name + " View Tir is displayed!");
+}
+
+// ============================================================================================================================
+// Definition du 'constructor' 
+function ModelTir( observer, obj_joueur ) {
+	this.observer = observer;
+	this.name = this.observer.name;
+	this.vitesse = 16;
+	this.obj_joueur = obj_joueur;
+	this.preparerTir();
+	console.log(this.name + " Model Tir is created!");
+}
+
+ModelTir.prototype.moveToRight = function()
 {
-	if  ( ! this.isNotFired() )
+	if  ( ! this.isNotFired() ) {
 		this.x += this.vitesse;
+		console.debug(this.name + " move to ("+this.x+","+this.y+','+this.visible+")");
+		this.observer.display(this);
+	}
 }
 
-Tir.prototype.fire = function ()
-{
-		obj_tir.x = this.obj_joueur.x + PLAYER_HALF_WIDTH;
-		obj_tir.y = this.obj_joueur.y;
+ModelTir.prototype.setVisible = function(visible) {
+	this.visible = visible;
+	this.observer.display(this);
 }
 
-Tir.prototype.preparerTir = function ()
+ModelTir.prototype.fire = function ()
 {
+	this.x = this.obj_joueur.x + PLAYER_HALF_WIDTH;
+	this.y = this.obj_joueur.y;
+	this.visible=true;
+	console.debug(this.name + " fire !!! + ("+this.x+","+this.y+','+this.visible+")");
+	this.observer.display(this);
+}
+
+ModelTir.prototype.preparerTir = function ()
+{
+	this.visible=false;
 	this.x = 10000;
+	this.y = 0;
+	this.observer.display(this);
+	console.log(this.name + " Model Tir is ready!");
 }
 
-Tir.prototype.isNotFired = function ()
+ModelTir.prototype.isNotFired = function ()
 {
-	return ( this.x > STAGE_WIDTH );
+	var ret =  ( this.x > STAGE_WIDTH );
+	console.debug(this.name + "is Tir Object in to canvas ? x = "+ this.x + " and (this.x > STAGE_WIDTH) = ", ret); 
+	return ( ret );
 }
+
