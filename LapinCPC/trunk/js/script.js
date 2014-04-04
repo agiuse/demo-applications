@@ -35,10 +35,12 @@
 	var obj_highScore;
 
 	var difficulte = 1;
-	var inMenu = true;
+	var inMenu;
+	var obj_menu;
 
 	var nb_saucisses;
 	var nb_saucisses_max;
+	
 	
 // Gestion du clavier
 addEventListener("keydown",
@@ -65,6 +67,7 @@ addEventListener("keyup",
 // Demarrage
 function startGame()
 {
+	console.clear();
 	preloadAssets();
 	img_decors = preloadAssetsDecors();
 	img_saucisse = preloadAssetsSaucisse();
@@ -114,7 +117,9 @@ function launchGame()
 	obj_view_highScore = new ViewHighScore(stage, "High Score");
 	obj_highScore = new ModelHighScore(obj_view_highScore);
 	
-	ViewMenu(stage);
+	obj_menu = new ControlMenu( stage, "Menu Difficulte", startNewGame, touches );
+	inMenu = true;
+	obj_menu.setVisibility(true);
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
@@ -126,9 +131,9 @@ function launchGame()
 function mainTick()
 {
 
-	if (inMenu)
+	if ( inMenu )
 	{
-		ControlMenu();
+		obj_menu.run();
 	} else {
 
 		if (nb_saucisses > nb_saucisses_max)
@@ -279,21 +284,23 @@ function startNewGame(diffi)
 	nb_saucisses_max = 50 - diffi * diffi;
 
 	inMenu = false;
-	obj_joueur.setVisible(true);
-	obj_tir.setVisible(false);
+
+	obj_joueur.setVisibility(true);
+	obj_tir.setVisibility(false);
 	obj_view_vies.visible = true;
 	obj_view_score.visible = true;
-	ModelMenu(false);
+	obj_menu.setVisibility(false);
 }
 
 function endGame()
 {
 	inMenu = true;
-	obj_joueur.setVisible(false);
-	obj_tir.setVisible(false);
+
+	obj_joueur.setVisibility(false);
+	obj_tir.setVisibility(false);
 	obj_view_vies.visible = false;
 	obj_view_score.visible = false;
-	ModelMenu(true);
+	obj_menu.setVisibility(true);
 	createjs.Sound.play("prout_3", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 }
 
