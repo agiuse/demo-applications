@@ -36,10 +36,10 @@ ViewPlayer.prototype = new createjs.Bitmap();
 
 ViewPlayer.prototype.preparer = function(observable)
 {
-	this.x = observable.x;
-	this.y = observable.y
+	this.x = observable.getX();
+	this.y = observable.getY();
 	this.image = this.img_joueur[0];
-	this.rotation = observable.rotation;
+	this.rotation = observable.getRotation();
 	this.invincibleCligno = false;
 	this.visible=false;
 	console.log(this.name + " View Player is ready!");
@@ -47,10 +47,10 @@ ViewPlayer.prototype.preparer = function(observable)
 
 ViewPlayer.prototype.display = function(observable)
 {
-	this.x = observable.x;
-	this.y = observable.y
-	this.rotation = observable.rotation;
-	this.visible = observable.visible;
+	this.x = observable.getX();
+	this.y = observable.getY();
+	this.rotation = observable.getRotation();
+	this.visible = observable.getVisibility();
 	console.debug(this.name + " View Player is displayed!");
 	
 }
@@ -91,6 +91,18 @@ ModelPlayer.prototype.preparerPlayer = function()
 	this.invincibleTimer = 0;
 	this.observer.preparer(this);
 	console.log(this.name + " Model Player is ready!");
+}
+
+ModelPlayer.prototype.getRotation = function() {
+	return this.rotation;
+}
+
+ModelPlayer.prototype.getX = function() {
+	return this.x;
+}
+
+ModelPlayer.prototype.getY = function() {
+	return this.y;
 }
 
 ModelPlayer.prototype.getScore = function() {
@@ -190,9 +202,13 @@ ModelPlayer.prototype.annulerRotation = function()
 	}
 }
 
-ModelPlayer.prototype.setVisible = function(visible) {
+ModelPlayer.prototype.setVisibility = function(visible) {
 	this.visible = visible;
 	this.observer.display(this);
+}
+
+ModelPlayer.prototype.getVisibility = function() {
+	return ( this.visible );
 }
 
 // ============================================================================================================================
@@ -254,7 +270,7 @@ ViewTir.prototype = new createjs.Bitmap();
 ViewTir.prototype.display = function( observable ) {
 	this.x = observable.x;
 	this.y = observable.y;
-	this.visible = observable.visible;
+	this.visible = observable.getVisibility();
 	console.debug(this.name + " View Tir is displayed!");
 }
 
@@ -278,9 +294,13 @@ ModelTir.prototype.moveToRight = function()
 	}
 }
 
-ModelTir.prototype.setVisible = function(visible) {
+ModelTir.prototype.setVisibility = function(visible) {
 	this.visible = visible;
 	this.observer.display(this);
+}
+
+ModelTir.prototype.getVisibility = function() {
+	return ( this.visible );
 }
 
 ModelTir.prototype.fire = function ()
