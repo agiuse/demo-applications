@@ -35,7 +35,6 @@
 	var obj_highScore;
 
 	var difficulte = 1;
-	var menuTexte = [];
 	var inMenu = true;
 
 	var nb_saucisses;
@@ -115,20 +114,8 @@ function launchGame()
 	obj_view_highScore = new ViewHighScore(stage, "High Score");
 	obj_highScore = new ModelHighScore(obj_view_highScore);
 	
-	// Menu de difficulté
-	for ( var i = 0; i < 3; i++)
-	{
-		menuTexte[i] = new createjs.Text("", "48px Arial", "#000000");
-		menuTexte[i].x = 320;
-		menuTexte[i].y = 130 + 60 * i;
-		switch(i)
-		{
-			case 0:	menuTexte[i].text = "F1: Facile"; break;
-			case 1:	menuTexte[i].text = "F2: Moyen"; break;
-			case 2: menuTexte[i].text = "F3: Difficile"; break;
-		}
-		stage.addChild(menuTexte[i]);
-	}
+	ViewMenu(stage);
+
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
 
@@ -141,14 +128,7 @@ function mainTick()
 
 	if (inMenu)
 	{
-		if (112 in touches)
-			startNewGame(1);
-		else
-			if (113 in touches)
-				startNewGame(2);
-			else
-				if  (114 in touches)
-					startNewGame(3);
+		ControlMenu();
 	} else {
 
 		if (nb_saucisses > nb_saucisses_max)
@@ -303,10 +283,7 @@ function startNewGame(diffi)
 	obj_tir.setVisible(false);
 	obj_view_vies.visible = true;
 	obj_view_score.visible = true;
-	for ( var i = 0; i < 3; i++)
-	{
-		menuTexte[i].visible = false;
-	}
+	ModelMenu(false);
 }
 
 function endGame()
@@ -316,10 +293,7 @@ function endGame()
 	obj_tir.setVisible(false);
 	obj_view_vies.visible = false;
 	obj_view_score.visible = false;
-	for ( var i = 0; i < 3; i++)
-	{
-		menuTexte[i].visible = true;
-	}
+	ModelMenu(true);
 	createjs.Sound.play("prout_3", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 }
 
