@@ -1,4 +1,4 @@
-
+"use strict";
 // Chargement des ressources
 function preloadAssetsDecors()
 {
