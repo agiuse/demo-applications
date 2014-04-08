@@ -1,17 +1,42 @@
+"use strict";
 // ============================================================================================================================
 // Variables globales
-	var stage;
+	var obj_stage;
 	var preloadCount =0 ;
-	var PRELOADTOTAL = 4;  // nombre de ressources à charger
+	var PRELOADTOTAL = 6;  // nombre de ressources à charger
 	var touches = {};
 
 	// Objets resource
 	var img_decors;
+	var img_joueur;
 
 	var obj_lists = {};
 
 	var sound_musique = 0.1;
 	var sound_bruitage = 0.4;
+
+// ============================================================================================================================
+// Gestion du clavier
+addEventListener("keydown",
+	function(e)
+	{
+		touches[e.keyCode]=true;	// enregistre la touche enfoncÃ©e dans le table de hashage "touches"
+		if ( ( (e.keyCode >= 37) && (e.keyCode <=40) ) || ( e.keyCode == 32 ) )
+			e.preventDefault();
+
+		if ( (e.keyCode >= 112) && (e.keyCode <=114) )
+			e.preventDefault();
+
+		return false;
+	}
+);
+
+addEventListener("keyup",
+	function(e)
+	{
+		delete touches[e.keyCode];	// supprime la touche enfoncÃ©e dans le table de hashage "touches"
+	}
+);
 
 // ============================================================================================================================
 // Demarrage
@@ -20,6 +45,7 @@ function startGame()
 	console.clear();
 	preloadAssets();
 	img_decors = preloadAssetsDecors();
+	img_joueur = preloadAssetsPlayer();
 }
 
 // Chargement des ressources
@@ -66,7 +92,8 @@ function launchGame()
 	obj_stage = new ViewStage();
 
 	obj_lists['sky'] = new ViewCiel(obj_stage, img_decors);
-
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches);
+	
 	obj_stage.go();
 }
 
