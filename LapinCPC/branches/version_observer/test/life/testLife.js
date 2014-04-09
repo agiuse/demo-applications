@@ -3,14 +3,20 @@ function ObjetVie(name, obj_controller_vies)
 {
 	this.name = name;	
 	Observable.call(this, name);
-	this.vies=10;
 	
 	this.add( obj_controller_vies.getRefObjectView() );
-
+	
 	console.log(this.name, "Constructeur ObjetVie");
+	this.preparer();
 }
 
 ObjetVie.prototype = new Observable();
+
+ObjetVie.prototype.preparer = function()
+{
+	this.vies=10;
+	this.notify('prepare');
+}
 
 ObjetVie.prototype.run = function(valeur)
 {
@@ -33,7 +39,7 @@ function test1() {
 
 	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1');
 	obj_observable = new ObjetVie('observable', obj_controller_vies);
-	
+		
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getLife());
 
 	obj_stage.update();
