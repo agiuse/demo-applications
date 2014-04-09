@@ -76,7 +76,7 @@ ObserverB.prototype.prepare = function(observable)
 // -----------------------------------------------------------------
 function test1()
 {
-	console.log("Test 1 : liste vide");
+	console.log("==== Test 1 : liste vide");
 	obj_observable = new MyCoordonnee('coordonnee_1');
 	console.log("value de ",obj_observable.name, " X = ", obj_observable.getX());
 	console.log("value de ",obj_observable.name, " Y = ", obj_observable.getY());
@@ -90,22 +90,22 @@ function test1()
 
 function test2()
 {
-	console.log("Test 2 : test de la fonction display de l'observer");
+	console.log("==== Test 2 : test de la fonction display de l'observer");
 	obj_observable = new MyCoordonnee('coordonnee_2');
 	obj_observer_1 = new ObserverA('observer_1');
 	obj_observer_2 = new ObserverB('observer_2');
 
 	obj_observer_1.display(obj_observable);
 
-	obj_observer_2.prepare(obj_observable);
-	obj_observer_2.display(obj_observable);
+	obj_observer_2.prepare(obj_observable.coordonnee);
+	obj_observer_2.display(obj_observable.coordonnee);
 
 }
 
 function test3()
 {
-	console.log("Test 3 : liste avec plusieurs objets");
-	obj_observable = new MyCoordonnee('coordonnee_4');
+	console.log("==== Test 3 : liste avec plusieurs objets");
+	obj_observable = new MyCoordonnee('coordonnee_3');
 	obj_observer_1 = new ObserverA('observer_1');
 	obj_observer_2 = new ObserverB('observer_2');
 

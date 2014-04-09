@@ -22,38 +22,40 @@ Observable.prototype.add = function(observer)
 
 Observable.prototype.notify = function(type_notify)
 {
-	console.debug(this.name, "observable : notify(",type_notify,") pour ", this.lists);
+	console.debug(this.name, "observable : debut de notify(",type_notify,") pour ", this.lists);
 	for ( var k in this.lists )
 	{
 		switch (type_notify)
 		{
 
 		case 'prepare':
-			console.debug(this.name, "observable : traitement de la notification ",type_notify," pour ",this.lists[k].name ,this.lists[k].prepare);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].prepare);
 			if (this.lists[k].prepare !== undefined )
 				this.lists[k].prepare(this);
 			break;
 
 		case 'display':
-			console.debug(this.name, "observable : traitement de la notification ",type_notify," pour ",this.lists[k].name ,this.lists[k].display);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].display);
 			if (this.lists[k].display !== undefined )
 				this.lists[k].display(this);
 			break;
 
 		case 'visibility':
-			console.debug(this.name, "observable : traitement de la notification ",type_notify," pour ",this.lists[k].name ,this.lists[k].visibility);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].visibility);
 			if (this.lists[k].visibility !== undefined )
 				this.lists[k].visibility(this);
 			break;
 
 		case 'invincibility':
-			console.debug(this.name, "observable : traitement de la notification ",type_notify," pour ",this.lists[k].name ,this.lists[k].invincibility);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].invincibility);
 			if (this.lists[k].invincible !== undefined )
 				this.lists[k].invincible(this);
 			break;
 
 		}
 	}
+	console.debug(this.name, "observable : fin de notify(",type_notify,") pour ", this.lists);
+
 }
 
 // ============================================================================================================================
@@ -124,7 +126,7 @@ function LifeNumber(name)
 
 LifeNumber.prototype = new Observable();
 
-LifeNumber.prototype.get = function(nb_vies)
+LifeNumber.prototype.get = function()
 {
 	return this.nb_vies;
 }
@@ -138,5 +140,5 @@ LifeNumber.prototype.init = function(nb_vies)
 LifeNumber.prototype.dec = function()
 {
 	this.nb_vies--;
-	this.notify('prepare');
+	this.notify('display');
 }
