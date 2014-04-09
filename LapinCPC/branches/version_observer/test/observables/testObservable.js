@@ -3,7 +3,7 @@ function ObservableA(name)
 {
 	Observable.call(this, name);
 	this.value=10;
-	console.log(this.name, "Contructeur ObservableA");
+	console.log(this.name, "Constructeur ObservableA");
 }
 
 ObservableA.prototype = new Observable();
@@ -70,7 +70,7 @@ function test2() {
 
 function test3() {
 	console.log("Test 3 : test l'ajout dans la liste des observer");
-	obj_observable = new ObservableA('observable_2');
+	obj_observable = new ObservableA('observable_3');
 	obj_observer_1 = new ObserverA('observer_1');
 
 	obj_observer_1.display(obj_observable);
@@ -84,7 +84,7 @@ function test3() {
 
 function test4() {
 	console.log("Test 4 : liste avec plusieurs objets");
-	obj_observable = new ObservableA('observable_3');
+	obj_observable = new ObservableA('observable_4');
 	obj_observer_1 = new ObserverA('observer_1');
 	obj_observer_2 = new ObserverB('observer_2');
 	obj_observer_4 = new ObserverB('observer_4');
@@ -102,7 +102,7 @@ function test4() {
 
 function test5() {
 	console.log("Test 5 : ajout de deux fois le meme observer dans la liste");
-	obj_observable = new ObservableA('observable_4');
+	obj_observable = new ObservableA('observable_5');
 	obj_observer_1 = new ObserverA('observer_1');
 
 	obj_observable.add(obj_observer_1);

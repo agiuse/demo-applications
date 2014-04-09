@@ -15,12 +15,14 @@ function Observable(name)
 Observable.prototype.add = function(observer)
 {
 	console.debug(this.name, "observable : add(",observer.name, ") Ok");
-	this.lists[observer] = observer;
+	this.lists[observer.name] = observer;
+	
+	console.debug(this.name, "observable : Lists =",this.lists);
 }
 
 Observable.prototype.notify = function(type_notify)
 {
-	console.debug(this.name, "observable : notify(",type_notify,")");
+	console.debug(this.name, "observable : notify(",type_notify,") pour ", this.lists);
 	for ( var k in this.lists )
 	{
 		switch (type_notify)
@@ -104,4 +106,37 @@ Coordonnee.prototype.set = function(x,y, rotation)
 	this.y = y;
 	this.rotation = rotation;
 	this.notify('display');
+}
+
+// ============================================================================================================================
+// Classe LifeNumber
+// Cet objet permet de gérer le nombre de vie du joueur.
+// Ces observateurs sont notifiés lorsque le npmbre de vies évoluent.
+// Cet objet hérite de l'objet dobservateur
+//
+// ============================================================================================================================
+function LifeNumber(name)
+{
+	Observable.call(this, name);
+	this.name = name;
+	this.nb_vies = 0;
+}
+
+LifeNumber.prototype = new Observable();
+
+LifeNumber.prototype.get = function(nb_vies)
+{
+	return this.nb_vies;
+}
+
+LifeNumber.prototype.init = function(nb_vies)
+{
+	this.nb_vies = nb_vies;
+	this.notify('prepare');
+}
+
+LifeNumber.prototype.dec = function()
+{
+	this.nb_vies--;
+	this.notify('prepare');
 }
