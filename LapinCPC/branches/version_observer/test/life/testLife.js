@@ -1,9 +1,12 @@
 "use strict;"
-function ObjetVie(name)
+function ObjetVie(name, obj_controller_vies)
 {
-	this.name = name;
+	this.name = name;	
 	Observable.call(this, name);
 	this.vies=10;
+	
+	this.add( obj_controller_vies.getRefObjectView() );
+
 	console.log(this.name, "Constructeur ObjetVie");
 }
 
@@ -21,11 +24,6 @@ ObjetVie.prototype.getLife = function()
 	return this.vies;
 }
 
-ObjetVie.prototype.addObserverLife = function(observer)
-{
-	this.add(observer);
-
-}	
 
 // -----------------------------------------------------------------
 function test1() {
@@ -33,10 +31,11 @@ function test1() {
 
 	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
-	obj_observable = new ObjetVie('observable');
+	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1');
+	obj_observable = new ObjetVie('observable', obj_controller_vies);
+	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getLife());
 
-	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1', obj_observable);
 	obj_stage.update();
 	
 	obj_observable.run(14);
