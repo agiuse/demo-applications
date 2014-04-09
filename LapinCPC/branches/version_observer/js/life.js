@@ -26,12 +26,15 @@ ViewLife.prototype.display = function(obj_model_view)
 // constructeur de l'objet Controller du View
 // Pas de Model,
 // ============================================================================================================================
-function ControllerLife(stage, name, obj_joueur)
+function ControllerLife(stage, name)
 {
 	this.stage = stage;
 	this.name = name;
-	this.obj_controller_joueur = obj_joueur;
 	
 	this.obj_view_vie = new ViewLife(this.stage, this.name);
-	this.obj_controller_joueur.addObserverLife(this.obj_view_vie);
+}
+
+ControllerLife.prototype.getRefObjectView = function()
+{
+	return this.obj_view_vie;
 }
