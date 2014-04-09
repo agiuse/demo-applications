@@ -22,6 +22,12 @@ ViewLife.prototype.display = function(obj_model_view)
 	console.debug(this.name + " View is displayed!");
 }
 
+ViewLife.prototype.prepare = function(obj_model_view)
+{
+	this.text = "Vies : " + obj_model_view.getLife();
+	console.debug(this.name + " View is prepared!");
+}
+
 // ============================================================================================================================
 // constructeur de l'objet Controller du View
 // Pas de Model,
