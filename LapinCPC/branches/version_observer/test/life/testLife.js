@@ -1,9 +1,13 @@
 "use strict;"
+// ====================================================================
+// objet simulant l'observable observé par l'objet testé ViewLife
+// Cet objet est directement un observable et n'est pas un Model
+// Comme par exemple l'observable vie ou coordonnee dans l'objet ModelPlayer
 function ObjetVie(name, obj_controller_vies)
 {
 	this.name = name;	
 	Observable.call(this, name);
-	
+
 	this.add( obj_controller_vies.getRefObjectView() );
 	
 	console.log(this.name, "Constructeur ObjetVie");
@@ -25,12 +29,12 @@ ObjetVie.prototype.run = function(valeur)
 	this.notify('display');
 }
 
-ObjetVie.prototype.getLife = function()
+ObjetVie.prototype.get = function()
 {
 	return this.vies;
 }
 
-
+// ====================================================================
 // -----------------------------------------------------------------
 function test1() {
 	console.log("Test 1 : Affichage de la vie");
@@ -40,7 +44,7 @@ function test1() {
 	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1');
 	obj_observable = new ObjetVie('observable', obj_controller_vies);
 		
-	console.log("value de ",obj_observable.name, " = ", obj_observable.getLife());
+	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 
 	obj_stage.update();
 	

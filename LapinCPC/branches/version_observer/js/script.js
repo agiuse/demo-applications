@@ -92,7 +92,8 @@ function launchGame()
 	obj_stage = new ViewStage();
 
 	obj_lists['sky'] = new ViewCiel(obj_stage, img_decors);
-	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches);
+	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text");
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches, obj_lists['vies']);
 	
 	obj_stage.go();
 }
@@ -104,7 +105,8 @@ function mainTick()
 	// animation du ciel
 	for ( var object in obj_lists )
 	{
-		obj_lists[object].run();
+		if ( obj_lists[object].run !== undefined )
+			obj_lists[object].run();
 	}
 
 	obj_stage.update();
