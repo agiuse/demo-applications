@@ -37,6 +37,7 @@ ViewPlayer.prototype = new createjs.Bitmap();
 
 ViewPlayer.prototype.prepare = function(observable)
 {
+	console.log(this.name + " View is being prepared!");
 	this.visible=true;
 	this.image = this.img_joueur[0];
 	this.display(observable);
@@ -46,9 +47,11 @@ ViewPlayer.prototype.prepare = function(observable)
 
 ViewPlayer.prototype.display = function(observable)
 {
+	console.log(this.name + " View is being displayed!");
 	this.x = observable.getX();
 	this.y = observable.getY();
 	this.rotation = observable.getRotation();
+	console.log(this.name + " View is displayed!");
 }
 
 
@@ -61,6 +64,8 @@ function ModelPlayer(name, stage)
 	this.stage = stage;
 
 	this.coordonnee = new Coordonnee(this.name+"_coordonnee", 0,0,0 );
+	this.nb_vies = new LifeNumber(this.name + "_vies");
+	
 	this.PLAYER_HALF_WIDTH = 64;		// longueur du vaisseau
 	this.PLAYER_HALF_HEIGHT = 32;		// hauteur du vaisseau
 
@@ -72,6 +77,7 @@ ModelPlayer.prototype.preparer = function()
 	// le vaisseau se positionne complètement à gauche, au milieu de la hauteur.
 	this.vitesse = 6;
 	this.coordonnee.init(0, this.stage.getHeight() / 2, 0);
+	this.nb_vies.init(3);
 
 	console.log(this.name + " Model is ready!");
 }
@@ -138,10 +144,20 @@ ModelPlayer.prototype.annulerRotation = function()	// Methode observe par la Vue
 	}
 }
 
+ModelPlayer.prototype.getLife = function()
+{
+	return this.nb_vies.get();
+}
+
+ModelPlayer.prototype.delLife = function()
+{
+	this.nb_vies.dec();
+}
+
 // ============================================================================================================================
 // constructeur de l'objet Controller du Player
 // ============================================================================================================================
-function ControllerPlayer(stage, images, name, touches) 
+function ControllerPlayer(stage, images, name, touches, obj_controller_vies) 
 {
 	this.stage = stage;
 	this.images = images;
@@ -150,11 +166,12 @@ function ControllerPlayer(stage, images, name, touches)
 
 	this.obj_model_joueur = new ModelPlayer(this.name, this.stage);
 	this.obj_model_joueur.coordonnee.add( new ViewPlayer(this.stage, this.images, this.name) );
+    this.obj_model_joueur.nb_vies.add( obj_controller_vies.getRefObjectView() );
+	
 	this.obj_model_joueur.preparer();
 	
 	console.log(this.name, " Controller is created!");
 }
-
 
 ControllerPlayer.prototype.run = function()
 {

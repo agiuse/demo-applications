@@ -16,15 +16,16 @@ function ViewLife(stage, name) {
 //Nécessaire afin que ViewLife hérite de createjs.Text
 ViewLife.prototype = new createjs.Text();
 
-ViewLife.prototype.display = function(obj_model_view)
+ViewLife.prototype.display = function(obj_observable)
 {
-	this.text = "Vies : " + obj_model_view.getLife();
+	console.debug(this.name + ": traitement de l'observable",obj_observable);
+	this.text = "Vies : " + obj_observable.get();
 	console.debug(this.name + " View is displayed!");
 }
 
-ViewLife.prototype.prepare = function(obj_model_view)
+ViewLife.prototype.prepare = function(obj_observable)
 {
-	this.text = "Vies : " + obj_model_view.getLife();
+	this.text = "Vies : " + obj_observable.get();
 	console.debug(this.name + " View is prepared!");
 }
 
