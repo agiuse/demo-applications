@@ -41,7 +41,7 @@ function ControllerLife(stage, name)
 	this.obj_view_vie = new ViewLife(this.stage, this.name);
 }
 
-ControllerLife.prototype.getRefObjectView = function()
+ControllerLife.prototype.toObserve = function(obj_observable)
 {
-	return this.obj_view_vie;
+	obj_observable.add(this.obj_view_vie);
 }
