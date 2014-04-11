@@ -169,3 +169,9 @@ Score.prototype.init = function(nb_points)
 	this.nb_points = nb_points;
 	this.notify('prepare');
 }
+
+Score.prototype.dec = function()
+{
+	this.nb_points--;
+	this.notify('display');
+}
