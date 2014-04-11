@@ -26,6 +26,8 @@ function ViewPlayer(stage, img_joueur, name )
 	this.img_joueur = img_joueur;
 	this.stage = stage;
 
+	console.log(this.name, " View is being created...");
+
 	this.stage.addChild(this);
 
 	console.log(this.name + " View is created!");
@@ -62,9 +64,12 @@ function ModelPlayer(name, stage)
 {
 	this.name = name;
 	this.stage = stage;
+	
+	console.log(this.name, " Model is being created...");
 
 	this.coordonnee = new Coordonnee(this.name+"_coordonnee", 0,0,0 );
 	this.nb_vies = new LifeNumber(this.name + "_vies");
+	this.nb_points = new Score(this.name + "_score");
 	
 	this.PLAYER_HALF_WIDTH = 64;		// longueur du vaisseau
 	this.PLAYER_HALF_HEIGHT = 32;		// hauteur du vaisseau
@@ -72,12 +77,13 @@ function ModelPlayer(name, stage)
 	console.log(this.name + " Model is created!");
 }
 
-ModelPlayer.prototype.preparer = function()
+ModelPlayer.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
 {
 	// le vaisseau se positionne complètement à gauche, au milieu de la hauteur.
-	this.vitesse = 6;
-	this.coordonnee.init(0, this.stage.getHeight() / 2, 0);
-	this.nb_vies.init(3);
+	this.vitesse = vitesse;
+	this.coordonnee.init(x, y, rotation);
+	this.nb_vies.init(nb_vies_de_depart);
+	this.nb_points.init(nb_points_de_depart);
 
 	console.log(this.name + " Model is ready!");
 }
@@ -157,19 +163,24 @@ ModelPlayer.prototype.delLife = function()
 // ============================================================================================================================
 // constructeur de l'objet Controller du Player
 // ============================================================================================================================
-function ControllerPlayer(stage, images, name, touches, obj_controller_vies) 
+function ControllerPlayer(stage, images, name, touches, obj_controller_vies, obj_controller_score) 
 {
 	this.stage = stage;
 	this.images = images;
 	this.name = name;
 	this.touches = touches;
+	console.log(this.name, " Controller is being created...");
 
 	this.obj_model_joueur = new ModelPlayer(this.name, this.stage);
 	this.obj_model_joueur.coordonnee.add( new ViewPlayer(this.stage, this.images, this.name) );
-    this.obj_model_joueur.nb_vies.add( obj_controller_vies.getRefObjectView() );
+
+	console.debug(this.name, " being added the Views object to observers...");
+	obj_controller_vies.toObserve(this.obj_model_joueur.nb_vies );
+	obj_controller_score.toObserve(this.obj_model_joueur.nb_points);
+	console.debug(this.name, " The View object adds to observers are done.");
 	
-	this.obj_model_joueur.preparer();
-	
+	this.obj_model_joueur.preparer(0, this.stage.getHeight() / 2, 0, 6, 3, 0);
+
 	console.log(this.name, " Controller is created!");
 }
 

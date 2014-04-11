@@ -93,7 +93,8 @@ function launchGame()
 
 	obj_lists['sky'] = new ViewCiel(obj_stage, img_decors);
 	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text");
-	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches, obj_lists['vies']);
+	obj_lists['score'] = new ControllerScore(obj_stage,"Score_Text");
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches, obj_lists['vies'], obj_lists['score']);
 	
 	obj_stage.go();
 }
