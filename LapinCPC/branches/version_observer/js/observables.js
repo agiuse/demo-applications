@@ -142,3 +142,30 @@ LifeNumber.prototype.dec = function()
 	this.nb_vies--;
 	this.notify('display');
 }
+
+// ============================================================================================================================
+// Classe Score
+// Cet objet permet de gérer le nombre de point du joueur.
+// Ces observateurs sont notifiés lorsque le npmbre de points évoluent.
+// Cet objet hérite de l'objet observateur
+//
+// ============================================================================================================================
+function Score(name)
+{
+	Observable.call(this, name);
+	this.name = name;
+	this.nb_points = 0;
+}
+
+Score.prototype = new Observable();
+
+Score.prototype.get = function()
+{
+	return this.nb_points;
+}
+
+Score.prototype.init = function(nb_points)
+{
+	this.nb_points = nb_points;
+	this.notify('prepare');
+}
