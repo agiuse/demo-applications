@@ -1,60 +1,74 @@
 "use strict";
+
 // ============================================================================================================================
 // Classe Observable
 // Cette objet permet de gerer une liste d'observateur
 //
 // base sur le pattern Observer/Observable
 // ============================================================================================================================
+/*
+@startuml
+title Class <b>Observable</b>
+
+class Observable {
+	String name
+	ArrayHashage<Observer> obj_observer_lists
+	==
+	add(obj_observer)
+	notity(type_notify)
+}
+@enduml
+*/
 function Observable(name)
 {
 	this.name = name;
-	this.lists={};
+	this.obj_observer_lists={};
 	console.debug(this.name, "constructeur Observable()");
 }
 
 Observable.prototype.add = function(observer)
 {
 	console.debug(this.name, "observable : add(",observer.name, ") Ok");
-	this.lists[observer.name] = observer;
+	this.obj_observer_lists[observer.name] = observer;
 	
-	console.debug(this.name, "observable : Lists =",this.lists);
+	console.debug(this.name, "observable : obj_observer_lists =",this.obj_observer_lists);
 }
 
 Observable.prototype.notify = function(type_notify)
 {
-	console.debug(this.name, "observable : debut de notify(",type_notify,") pour ", this.lists);
-	for ( var k in this.lists )
+	console.debug(this.name, "observable : debut de notify(",type_notify,") pour ", this.obj_observer_lists);
+	for ( var k in this.obj_observer_lists )
 	{
 		switch (type_notify)
 		{
 
 		case 'prepare':
-			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].prepare);
-			if (this.lists[k].prepare !== undefined )
-				this.lists[k].prepare(this);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.obj_observer_lists[k].name ,this.obj_observer_lists[k].prepare);
+			if (this.obj_observer_lists[k].prepare !== undefined )
+				this.obj_observer_lists[k].prepare(this);
 			break;
 
 		case 'display':
-			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].display);
-			if (this.lists[k].display !== undefined )
-				this.lists[k].display(this);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.obj_observer_lists[k].name ,this.obj_observer_lists[k].display);
+			if (this.obj_observer_lists[k].display !== undefined )
+				this.obj_observer_lists[k].display(this);
 			break;
 
 		case 'visibility':
-			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].visibility);
-			if (this.lists[k].visibility !== undefined )
-				this.lists[k].visibility(this);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.obj_observer_lists[k].name ,this.obj_observer_lists[k].visibility);
+			if (this.obj_observer_lists[k].visibility !== undefined )
+				this.obj_observer_lists[k].visibility(this);
 			break;
 
 		case 'invincibility':
-			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.lists[k].name ,this.lists[k].invincibility);
-			if (this.lists[k].invincible !== undefined )
-				this.lists[k].invincible(this);
+			console.debug(this.name, "   observable : traitement de la notification (",type_notify,") pour ",this.obj_observer_lists[k].name ,this.obj_observer_lists[k].invincibility);
+			if (this.obj_observer_lists[k].invincible !== undefined )
+				this.obj_observer_lists[k].invincible(this);
 			break;
 
 		}
 	}
-	console.debug(this.name, "observable : fin de notify(",type_notify,") pour ", this.lists);
+	console.debug(this.name, "observable : fin de notify(",type_notify,") pour ", this.obj_observer_lists);
 
 }
 
@@ -65,13 +79,41 @@ Observable.prototype.notify = function(type_notify)
 // Cet objet hérite de l'objet dobservateur
 //
 // ============================================================================================================================
-function Coordonnee(name, x, y, rotation)
+/* 
+@startuml
+title Class Observable <b>Coordonnee</b>
+
+class Observable {
+	String name
+	ArrayHashage<Observer> obj_observer_lists
+	==
+	add(obj_observer)
+	notity(type_notify)
+}
+
+class Coordonnee {
+	int x
+	int y
+	int rotation
+	==
+	int getX()
+	int getY()
+	int getRotation()
+	__ notify __
+	init(x, y, rotation)
+	set(x, y, rotation)
+}
+
+Observable <|-- Coordonnee
+@enduml
+*/
+function Coordonnee(name)
 {
 	Observable.call(this, name);
 	this.name = name;
-	this.x = x;
-	this.y = y;
-	this.rotation = rotation;
+	this.x = 0;
+	this.y = 0;
+	this.rotation = 0;
 	
 	console.debug(this.name, "constructeur Coordonnee()");
 
@@ -117,6 +159,29 @@ Coordonnee.prototype.set = function(x,y, rotation)
 // Cet objet hérite de l'objet dobservateur
 //
 // ============================================================================================================================
+/*
+@startuml
+title Class <b>LifeNumber</b>
+
+class Observable {
+	String name
+	ArrayHashage<Observer> obj_observer_lists
+	==
+	add(obj_observer)
+	notity(type_notify)
+}
+class LifeNumber {
+	int nb_vies
+	==
+	int get()
+	__ notity __
+	init(nb_vies)
+	dec()
+}
+
+Observable <|-- LifeNumber
+@enduml
+*/
 function LifeNumber(name)
 {
 	Observable.call(this, name);
@@ -143,13 +208,6 @@ LifeNumber.prototype.dec = function()
 	this.notify('display');
 }
 
-// ============================================================================================================================
-// Classe Score
-// Cet objet permet de gérer le nombre de point du joueur.
-// Ces observateurs sont notifiés lorsque le npmbre de points évoluent.
-// Cet objet hérite de l'objet observateur
-//
-// ============================================================================================================================
 function Score(name)
 {
 	Observable.call(this, name);
