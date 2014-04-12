@@ -33,6 +33,31 @@ ObjetScore.prototype.get = function()
 }
 
 // ====================================================================
+/*
+@startuml
+title testViewLife <b>class diagrams</b>
+
+class Observable {
+	String name
+	ArrayHashage<Observer> obj_observer_lists
+	==
+	add(obj_observer)
+	notity(type_notify)
+}
+
+class ObjetScore {
+	int score
+	==
+	int get()
+	__ notify __
+	preparer()
+	__ execution __
+	run()
+}
+
+Observable <|-- ObjetVie
+@enduml
+*/
 // -----------------------------------------------------------------
 function test1() {
 	console.log("Test 1 : Affichage du score");
@@ -44,8 +69,7 @@ function test1() {
 	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 
-	obj_controller_score.toObserve(obj_observable);
-	obj_stage.update();
+	obj_observable.add(obj_controller_score.getObserver() );
 	
 	obj_observable.run(14);
 	obj_stage.update();

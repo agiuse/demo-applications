@@ -32,8 +32,35 @@ ObjetVie.prototype.get = function()
 	return this.vies;
 }
 
+
 // ====================================================================
+/*
+@startuml
+title testViewLife <b>class diagrams</b>
+
+class Observable {
+	String name
+	ArrayHashage<Observer> obj_observer_lists
+	==
+	add(obj_observer)
+	notity(type_notify)
+}
+
+class ObjetVie {
+	int vies
+	==
+	int get()
+	__ notify __
+	preparer()
+	__ execution __
+	run()
+}
+
+Observable <|-- ObjetVie
+@enduml
+*/
 // -----------------------------------------------------------------
+
 function test1() {
 	console.log("Test 1 : Affichage de la vie");
 
@@ -41,7 +68,7 @@ function test1() {
 
 	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1');
 	obj_observable = new ObjetVie('observable');
-	obj_controller_vies.toObserve(obj_observable);
+	obj_observable.add(obj_controller_vies.getObserver() );
 		
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 
