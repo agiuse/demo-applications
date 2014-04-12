@@ -1,6 +1,32 @@
+"use strict";
 // ============================================================================================================================
-// constructeur de l'objet ViewLife
+// MVC Player
 // ============================================================================================================================
+
+// ============================================================================================================================
+// Classe ViewLife
+// Cette classe s'occupe de l'affichage de la vie
+// ============================================================================================================================
+/*
+@startuml
+title Class <b>ViewLife</b>
+class createjs.Text
+
+class ViewLife {
+	createjs.Stage stage
+	String name
+	int x = 8
+	int y = 420
+	Boolean visible = true
+	==
+	__ notified __
+	display(obj_observable)
+	prepare(obj_observable)
+}
+
+createjs.Text <|-- ViewLife
+@enduml
+*/
 function ViewLife(stage, name) {
 	createjs.Text.call(this, "Vies : -", "24px Arial", "#00000" );
 	this.stage = stage;
@@ -30,9 +56,25 @@ ViewLife.prototype.prepare = function(obj_observable)
 }
 
 // ============================================================================================================================
-// constructeur de l'objet Controller du View
-// Pas de Model,
+// Classe  ControllerLife
+// Cette classe s'occupe uniqement de l'affichage de la vie.
+// Une classe externe s'occupe de Model de la vie comme ModelPlayer.
+// Note : pas de ModelLife pour cette classe
 // ============================================================================================================================
+/*
+@startuml
+title Class <b>ControllerLife</b>
+class ViewLife
+class ControllerLife {
+	createjs.Stage stage
+	String name
+	==
+	ViewLife getObserver()
+}
+
+ControllerLife *-- ViewLife
+@enduml
+*/
 function ControllerLife(stage, name)
 {
 	this.stage = stage;
@@ -41,7 +83,7 @@ function ControllerLife(stage, name)
 	this.obj_view_vie = new ViewLife(this.stage, this.name);
 }
 
-ControllerLife.prototype.toObserve = function(obj_observable)
+ControllerLife.prototype.getObserver = function()
 {
-	obj_observable.add(this.obj_view_vie);
+	return this.obj_view_vie;
 }
