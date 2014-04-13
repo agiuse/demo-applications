@@ -59,10 +59,27 @@ function preloadAssets()
 function preloadUpdate()
 {
 	preloadCount++;
-	if (preloadCount == PRELOADTOTAL) launchGame();
+	if (preloadCount == PRELOADTOTAL)
+		launchGame();
 }
 
 // ============================================================================================================================
+/*
+@startuml
+title Class <B>ViewStage</B>
+class createjs.Bitmap
+class createjs.Text
+class createjs.Stage
+
+class ViewStage {
+	int STAGE_WIDTH = 640
+	int STAGE_HEIGHT = 480
+	==
+	int getWidth()
+	int getHeight()
+}
+@enduml
+*/
 function ViewStage() {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.STAGE_WIDTH = 640;
@@ -92,9 +109,15 @@ function launchGame()
 	obj_stage = new ViewStage();
 
 	obj_lists['sky'] = new ViewCiel(obj_stage, img_decors);
-	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text");
-	obj_lists['score'] = new ControllerScore(obj_stage,"Score_Text");
-	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches, obj_lists['vies'], obj_lists['score']);
+	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text", 8, 420);
+	obj_lists['score'] = new ControllerScore(obj_stage,"Score_Text", 8, 450);
+	obj_lists['highscore'] = new ControllerHighScore(obj_stage,"HighScore_Text", 300, 450);
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches);
+	obj_lists['joueur'].lifeHasObservedBy(obj_lists['vies'].getObserver());
+	obj_lists['joueur'].scoreHasObservedBy(obj_lists['score'].getObserver());
+	obj_lists['joueur'].scoreHasObservedBy(obj_lists['highscore'].getObserver());
+	obj_lists['joueur'].preparer(6, 3, 0);
+	obj_lists['highscore'].preparer(0);
 	
 	obj_stage.go();
 }
