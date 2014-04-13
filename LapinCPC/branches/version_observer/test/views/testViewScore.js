@@ -63,8 +63,11 @@ function test1() {
 	console.log("Test 1 : Affichage du score");
 
 	var obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
+	var obj_text =  new createjs.Text("Test View Score 1", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 74;
+	obj_stage.addChild( obj_text );
 
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1');
+	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 100);
 	var obj_observable = new ObjetScore('observable');
 	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
