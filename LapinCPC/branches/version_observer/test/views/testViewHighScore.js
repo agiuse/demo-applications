@@ -91,6 +91,7 @@ class ObjetScore {
 }
 
 Observable <|-- ObjetScore
+Observable <|-- Score
 
 class ViewScore {
 	...
@@ -109,7 +110,7 @@ class ControllerScore {
 createjs.Text <|-- ViewScore
 ControllerScore *-- ViewScore
 ViewScore .. ObjetScore : "Observable/Observer"
-
+ControllerHighScore .. ObjetScore : "observable/observer"
 
 @enduml
 */
