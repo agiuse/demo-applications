@@ -65,17 +65,15 @@ function test1() {
 	console.log("Test 1 : Affichage de la vie");
 
 	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
+	var obj_text =  new createjs.Text("Test View Life 1", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 74;
+	obj_stage.addChild( obj_text );
 
-	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1');
+	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1', 8, 100);
 	obj_observable = new ObjetVie('observable');
 	obj_observable.add(obj_controller_vies.getObserver() );
 		
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
-
-	obj_stage.update();
-	
-	obj_observable.run(14);
-	obj_stage.update();
 
 	obj_observable.run(1230);
 	obj_stage.update();

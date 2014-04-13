@@ -27,13 +27,13 @@ class ViewLife {
 createjs.Text <|-- ViewLife
 @enduml
 */
-function ViewLife(stage, name) {
+function ViewLife(stage, name, x, y ) {
 	createjs.Text.call(this, "Vies : -", "24px Arial", "#00000" );
 	this.stage = stage;
 	this.name = name;
 	
-	this.x = 8;
-	this.y = 420;
+	this.x = x;
+	this.y = y;
 	this.stage.addChild(this);
 	this.visible=true;
 	console.log(this.name + " View is created!");
@@ -75,12 +75,12 @@ class ControllerLife {
 ControllerLife *-- ViewLife
 @enduml
 */
-function ControllerLife(stage, name)
+function ControllerLife(stage, name, x, y)
 {
 	this.stage = stage;
 	this.name = name;
 	
-	this.obj_view_vie = new ViewLife(this.stage, this.name);
+	this.obj_view_vie = new ViewLife(this.stage, this.name, x, y);
 }
 
 ControllerLife.prototype.getObserver = function()
