@@ -24,13 +24,13 @@ class ViewScore {
 createjs.Text <|-- ViewScore
 @enduml
 */
-function ViewScore(stage, name)
+function ViewScore(stage, name, x, y)
 {
 	createjs.Text.call(this, "Score : 0", "24px Arial", "#000000" );
 	this.stage = stage;
 	this.name = name;
-	this.x = 8;
-	this.y = 450;
+	this.x = x;
+	this.y = y;
 	this.stage.addChild(this);
 	this.visible=true;
 	console.log(this.name + " View is created!");
@@ -63,11 +63,11 @@ class ControllerScore {
 createText <|-- ViewScore
 @enduml
 */
-function ControllerScore(obj_stage, name)
+function ControllerScore(obj_stage, name, x, y)
 {
 	this.obj_stage = obj_stage;
 	this.name = name;
-	this.obj_view_score = new ViewScore(this.obj_stage, this.name);
+	this.obj_view_score = new ViewScore(this.obj_stage, this.name, x, y);
 }
 
 // Renvoie la référence de l'objet observeur géré par le Controller
@@ -103,12 +103,15 @@ class ViewScore {
 createjs.Text <|-- ViewScore
 @enduml
 */
-function ViewHighScore(stage).
+
+function ViewHighScore(stage, name, x, y)
 {
 	createjs.Text.call(this, "Highscore : 0", "24px Arial", "#00000");
 	this.stage = stage;
-	this.x = 300;
-	this.y = 450;
+	this.name = name;
+
+	this.x = x;
+	this.y = y;
 	this.stage.addChild(this);
 	this.visible=true;
 
@@ -117,7 +120,8 @@ function ViewHighScore(stage).
 //NÃ©cessaire afin que ViewHighScore hÃ©rite de createjs.Text
 ViewHighScore.prototype = new createjs.Text();
 
-ViewHighScore.prototype.display = function(obj_observable) {	// notifie lors du changement du HighScore
+ViewHighScore.prototype.display = function(obj_observable)
+{	// notifie lors du changement du HighScore
 	this.text = "Highscore : " + obj_observable.get();
 }
 
@@ -136,12 +140,14 @@ class ModelHighScore {
 	String name
 	==
 	int get()
-	set(int)
+	__ notify __
+	set(int nb_points)
 }
 
 ModelHighScore *-- Score : nb_points
 @enduml
 */
+
 function ModelHighScore(name)
 {
 	this.name = name;
@@ -179,6 +185,7 @@ class ControllerHighScore {
 	createjs.Stage stage
 	String name
 	==
+	int get()
 	ViewScore getObserver()
 }
 
@@ -189,14 +196,14 @@ Score .. ViewHighScore : "observable/observer"
 
 @enduml
 */
-function ControllerHighScore(obj_stage, name)
+function ControllerHighScore(obj_stage, name, x, y)
 {
 	this.obj_stage = obj_stage;
 	this.name = name;
 	console.log(this.name, " Controller is being created...");
 
 	this.obj_model_highscore = new ModelHighScore(this.name);
-	this.obj_model_highscore.nb_points.add(new ViewHighScore(this.obj_stage, this.name) ); // L'objet ViewHighScore est en observation du highscore
+	this.obj_model_highscore.nb_points.add(new ViewHighScore(this.obj_stage, this.name, x, y) ); // L'objet ViewHighScore est en observation du highscore
 	
 	console.log(this.name, " Controller is created...");
 }
@@ -209,7 +216,7 @@ ControllerHighScore.prototype.prepare = function(nb_points)
 // Verifie que le score ne depasse pas le highscore
 // Si oui le highscore change (Model) et la vue est notifiée du changement.
 ControllerHighScore.prototype.display = function(obj_observable)
-{ // notifie lors du changement du score du joueur
+{
 	if (this.obj_observable.get() > this.obj_model_highscore.get() )
 		this.obj_model_highscore.set( observable.get() );
 }
@@ -220,4 +227,9 @@ ControllerHighScore.prototype.display = function(obj_observable)
 ControllerHighScore.prototype.getObserver = function()
 {
 	return this;
+}
+
+ControllerHighScore.prototype.get = function()
+{
+	return this.obj_model_highscore.get();
 }
