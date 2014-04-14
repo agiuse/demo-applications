@@ -4,25 +4,6 @@
 // ============================================================================================================================
 
 // ============================================================================================================================
-// Chargement des ressources
-// ============================================================================================================================
-function preloadAssetsPlayer()
-{
-	console.debug("Lancement du chargement des ressources Player");
-
-	var img_joueur= [ new Image(), new Image() ];
-
-	img_joueur[0].onload = preloadUpdate();
-	img_joueur[0].src = "images/joueur.png";
-
-	img_joueur[1].onload = preloadUpdate();
-	img_joueur[1].src = "images/joueur_hit.png";
-
-	console.debug("Fin du lancement du chargement des ressources Player");
-	return img_joueur;
-}
-
-// ============================================================================================================================
 // Classe ViewPlayer
 // Cette classe s'occupe d'afficher le vaisseau
 // ============================================================================================================================
@@ -34,8 +15,8 @@ class createjs.Bitmap
 
 class ViewPlayer {
 	createjs.Stage stage
+	createjs.LoadQueue obj_queue
 	String name
-	Array<Image> img_joueur
 	==
 	__ notified __
 	prepare(obj_observable)
@@ -45,12 +26,11 @@ class ViewPlayer {
 createjs.Bitmap <|-- ViewPlayer
 @enduml
 */
-function ViewPlayer(stage, img_joueur, name )
+function ViewPlayer(stage, obj_queue, name )
 {
 	createjs.Bitmap.call(this);
 
 	this.name = name;
-	this.img_joueur = img_joueur;
 	this.stage = stage;
 
 	console.log(this.name, " View is being created...");
@@ -68,7 +48,7 @@ ViewPlayer.prototype.prepare = function(obj_observable)
 {
 	console.log(this.name + " View is being prepared!");
 	this.visible=true;
-	this.image = this.img_joueur[0];
+	this.image = obj_queue.getResult("player0");
 	this.display(obj_observable);
 
 	console.log(this.name + " View is ready!");
@@ -209,7 +189,7 @@ class LifeNumber
 
 class ControllerPlayer {
 	createjs.Stage stage
-	Array<Image>
+	createjs.LoadQueue obj_queue
 	String Name
 	ArrayHashage<Boolean> touches
 	==
@@ -239,16 +219,16 @@ createjs.Text <|-- ViewScore
 createjs.Text <|-- ViewLife
 @enduml
 */
-function ControllerPlayer(stage, images, name, touches) 
+function ControllerPlayer(stage, obj_queue, name, touches) 
 {
 	this.stage = stage;
-	this.images = images;
+	this.obj_queue = obj_queue;
 	this.name = name;
 	this.touches = touches;
 	console.log(this.name, " Controller is being created...");
 
 	this.obj_model_joueur = new ModelPlayer(this.name, this.stage);
-	this.obj_model_joueur.coordonnee.add( new ViewPlayer(this.stage, this.images, this.name) );
+	this.obj_model_joueur.coordonnee.add( new ViewPlayer(this.stage, this.obj_queue, this.name) );
 
 	console.log(this.name, " Controller is created!");
 }

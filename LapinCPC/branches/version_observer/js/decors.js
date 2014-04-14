@@ -1,35 +1,35 @@
 "use strict";
-// Chargement des ressources
-function preloadAssetsDecors()
-{
-	var img_sky = [ new Image(), new Image(), new Image() ];
-
-	for ( var i=0; i < 3; i++)
-	{
-		img_sky[i].onload = preloadUpdate();
-		img_sky[i].src = "images/ciel" + i + ".png";
-	}
-
-	return img_sky;
-}
 
 // ============================================================================================================================
-// Definition du 'constructor' pour Saucisse.
-function ViewCiel(stage, img_sky) {
-	this.image=[];
-	this.stage = stage;
+// Classe ViewCiel
+// ============================================================================================================================
+/*
+@startuml
+title Class <B>ViewCiel</B>
 
-	this.vitesse = 4;
+class ViewCiel {
+	createjs.Stage stage
+	createjs.LoadQueue obj_queue
+	Array image
+	int vitesse
+	==
+	run()
+}
+@enduml
+*/
+function ViewCiel(stage, obj_queue) {
+	this.image=[];
+	this.obj_queue = obj_queue;
+	this.stage = stage;
 
 	for ( var i=0; i < 3; i++)
 	{
-		this.image[i] = new createjs.Bitmap(img_sky[i]);
+		this.image[i] = new createjs.Bitmap(obj_queue.getResult("ciel"+i));
 		this.stage.addChild(this.image[i]);
 	}
 
 }
 
-//Nécessaire afin que Saucisse hérite de createjs.Bitmap
 ViewCiel.prototype.run = function ()
 {
 	// animation du ciel

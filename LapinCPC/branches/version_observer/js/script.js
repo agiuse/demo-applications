@@ -2,15 +2,13 @@
 // ============================================================================================================================
 // Variables globales
 	var obj_stage;
-	var preloadCount =0 ;
-	var PRELOADTOTAL = 6;  // nombre de ressources à charger
-	var touches = {};
-
-	// Objets resource
-	var img_decors;
-	var img_joueur;
-
 	var obj_lists = {};
+	var touches = {};
+	var obj_queue;
+	
+	// Objets resource
+	//var img_decors;
+	//var img_joueur;
 
 	var sound_musique = 0.1;
 	var sound_bruitage = 0.4;
@@ -39,31 +37,6 @@ addEventListener("keyup",
 );
 
 // ============================================================================================================================
-// Demarrage
-function startGame()
-{
-	console.clear();
-	preloadAssets();
-	img_decors = preloadAssetsDecors();
-	img_joueur = preloadAssetsPlayer();
-}
-
-// Chargement des ressources
-function preloadAssets()
-{
-	createjs.Sound.registerPlugins( [ createjs.WebAudioPlugin, createjs.HTMLAudioPlugin ] );
-	createjs.Sound.addEventListener( "loadComplete", preloadUpdate );
-	createjs.Sound.registerSound( "sounds/music.mp3|sounds/music.ogg", "music" );
-}
-
-function preloadUpdate()
-{
-	preloadCount++;
-	if (preloadCount == PRELOADTOTAL)
-		launchGame();
-}
-
-// ============================================================================================================================
 /*
 @startuml
 title Class <B>ViewStage</B>
@@ -80,7 +53,8 @@ class ViewStage {
 }
 @enduml
 */
-function ViewStage() {
+function ViewStage()
+{
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.STAGE_WIDTH = 640;
 	this.STAGE_HEIGHT = 480;
@@ -88,11 +62,13 @@ function ViewStage() {
 
 ViewStage.prototype = new createjs.Stage();
 
-ViewStage.prototype.getWidth = function() {
+ViewStage.prototype.getWidth = function()
+{
 	return this.STAGE_WIDTH;
 }
 
-ViewStage.prototype.getHeight = function() {
+ViewStage.prototype.getHeight = function()
+{
 	return this.STAGE_WIDTH;
 }
 
@@ -104,15 +80,36 @@ ViewStage.prototype.go = function()
 }
 
 // ============================================================================================================================
+function startGame()
+{
+	console.log("Programme start!\npreLoadAssets in being...");
+	obj_queue = new createjs.LoadQueue(false);
+	obj_queue.installPlugin(createjs.Sound);
+	
+	obj_queue.on("complete", launchGame, this);
+
+	obj_queue.loadManifest([
+			{src:"./images/ciel0.png", id:"ciel0"},
+			{src:"./images/ciel1.png", id:"ciel1"},
+			{src:"./images/ciel2.png", id:"ciel2"},
+            {src:"./images/joueur.png", id:"player0"},
+            {src:"./images/joueur_hit.png", id:"player1"},
+			{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND}
+	]);
+	console.log("preLoadAssets is ended.\nProgramme is ended!");
+}
+
+// ============================================================================================================================
 function launchGame()
 {
+	console.log("Load is ended!\nController creations are being done...");
 	obj_stage = new ViewStage();
 
-	obj_lists['sky'] = new ViewCiel(obj_stage, img_decors);
+	obj_lists['sky'] = new ViewCiel(obj_stage, obj_queue);
 	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text", 8, 420);
 	obj_lists['score'] = new ControllerScore(obj_stage,"Score_Text", 8, 450);
 	obj_lists['highscore'] = new ControllerHighScore(obj_stage,"HighScore_Text", 300, 450);
-	obj_lists['joueur'] = new ControllerPlayer(obj_stage, img_joueur, 'Joueur', touches);
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, obj_queue, 'Joueur', touches);
 	obj_lists['joueur'].lifeHasObservedBy(obj_lists['vies'].getObserver());
 	obj_lists['joueur'].scoreHasObservedBy(obj_lists['score'].getObserver());
 	obj_lists['joueur'].scoreHasObservedBy(obj_lists['highscore'].getObserver());
