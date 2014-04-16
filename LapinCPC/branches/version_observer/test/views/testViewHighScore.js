@@ -6,29 +6,32 @@ function ObjetScore(name)
 {
 	this.name = name;	
 	this.score = 0;
-	Observable.call(this, name);
+	this.score_notifier = new Observable(name+"_notifier", this);
 	
 	console.log(this.name, "Constructeur ObjetScore");
 }
 
-ObjetScore.prototype = new Observable();
-
 ObjetScore.prototype.preparer = function(valeur)
 {
 	this.score=valeur;
-	this.notify('prepare');
+	this.score_notifier.notify('prepare');
 }
 
 ObjetScore.prototype.run = function(valeur)
 {
 	this.score = valeur;
 	console.log(this.name, "ObjetScore : traitement de la nouvelle valeur = ", this.score);
-	this.notify('display');
+	this.score_notifier.notify('display');
 }
 
 ObjetScore.prototype.get = function()
 {
 	return this.score;
+}
+
+ObjetScore.prototype.add = function(obj_observer)
+{
+	this.score_notifier.add(obj_observer);
 }
 
 // ====================================================================
@@ -38,32 +41,57 @@ title testViewHighScore <b>class diagrams</b>
 
 class createjs.Text
 
-class Score {
-	int nb_points
+class Observable {
+	String name
+	ArrayHashage<Object> obj_observer_lists
 	==
-	int get()
-	__ notity __
-	init(nb_vies)
-	dec()
+	Observable(String name, Object obj_observable)
+	add(Object obj_observer)
+	notity(String type_notify)
 }
 
-class ViewHighScore {
-	...
+class ObjetScore {
+	int score
+	Observable score_notifier
 	==
-	...
+	int get()
+	int add(Object obj_observer)
+	__ notify __
+	preparer()
+	run()
+}
+
+Observable *-- ObjetScore : score_notifier
+
+
+class ViewHighScore {
+	createjs.Stage stage
+	String name
+	int x
+	int y
+	--
+	Boolean visible=true
+	==
+	ViewHighScore(createjs.Stage stage, String name, int x, int y)	
 	__ notified __
 	prepare(obj_observable)
 }
 
+createjs.Text <|-- ViewHighScore
+
 class ModelHighScore {
-	...
+	String name
+	int nb_points
+	Observable score_notifier
 	==
-	...
+	ModelHighScore(String name)
+	int get()
+	add(Object obj_observer)
 	__ notify __
 	set(int nb_points)
 }
-ModelHighScore *-- Score : nb_points
-ViewHighScore .. Score : "observable/observer"
+
+ModelHighScore *-- Observable : score_notifier
 
 class ControllerHighScore {
 }
@@ -71,42 +99,28 @@ class ControllerHighScore {
 createjs.Text <|-- ViewHighScore
 ControllerHighScore *-- ViewHighScore
 ControllerHighScore *-- ModelHighScore
-
-class Observable {
-	String name
-	int score = 0
-	ArrayHashage<Observer> obj_observer_lists
-	==
-	add(obj_observer)
-	notity(type_notify)
-}
-
-class ObjetScore {
-	int score
-	==
-	int get()
-	__ notify __
-	preparer(int score)
-	run(int score)
-}
-
-Observable <|-- ObjetScore
-Observable <|-- Score
+ViewHighScore .. ModelHighScore : "observable/observer"
 
 class ViewScore {
-	...
+	createjs.Stage stage
+	String name
+	int x
+	int y
+	--
+	Boolean visible=true
 	==
+	ViewScore(createjs.Stage stage, String name, int x, int y)
 	__ notified __
-	prepare(obj_observable)
-	display(obj_observable)
+	prepare(Object obj_observable)
+	display(Object obj_observable)
 }
 
 class ControllerScore {
-	...
+	createjs.Stage stage
+	String name
 	==
-	...
+	ViewScore getObserver()
 }
-
 createjs.Text <|-- ViewScore
 ControllerScore *-- ViewScore
 ViewScore .. ObjetScore : "Observable/Observer"
@@ -118,17 +132,46 @@ ControllerHighScore .. ObjetScore : "observable/observer"
 // -----------------------------------------------------------------
 function test1(obj_stage)
 {
-	console.log("**** Test 1 : Affichage du score et le highscore au départ");
+	console.log("**** Test 1 : Affichage du score de l'objet Score avec le Viewer Score\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test View Score 1", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Score and High Score 1", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 0;
 	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 	
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1',8, 26); // creer le MVC Score
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8,52); // creer le MVC HighScore
+	var obj_viewer_score = new ViewScore(obj_stage, 'viewer_score_1',8, 26); // creer le MVC Score
+	var obj_viewer_highscore = new ViewHighScore(obj_stage, 'viewer_highscore_1',208, 26); // creer le MVC Score
+	
+	obj_observable.add(obj_viewer_score ); // ajout le viewer score à observer l'objet Score
+	obj_observable.add(obj_viewer_highscore ); // ajout le viewer highscore à observer l'objet Score
+	console.log("  Test1 environment is ready!");
+
+	obj_observable.preparer(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	console.log("  Score Test Modem is ok!");
+	
+	obj_stage.update();
+	// Le changement de score ne doit pas modifier le highscore !!!
+	// Car le test couvre uniquement la phase de préparation.
+
+}
+
+function test2(obj_stage)
+{
+	console.log("**** Test 2 : Affichage du score de l'objet Score via MVC Score\n --------------------------------------------");
+
+	var obj_text =  new createjs.Text("Test MVC Score and High Score 2", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 80;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
+
+	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
+	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
+	
+	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 106); // creer le MVC Score
+	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 132); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_score.getObserver() ); // ajout le controller score à observer l'objet Score
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
@@ -145,19 +188,20 @@ function test1(obj_stage)
 
 }
 
-function test2(obj_stage)
+function test3(obj_stage)
 {
-	console.log("**** Test 2 : Affichage du score et le highscore avec un score < highscore");
+	console.log("**** Test 3 : Affichage du score et le highscore avec un score < highscore");
 
-	var obj_text =  new createjs.Text("Test View Score 2", "24px Arial", "#00000");
-	obj_text.x = 8 ; obj_text.y = 80;
+	var obj_text =  new createjs.Text("Test MVC Score and High Score 3", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 160;
 	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 	
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 106); // creer le MVC Score
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 132); // creer le MVC HighScore
+	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 186); // creer le MVC Score
+	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 212); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_score.getObserver() ); // ajout le controller score à observer l'objet Score
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
@@ -174,18 +218,19 @@ function test2(obj_stage)
 	console.log("Result = highscore (20",obj_controller_highscore.get(),") ", ( obj_controller_highscore.get() == 20 ? "Ok" : "Ko" ));
 }
 
-function test3(obj_stage)
+function test4(obj_stage)
 {
-	console.log("**** Test 3 : Affichage du score et le highscore avec un score > highscore");
-	var obj_text =  new createjs.Text("Test View Score 3", "24px Arial", "#00000");
-	obj_text.x = 8 ; obj_text.y = 160;
+	console.log("**** Test 4 : Affichage du score et le highscore avec un score > highscore");
+	var obj_text =  new createjs.Text("Test MVC Score and High Score 4", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 240;
 	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 	
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 186); // creer le MVC Score
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 212); // creer le MVC HighScore
+	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8,266); // creer le MVC Score
+	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 292); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_score.getObserver() ); // ajout le controller score à observer l'objet Score
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
@@ -200,19 +245,20 @@ function test3(obj_stage)
 	console.log("Result = highscore (30",obj_controller_highscore.get(),") ", ( obj_controller_highscore.get() == 30 ? "Ok" : "Ko" ));
 }
 
-function test4(obj_stage)
+function test5(obj_stage)
 {
-	console.log("**** Test 4 : Affichage du score et le highscore avec un score = highscore");
+	console.log("**** Test 5 : Affichage du score et le highscore avec un score = highscore");
 
-	var obj_text =  new createjs.Text("Test View Score 4", "24px Arial", "#00000");
-	obj_text.x = 8 ; obj_text.y = 240;
+	var obj_text =  new createjs.Text("Test MVC Score and High Score 5", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 320;
 	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
 	
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8,266); // creer le MVC Score
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 292); // creer le MVC HighScore
+	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8,346); // creer le MVC Score
+	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 8, 372); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_score.getObserver() ); // ajout le controller score à observer l'objet Score
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
@@ -236,4 +282,5 @@ function startTest()
 	test2(obj_stage);
 	test3(obj_stage);
 	test4(obj_stage);
+	test5(obj_stage);
 }

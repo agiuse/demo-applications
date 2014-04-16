@@ -12,14 +12,15 @@ class createjs.Text
 class ViewScore {
 	createjs.Stage stage
 	String name
+	int x
+	int y
 	--
-	int x = 8
-	int y = 450
 	Boolean visible=true
 	==
+	ViewScore(createjs.Stage stage, String name, int x, int y)
 	__ notified __
-	prepare(obj_observable)
-	display(obj_observable)
+	prepare(Object obj_observable)
+	display(Object obj_observable)
 }
 
 createjs.Text <|-- ViewScore
@@ -67,6 +68,7 @@ class ControllerScore {
 }
 
 createText <|-- ViewScore
+ControllerScore *-- ViewScore
 @enduml
 */
 function ControllerScore(obj_stage, name, x, y)
@@ -97,11 +99,12 @@ class createjs.Text
 class ViewHighScore {
 	createjs.Stage stage
 	String name
+	int x
+	int y
 	--
-	int x = 300
-	int y = 450
 	Boolean visible=true
 	==
+	ViewHighScore(createjs.Stage stage, String name, int x, int y)	
 	__ notified __
 	prepare(obj_observable)
 }
@@ -140,24 +143,19 @@ ViewHighScore.prototype.prepare = function(obj_observable)
 @startuml
 title Class <b>ModelHighScore</b>
 
-class Score {
-	int nb_points
-	==
-	int get()
-	__ notity __
-	init(nb_vies)
-	dec()
-}
-
 class ModelHighScore {
 	String name
+	int nb_points
+	Observable score_notifier
 	==
+	ModelHighScore(String name)
 	int get()
+	add(Object obj_observer)
 	__ notify __
 	set(int nb_points)
 }
 
-ModelHighScore *-- Score : nb_points
+ModelHighScore *-- Observable : score_notifier
 @enduml
 */
 
@@ -166,7 +164,8 @@ function ModelHighScore(name)
 	this.name = name;
 	console.log(this.name + " View is being created...");
 	
-	this.nb_points = new Score(this.name);
+	this.nb_points = 0;
+	this.score_notifier = new Observable(this.name+"_notifier", this);
 	
 	console.log(this.name + " View is created!");
 
@@ -174,12 +173,18 @@ function ModelHighScore(name)
 
 ModelHighScore.prototype.get = function()
 {
-	return this.nb_points.get();
+	return this.nb_points;
 }
 
 ModelHighScore.prototype.set = function(nb_points)
 {
-	this.nb_points.init(nb_points);
+	this.nb_points = nb_points;
+	this.score_notifier.notify('prepare');
+}
+
+ModelHighScore.prototype.add = function(obj_observer)
+{
+	this.score_notifier.add(obj_observer);
 }
 
 // ============================================================================================================================
@@ -220,7 +225,7 @@ function ControllerHighScore(obj_stage, name, x, y)
 	console.log(this.name, " Controller is being created...");
 
 	this.obj_model_highscore = new ModelHighScore(this.name);
-	this.obj_model_highscore.nb_points.add(new ViewHighScore(this.obj_stage, this.name, x, y) ); // L'objet ViewHighScore est en observation du highscore
+	this.obj_model_highscore.add(new ViewHighScore(this.obj_stage, this.name, x, y) ); // L'objet ViewHighScore est en observation du highscore
 	
 	console.log(this.name, " Controller is created...");
 }
