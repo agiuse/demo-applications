@@ -15,13 +15,14 @@ class createjs.Text
 class ViewLife {
 	createjs.Stage stage
 	String name
-	int x = 8
-	int y = 420
+	int x
+	int y
 	Boolean visible = true
 	==
+	ViewLife(createjs.Stage stage, String name, int x, int y)
 	__ notified __
-	display(obj_observable)
-	prepare(obj_observable)
+	display(Object obj_observable)
+	prepare(Object obj_observable)
 }
 
 createjs.Text <|-- ViewLife
@@ -69,6 +70,7 @@ class ControllerLife {
 	createjs.Stage stage
 	String name
 	==
+	ControllerLife(createjs.Stage stage, String name, int x, int y)
 	ViewLife getObserver()
 }
 
