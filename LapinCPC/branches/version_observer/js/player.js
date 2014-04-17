@@ -14,7 +14,7 @@ title Class <B>ViewPlayer</B>
 class createjs.Bitmap
 
 class ViewPlayer {
-	createjs.Stage stage
+	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String name
 	==
@@ -26,29 +26,27 @@ class ViewPlayer {
 createjs.Bitmap <|-- ViewPlayer
 @enduml
 */
-function ViewPlayer(stage, obj_queue, name )
+function ViewPlayer(obj_stage, obj_queue, name )
 {
 	createjs.Bitmap.call(this);
 
 	this.name = name;
-	this.stage = stage;
-
+	this.obj_stage = obj_stage;
+	this.obj_queue = obj_queue;
 	console.log(this.name, " View is being created...");
 
-	this.stage.addChild(this);
+	this.obj_stage.addChild(this);
 
 	console.log(this.name + " View is created!");
 }
 
-
-//Nécessaire afin que ViewPlayer hérite de createjs.Bitmap
 ViewPlayer.prototype = new createjs.Bitmap();
 
 ViewPlayer.prototype.prepare = function(obj_observable)
 {
 	console.log(this.name + " View is being prepared!");
 	this.visible=true;
-	this.image = obj_queue.getResult("player0");
+	this.image = this.obj_queue.getResult("player0");
 	this.display(obj_observable);
 
 	console.log(this.name + " View is ready!");
@@ -71,102 +69,131 @@ ViewPlayer.prototype.display = function(obj_observable)
 /*
 @startuml
 title Class <b>Model Player</b>
-class Score
-class LifeNumber
-class Coordonnee
+class Observable {
+	String name
+	ArrayHashage<Object> obj_observer_lists
+	==
+	Observable(String name, Object obj_observable)
+	add(Object obj_observer)
+	notity(String type_notify)
+}
 
 class ModelPlayer {
-	createjs.Stage = stage
 	String name
-	int vitesse;
+	--
+	int x = 0
+	int y = 224
+	int rotation = 0
+	int vitesse = 6
+	Observable coordonnee_notifier
+	Observable nb_vies_notifier
+	Observable nb_points_notifier
 	==
-	__ notify __
-	preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
-	set(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
-	__ coordonnee __
+	ModelPlayer(String name)
+	addLifeNotifier(Object obj_observer)
+	addScoreNotifier(Object obj_observer)
+	addCoordonneeNotifier(Object obj_observer)
 	int getX()
 	int getY()
 	int getRotation()
-	__ nb_vies __
-	int getLife()
-	__ nb_points __
-	int getScore()
-	__ vitesse __
 	int getSpeed()
+	int getLife()
+	int getScore()
+	__ notify __
+	preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
+	set(int x, int y , int rotation)
 }
 
-ModelPlayer *-- Coordonnee : coordonnee
-ModelPlayer *-- LifeNumber : nb_vies
-ModelPlayer *-- Score : nb_points
+ModelPlayer *-- Observable : coordonnee_notifier
+ModelPlayer *-- Observable : nb_vies_notifier
+ModelPlayer *-- Observable : nb_points_notifier
 @enduml
 */
-function ModelPlayer(name, stage)
+function ModelPlayer(name)
 {
 	this.name = name;
-	this.stage = stage;
 	
 	console.log(this.name, " Model is being created...");
 
-	this.coordonnee = new Coordonnee(this.name+"_model_coordonnee");
-	this.nb_vies = new LifeNumber(this.name + "_model_vies");
-	this.nb_points = new Score(this.name + "_model_score");
+	this.x = 0;			// default value
+	this.y = 224;		// default value
+	this.rotation = 0;	// default value
+	this.vitesse = 6;	// default value
+	this.nb_vies = 3;	// default value
+	this.nb_points = 0;	// default value
+	this.coordonnee_notifier = new Observable(this.name+"_coordonnee_nofitier", this);
+	this.nb_vies_notifier = new Observable(this.name + "_life_notifier", this);
+	this.nb_points_notifier = new Observable(this.name + "_score_notifier", this);
 	
-	this.PLAYER_HALF_WIDTH = 64;		// longueur du vaisseau
-	this.PLAYER_HALF_HEIGHT = 32;		// hauteur du vaisseau
-
 	console.log(this.name + " Model is created!");
 }
 
 ModelPlayer.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
 {
+	this.x = x;
+	this.y = y;
+	this.rotation = rotation;
 	this.vitesse = vitesse;
-	this.coordonnee.init(x, y, rotation);
-	this.nb_vies.init(nb_vies_de_depart);
-	this.nb_points.init(nb_points_de_depart);
+	this.coordonnee_notifier.notify('prepare');
+	
+	this.nb_vies = nb_vies_de_depart;
+	this.nb_vies_notifier.notify('prepare');
+	
+	this.nb_points = nb_points_de_depart;
+	this.nb_points_notifier.notify('prepare');
 
 	console.log(this.name + " Model is ready!");
 }
 
-ModelPlayer.prototype.getWidth = function()
-{
-	return this.PLAYER_HALF_WIDTH;
-}
-
-ModelPlayer.prototype.getHeight = function()
-{
-	return this.PLAYER_HALF_HEIGHT;
-}
-
-ModelPlayer.prototype.getRotation = function()
-{
-	return this.coordonnee.getRotation();
-}
-
 ModelPlayer.prototype.set = function(x, y, rotation)
 {
-	this.coordonnee.set(x, y, rotation);
+	this.x = x;
+	this.y = y;
+	this.rotation = rotation;
+
+	this.coordonnee_notifier('display');
 
 	console.log(this.name + " Model is displayed!");
 }
 
+ModelPlayer.prototype.addCoordonneeNotifier = function(obj_observer)
+{
+	this.coordonnee_notifier.add(obj_observer);
+}
+
+ModelPlayer.prototype.addLifeNotifier = function(obj_observer)
+{
+	this.nb_vies_notifier.add(obj_observer);
+}
+
+ModelPlayer.prototype.addScoreNotifier = function(obj_observer)
+{
+	this.nb_points_notifier.add(obj_observer);
+}
+
 ModelPlayer.prototype.getX = function()
 {
-	return this.coordonnee.getX();
+	return this.x;
 }
 
 ModelPlayer.prototype.getY = function()
 {
-	return this.coordonnee.getY();
+	return this.y;
+}
+
+ModelPlayer.prototype.getRotation = function()
+{
+	return this.rotation;
 }
 
 ModelPlayer.prototype.getLife = function()
 {
-	return this.nb_vies.get();
+	return this.nb_vies;
 }
 
 ModelPlayer.prototype.getScore = function()
 {
-	return this.nb_points.get();
+	return this.nb_points;
 }
 
 ModelPlayer.prototype.getSpeed = function()
