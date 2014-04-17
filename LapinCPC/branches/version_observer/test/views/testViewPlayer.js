@@ -220,13 +220,26 @@ function test3(obj_stage)
 {
 	console.log("**** Test 3 : Affichage d'un vaisseau avec le Controller Player");
 
-	var obj_text =  new createjs.Text("Test MVC Player 2", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Player 3", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 200;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
 	obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
+	console.log(" Controller Player creation is done.\nView-Score creation is in progress.");
+	
+	obj_view_score = new ViewScore(obj_stage, "View Score", 208,240);
+	obj_controller_player.scoreHasObservedBy(obj_view_score);
+	console.log(" View Score creation is done.\nView-Life creation is in progress.");
+
+	obj_view_vies = new ViewLife(obj_stage, "View Life", 408,240);
+	obj_controller_player.lifeHasObservedBy(obj_view_vies);
+	console.log(" View Life creation is done.\nGo");
+
+	obj_controller_player.preparer(8,230,0,6,3,103);
+
 	console.log(" Controller Player creation done.");
+	obj_stage.update();
 
 }
 
