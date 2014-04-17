@@ -13,12 +13,12 @@ title Class <B>View Saucisse</B>
 class createjs.Bitmap
 
 class ViewSaucisse {
-	createjs.Stage stage
+	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String name
 	--
 	==
-	ViewSaucisse(createjs.Stage stage, createjs.LoadQueue obj_queue, String name)
+	ViewSaucisse(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notified __
 	prepare(obj_observable)
 	display(obj_observable)
@@ -27,15 +27,15 @@ class ViewSaucisse {
 createjs.Bitmap <|-- ViewSaucisse
 @enduml
 */
-function ViewSaucisse(stage, obj_queue, name)
+function ViewSaucisse(obj_stage, obj_queue, name)
 {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandÃ©)
 	this.name = name;
-	this.stage=stage;
+	this.obj_stage=obj_stage;
 	this.obj_queue = obj_queue;
 
 	console.log(this.name, " View is being created...");
-	this.stage.addChild(this);
+	this.obj_stage.addChild(this);
 	console.log(this.name + " View is created!");
 }
 //NÃ©cessaire afin que Saucisse hÃ©rite de createjs.Bitmap
@@ -61,8 +61,8 @@ ViewSaucisse.prototype.display = function (obj_observable)
 }
 
 // ============================================================================================================================
-// Classe ModelPlayer
-// Cette classe gère les données du joueur.
+// Classe ModelSaucisse
+// Cette classe gère les données de la Saucisse.
 // ============================================================================================================================
 /*
 @startuml
