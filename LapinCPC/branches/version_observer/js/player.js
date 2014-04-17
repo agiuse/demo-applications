@@ -210,12 +210,10 @@ title Class <B>ControllerPlayer</B>
 class createjs.Bitmap
 class ViewPlayer
 class ModelPlayer
-class Score
-class Coordonnee
-class LifeNumber
+class Observer
 
 class ControllerPlayer {
-	createjs.Stage stage
+	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String Name
 	ArrayHashage<Boolean> touches
@@ -246,40 +244,40 @@ createjs.Text <|-- ViewScore
 createjs.Text <|-- ViewLife
 @enduml
 */
-function ControllerPlayer(stage, obj_queue, name, touches) 
+function ControllerPlayer(obj_stage, obj_queue, name) 
 {
-	this.stage = stage;
+	this.obj_stage = obj_stage;
 	this.obj_queue = obj_queue;
 	this.name = name;
-	this.touches = touches;
+	
+	//this.touches = touches;
 	console.log(this.name, " Controller is being created...");
 
-	this.obj_model_joueur = new ModelPlayer(this.name, this.stage);
-	this.obj_model_joueur.coordonnee.add( new ViewPlayer(this.stage, this.obj_queue, this.name) );
-
-	console.log(this.name, " Controller is created!");
+	this.obj_model_joueur = new ModelPlayer(this.name + "_model");
+	this.obj_model_joueur.addCoordonneeNotifier( new ViewPlayer(this.obj_stage, this.obj_queue, this.name+"_viewer") );
+ 	console.log(this.name, " Controller is created!");
 }
 
-ControllerPlayer.prototype.preparer = function(vitesse, nb_vies, nb_points)
+ControllerPlayer.prototype.preparer = function(x, y, rotation, vitesse, nb_vies, nb_points)
 {
-	this.obj_model_joueur.preparer(0, this.stage.getHeight() / 2, 0, vitesse, nb_vies, nb_points);
+	this.obj_model_joueur.preparer(x, y, rotation, vitesse, nb_vies, nb_points);
 }
 
 // Abonne à l'observable Score par un observateur extérieur
 ControllerPlayer.prototype.scoreHasObservedBy = function(obj_observable)
 {
-	this.obj_model_joueur.nb_points.add(obj_observable);
+	this.obj_model_joueur.addScoreNotifier(obj_observable);
 }
 
 // Abonne à l'observable Life par un observateur extérieur
 ControllerPlayer.prototype.lifeHasObservedBy = function(obj_observable)
 {
-	this.obj_model_joueur.nb_vies.add(obj_observable);
+	this.obj_model_joueur.addLifeNotifier(obj_observable);
 }
 
+/*
 ControllerPlayer.prototype.run = function()
 {	
-
 	// gestion des touches flÃ¨che haut et flÃ¨che bas
 	if ( 38 in this.touches) 
 		this.moveToUp();
@@ -380,3 +378,5 @@ ControllerPlayer.prototype.annulerRotation = function()	// Methode observe par l
 			);
 	}
 }
+
+*/
