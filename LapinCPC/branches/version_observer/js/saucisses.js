@@ -87,7 +87,7 @@ class ModelSaucisse {
 	add(Object obj_observable)
 	__ Notify __
 	preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
-	display()
+	setX()
 }
 
 Observable <|-- Coordonnee
@@ -144,15 +144,10 @@ ModelSaucisse.prototype.add = function(obj_observer)
 	this.coordonnee_notifier.add(obj_observer);
 }
 
-ModelSaucisse.prototype.display = function()
+ModelSaucisse.prototype.setX = function (x)
 {
+	this.x = x;
 	this.coordonnee_notifier.notify('display');
-}
-
-ModelSaucisse.prototype.moveToLeft = function ()
-{
-	this.x -= this.vitesse;
-	this.coordonnee_notifier.display(this);
 }
 
 // ============================================================================================================================
@@ -194,5 +189,13 @@ function ControllerSaucisse(obj_stage, obj_queue, name, x, y, rotation, vitesse,
 
 ControllerSaucisse.prototype.run = function()
 {
-	obj_model_saucisse.preparer();
+	this.obj_model_saucisse.setX(this.obj_model_saucisse.getX() - this.obj_model_saucisse.getVitesse());
+	if ( this.obj_model_saucisse.getX() < -32 )
+		this.obj_model_saucisse.preparer(
+			Math.floor(Math.random() * 640 + 480),
+			Math.floor(Math.random() * 470 + 5),
+			Math.floor(Math.random() * 40 - 20), 
+			Math.floor(Math.random() * 6 + 2),
+			Math.floor(Math.random() < 0.5)
+		); 
 }
