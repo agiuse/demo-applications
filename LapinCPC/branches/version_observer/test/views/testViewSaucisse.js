@@ -1,6 +1,9 @@
 "use strict;"
 
 var obj_queue;
+var obj_lists;
+var obj_stage;
+var inc = 0;
 
 // ====================================================================
 function ViewStage() {
@@ -18,7 +21,6 @@ ViewStage.prototype.getWidth = function() {
 ViewStage.prototype.getHeight = function() {
 	return this.STAGE_WIDTH;
 }
-
 
 // ====================================================================
 /*
@@ -97,7 +99,7 @@ function startTest()
 
 	obj_queue.loadManifest([
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
-			{src:"./images/saucisse1.png", id:"mauvaisse_saucisse"},
+			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -106,7 +108,7 @@ function startTest()
 function runTest()
 {
 	console.log("Lancement des tests...");
-	var obj_stage = new ViewStage();
+	obj_stage = new ViewStage();
 	test1(obj_stage);
 	test2(obj_stage);
 	test3(obj_stage);
@@ -168,17 +170,21 @@ function test3(obj_stage)
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_1 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", 700,250,6,4,true);
-	obj_controller_2 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", 700,250,-10,6,false);
+	obj_lists={};
+	obj_lists['obj_controller_1'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", 700,250,6,4,true);
+	obj_lists['obj_controller_2'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", 700,250,-10,6,false);
 	console.log("Saucisse creation done.");
 	
+	createjs.Ticker.setFPS(30);
 	console.log("Display saucisse bitmaps");
-	for (var i=0;i++;i<122)
-	{
-		obj_controller_1.run();
-		obj_controller_1.run();
-		obj_stage.update();
-	}
+	createjs.Ticker.addEventListener("tick", test3_run);
+}
+
+function test3_run(event)
+{
+	obj_lists['obj_controller_1'].run();
+	obj_lists['obj_controller_2'].run();
+	obj_stage.update();
 }
 
 
