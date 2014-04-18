@@ -151,7 +151,7 @@ ModelPlayer.prototype.set = function(x, y, rotation)
 	this.y = y;
 	this.rotation = rotation;
 
-	this.coordonnee_notifier('display');
+	this.coordonnee_notifier.notify('display');
 
 	console.log(this.name + " Model is displayed!");
 }
@@ -275,21 +275,20 @@ ControllerPlayer.prototype.lifeHasObservedBy = function(obj_observable)
 	this.obj_model_joueur.addLifeNotifier(obj_observable);
 }
 
-/*
 ControllerPlayer.prototype.run = function()
 {	
 	// gestion des touches flèche haut et flèche bas
-	if ( 38 in this.touches) 
+	if ( 38 in this.obj_stage.touches) 
 		this.moveToUp();
 	else
-		if ( 40 in this.touches )
+		if ( 40 in this.obj_stage.touches )
 			this.moveToDown();
 			
 	// gestion des touches flèche gauche et flèche droite
-	if ( 37 in this.touches) 
+	if ( 37 in this.obj_stage.touches) 
 		this.moveToLeft();
 	else
-		if ( 39 in this.touches )
+		if ( 39 in this.obj_stage.touches )
 			this.moveToRight();
 		else
 			this.annulerRotation();
@@ -300,7 +299,7 @@ ControllerPlayer.prototype.moveToUp = function()	// Methode observe par la Vue d
 {
 	console.debug(this.name, "traitement de la touche Up");
 	
-	if (this.obj_model_joueur.getY() > -32 )
+	if (this.obj_model_joueur.getY() > 0 )
 	{		
 		this.obj_model_joueur.set(
 			this.obj_model_joueur.getX(),
@@ -313,7 +312,7 @@ ControllerPlayer.prototype.moveToUp = function()	// Methode observe par la Vue d
 ControllerPlayer.prototype.moveToDown = function()	// Methode observe par la Vue du joueur
 {
 	console.debug(this.name, "traitement de la touche Down");
-	if ( this.obj_model_joueur.getY() < 448 )
+	if ( this.obj_model_joueur.getY() < 412 )
 	{
 		this.obj_model_joueur.set(
 			this.obj_model_joueur.getX(),
@@ -326,7 +325,7 @@ ControllerPlayer.prototype.moveToDown = function()	// Methode observe par la Vue
 ControllerPlayer.prototype.moveToRight = function()	// Methode observe par la Vue du joueur
 {
 	console.debug(this.name, "traitement de la touche Right");
-	if ( this.obj_model_joueur.getX() < 576  )
+	if ( this.obj_model_joueur.getX() < 530  )
 	{
 		var rotation = this.obj_model_joueur.getRotation()
 		if ( rotation < 20) {
@@ -344,7 +343,7 @@ ControllerPlayer.prototype.moveToRight = function()	// Methode observe par la Vu
 ControllerPlayer.prototype.moveToLeft = function()	// Methode observe par la Vue du joueur
 {
 	console.debug(this.name, "traitement de la touche Left");
-	if (this.obj_model_joueur.getX() > -64 )
+	if (this.obj_model_joueur.getX() > 0 )
 	{
 		var rotation = this.obj_model_joueur.getRotation()
 		if ( rotation > - 20) {
@@ -378,5 +377,3 @@ ControllerPlayer.prototype.annulerRotation = function()	// Methode observe par l
 			);
 	}
 }
-
-*/

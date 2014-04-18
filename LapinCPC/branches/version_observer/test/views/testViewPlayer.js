@@ -6,6 +6,7 @@ function ViewStage() {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.STAGE_WIDTH = 640;
 	this.STAGE_HEIGHT = 480;
+	this.touches = {};
 }
 
 ViewStage.prototype = new createjs.Stage();
@@ -17,6 +18,8 @@ ViewStage.prototype.getWidth = function() {
 ViewStage.prototype.getHeight = function() {
 	return this.STAGE_WIDTH;
 }
+
+
 
 // ====================================================================
 // Copied at 17/04
@@ -133,6 +136,10 @@ title Class diagram of MVC Player in testing
 */
 
 var obj_queue;
+var obj_stage;
+var simult_touches = new Array();
+var count=0;
+var count_max=0;
 
 // ============================================================================================================================
 function startTest()
@@ -152,11 +159,12 @@ function startTest()
 function runTest()
 {
 	console.log("Lancement des tests...");
-	var obj_stage = new ViewStage();
+	obj_stage = new ViewStage();
 
 	test1(obj_stage);
 	test2(obj_stage);
 	test3(obj_stage);
+	test4(obj_stage);
 }
 
 // -----------------------------------------------------------------
@@ -248,21 +256,64 @@ function test4(obj_stage)
 {
 	console.log("**** Test 4 : Déplacement d'un vaisseau");
 
-	var obj_text =  new createjs.Text("Test MVC Player 3", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Player 4", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 300;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	/*
-	obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, "View_player", 0 ,250,6,4);
+	obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, "View_player");
 	console.log(" Controller Player creation done.");
+	obj_controller_player.preparer(0,330,0,4);
 	
+	obj_stage.touches = {};
+	
+	simult_touches=[
+		{key:39,value:true,count:50},
+		{key:39,value:false},
+		{key:40,value:true,count:20},
+		{key:39,value:true,count:1},
+		{key:40,value:true,count:20},
+		{key:40,value:false},
+		{key:39,value:false},
+		{key:37,value:true,count:30},
+		{key:37,value:false},
+		{key:38,value:true,count:30},
+		{key:38,value:false},
+		{key:40,value:true,count:1},
+		{key:37,value:true,count:20},
+		{key:37,value:false},
+		{key:40,value:false}
+	];
+
+	
+	createjs.Ticker.setFPS(30);
 	console.log("Display Player bitmaps");
-	for (var i=0;i++;i<122)
-	{
-		obj_controller_player.run();
-		obj_stage.update();
-	}
-	*/
+	createjs.Ticker.addEventListener("tick", test4_run);
 }
 
+
+function test4_run(event)
+{
+	if ( count > 0 ) {
+		count--;
+	} else {
+		if ( simult_touches.length > 0 )
+		{
+			touche = simult_touches.shift();
+			if (touche !== undefined )
+			{
+				if ( touche.value ) {
+					count_max=touche.count;
+					count=count_max;
+					obj_stage.touches[touche.key]=true;
+				} else {
+					delete obj_stage.touches[touche.key];	
+				}
+			}
+		}
+	}
+	
+	//console.debug(event);
+	obj_controller_player.run();
+	obj_stage.update();
+}
