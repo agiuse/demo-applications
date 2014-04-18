@@ -46,13 +46,13 @@ ViewLife.prototype = new createjs.Text();
 ViewLife.prototype.display = function(obj_observable)
 {
 	console.debug(this.name + ": traitement de l'observable",obj_observable);
-	this.text = "Vies : " + obj_observable.get();
+	this.text = "Vies : " + obj_observable.getLife();
 	console.debug(this.name + " View is displayed!");
 }
 
 ViewLife.prototype.prepare = function(obj_observable)
 {
-	this.text = "Vies : " + obj_observable.get();
+	this.text = "Vies : " + obj_observable.getLife();
 	console.debug(this.name + " View is prepared!");
 }
 

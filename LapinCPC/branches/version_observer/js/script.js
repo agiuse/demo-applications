@@ -3,22 +3,14 @@
 // Variables globales
 	var obj_stage;
 	var obj_lists = {};
-	var touches = {};
 	var obj_queue;
 	
-	// Objets resource
-	//var img_decors;
-	//var img_joueur;
-
-	var sound_musique = 0.1;
-	var sound_bruitage = 0.4;
-
 // ============================================================================================================================
 // Gestion du clavier
 addEventListener("keydown",
 	function(e)
 	{
-		touches[e.keyCode]=true;	// enregistre la touche enfoncÃ©e dans le table de hashage "touches"
+		obj_stage.touches[e.keyCode]=true;	// enregistre la touche enfoncÃ©e dans le table de hashage "touches"
 		if ( ( (e.keyCode >= 37) && (e.keyCode <=40) ) || ( e.keyCode == 32 ) )
 			e.preventDefault();
 
@@ -32,7 +24,7 @@ addEventListener("keydown",
 addEventListener("keyup",
 	function(e)
 	{
-		delete touches[e.keyCode];	// supprime la touche enfoncÃ©e dans le table de hashage "touches"
+		delete obj_stage.touches[e.keyCode];	// supprime la touche enfoncÃ©e dans le table de hashage "touches"
 	}
 );
 
@@ -58,6 +50,10 @@ function ViewStage()
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.STAGE_WIDTH = 640;
 	this.STAGE_HEIGHT = 480;
+	this.touches = {};
+	this.sound_musique = 0.1;
+	this.sound_bruitage = 0.4;
+
 }
 
 ViewStage.prototype = new createjs.Stage();
@@ -76,7 +72,7 @@ ViewStage.prototype.go = function()
 {
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", mainTick);
-	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, sound_musique );
+	createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, this.sound_musique );
 }
 
 // ============================================================================================================================
@@ -94,7 +90,9 @@ function startGame()
 			{src:"./images/ciel2.png", id:"ciel2"},
             {src:"./images/joueur.png", id:"player0"},
             {src:"./images/joueur_hit.png", id:"player1"},
-			{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND}
+			{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND},
+			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
+			{src:"./images/saucisse1.png", id:"mauvaisse_saucisse"},
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -109,13 +107,13 @@ function launchGame()
 	obj_lists['vies'] = new ControllerLife(obj_stage, "Vie_Text", 8, 420);
 	obj_lists['score'] = new ControllerScore(obj_stage,"Score_Text", 8, 450);
 	obj_lists['highscore'] = new ControllerHighScore(obj_stage,"HighScore_Text", 300, 450);
-	obj_lists['joueur'] = new ControllerPlayer(obj_stage, obj_queue, 'Joueur', touches);
+	obj_lists['joueur'] = new ControllerPlayer(obj_stage, obj_queue, 'Joueur');
 	obj_lists['joueur'].lifeHasObservedBy(obj_lists['vies'].getObserver());
 	obj_lists['joueur'].scoreHasObservedBy(obj_lists['score'].getObserver());
 	obj_lists['joueur'].scoreHasObservedBy(obj_lists['highscore'].getObserver());
-	obj_lists['joueur'].preparer(6, 3, 0);
+	obj_lists['joueur'].preparer(0,240, 0, 6, 3, 0);
 	obj_lists['highscore'].preparer(0);
-	
+	obj_lists['saucisses'] = new ControllerSaucisses(obj_stage, obj_queue, "Saucisses", 10);
 	obj_stage.go();
 }
 

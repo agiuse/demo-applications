@@ -43,13 +43,13 @@ ViewScore.prototype = new createjs.Text();
 
 ViewScore.prototype.prepare = function(obj_observable)
 {
-	this.text = "Score : " + obj_observable.get();
+	this.text = "Score : " + obj_observable.getScore();
 	console.debug(this.name + " View is displayed!");
 }
 
 ViewScore.prototype.display = function(obj_observable)
 {
-	this.text = "Score : " + obj_observable.get();
+	this.text = "Score : " + obj_observable.getScore();
 	console.debug(this.name + " View is displayed!");
 }
 // ============================================================================================================================
