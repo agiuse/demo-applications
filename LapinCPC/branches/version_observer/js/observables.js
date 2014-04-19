@@ -23,7 +23,7 @@ class Observable {
 function Observable(name, obj_observable)
 {
 
-	this.name = (name === undefined) ? "ViewLife_default" : name;
+	this.name = (name === undefined) ? "Observable_default" : name;
 	if ( typeof this.name !== 'string' )
 		throw "Parameter name is not a String!";
 
