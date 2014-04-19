@@ -14,27 +14,43 @@ class Observable {
 	String name
 	ArrayHashage<Object> obj_observer_lists
 	==
-	Observable(String name, Object obj_observable)
-	add(Object obj_observer)
-	notity(String type_notify)
+	void Observable(String name, Object obj_observable)
+	void add(Object obj_observer)
+	void notify(String type_notify)
 }
 @enduml
 */
 function Observable(name, obj_observable)
 {
-	this.name = name;
-	if (obj_observable == undefined )
+
+	this.name = (name === undefined) ? "ViewLife_default" : name;
+	if ( typeof this.name !== 'string' )
+		throw "Parameter name is not a String!";
+
+	if (obj_observable === undefined )
 		this.obj_observable = this;
 	else
+	{
+		if (typeof obj_observable !== 'object') 
+			throw "Observable is not a Object!";
+
 		this.obj_observable = obj_observable;
-		
+	}
+
 	this.obj_observer_lists={};
 	console.debug(this.name, "constructor(observable is ",this.obj_observable.name,") is done.");
 }
 
 Observable.prototype.add = function(obj_observer)
 {
+	if (typeof obj_observer !== 'object') 
+		throw "Observable is not a Object!";
+
+	if ( (obj_observer.prepare === undefined) && (obj_observer.display === undefined) )
+		throw "No 'prepare' and 'display' methods are defined!";
+
 	console.debug(this.name, "observable : add(",obj_observer.name, ") Ok");
+	
 	this.obj_observer_lists[obj_observer.name] = obj_observer;
 	
 	console.debug(this.name, "observable : obj_observer_lists =",this.obj_observer_lists);
@@ -42,6 +58,12 @@ Observable.prototype.add = function(obj_observer)
 
 Observable.prototype.notify = function(type_notify)
 {
+	if (typeof type_notify !== 'string') 
+		throw "type_notify is not a String type!";
+
+	if ( (type_notify !== 'prepare') && (type_notify !== 'display') )
+		throw "Unknown 'type_notify' value!";
+		
 	console.debug(this.name, "observable(observable is ", this.obj_observable.name,") : debut de notify(",type_notify,") pour ", this.obj_observer_lists);
 	for ( var k in this.obj_observer_lists )
 	{
