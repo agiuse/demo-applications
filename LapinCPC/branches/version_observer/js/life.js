@@ -13,34 +13,47 @@ title Class <b>ViewLife</b>
 class createjs.Text
 
 class ViewLife {
-	createjs.Stage stage
+	createjs.Stage obj_stage
 	String name
 	int x
 	int y
 	Boolean visible = true
 	==
-	ViewLife(createjs.Stage stage, String name, int x, int y)
+	void ViewLife(createjs.Stage obj_stage, String name, int x, int y)
 	__ notified __
-	display(Object obj_observable)
-	prepare(Object obj_observable)
+	void display(Object obj_observable)
+	void prepare(Object obj_observable)
 }
 
 createjs.Text <|-- ViewLife
 @enduml
 */
-function ViewLife(stage, name, x, y ) {
+function ViewLife(obj_stage, name, x, y )
+{
 	createjs.Text.call(this, "Vies : -", "24px Arial", "#00000" );
-	this.stage = stage;
-	this.name = name;
+
+	if (  obj_stage instanceof createjs.Stage)
+		this.obj_stage = obj_stage;
+	else
+		throw "Parameter obj_stage is not createjs.Stage instance!";
 	
-	this.x = x;
-	this.y = y;
-	this.stage.addChild(this);
+	this.name = (name === undefined) ? "ViewLife_default" : name;
+	if ( typeof this.name !== 'string' )
+		throw "Parameter name is not a String!";
+
+	this.x = (x === undefined) ? 0 : x;
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
+		throw "Parameter X is not a number!";
+		
+	this.y = (y === undefined) ? 0 : y;
+	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
+		throw "Parameter Y is not a number!";
+
+	this.obj_stage.addChild(this);
 	this.visible=true;
 	console.log(this.name + " View is created!");
 }
 
-//Nécessaire afin que ViewLife hérite de createjs.Text
 ViewLife.prototype = new createjs.Text();
 
 ViewLife.prototype.display = function(obj_observable)
@@ -67,22 +80,39 @@ ViewLife.prototype.prepare = function(obj_observable)
 title Class <b>ControllerLife</b>
 class ViewLife
 class ControllerLife {
-	createjs.Stage stage
+	createjs.Stage obj_stage
 	String name
 	==
-	ControllerLife(createjs.Stage stage, String name, int x, int y)
+	void ControllerLife(createjs.Stage obj_stage, String name, int x, int y)
 	ViewLife getObserver()
 }
 
 ControllerLife *-- ViewLife
 @enduml
 */
-function ControllerLife(stage, name, x, y)
+
+function ControllerLife(obj_stage, name, x, y)
 {
-	this.stage = stage;
-	this.name = name;
+	if (  obj_stage instanceof createjs.Stage)
+		this.obj_stage = obj_stage;
+	else
+		throw "Parameter obj_stage is not createjs.Stage instance!";
 	
-	this.obj_view_vie = new ViewLife(this.stage, this.name, x, y);
+	this.name = (name === undefined) ? "ControllerLife_default" : name;
+	if ( typeof this.name !== 'string' )
+		throw "Parameter name is not a String!";
+
+	this.x = (x === undefined) ? 0 : x;
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
+		throw "Parameter X is not a number!";
+		
+	this.y = (y === undefined) ? 0 : y;
+	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
+		throw "Parameter Y is not a number!";
+	
+	this.obj_view_vie = new ViewLife(this.obj_stage, this.name, x, y);
+
+	console.log(this.name + " Controller is created!");
 }
 
 ControllerLife.prototype.getObserver = function()
