@@ -176,12 +176,12 @@ class ControllerSaucisse {
 
 @enduml
 */
-function ControllerSaucisse(obj_stage, obj_queue, name, methode_generator)
+function ControllerSaucisse(obj_stage, obj_queue, name, obj_generator)
 {
 	this.obj_stage = obj_stage;
 	this.obj_queue = obj_queue;
 	this.name = name;
-	this.methode_generator = methode_generator
+	this.obj_generator = obj_generator;
 	
 	console.log(this.name + " Controller is being created!");
 	this.obj_model_saucisse	= new ModelSaucisse( this.name );
@@ -198,25 +198,32 @@ ControllerSaucisse.prototype.run = function()
 
 ControllerSaucisse.prototype.preparer = function()
 {
-	var object = this.methode_generator.iterator();	
-	this.obj_model_saucisse.preparer(object.x, object.y, object.rotation, object.vitesse, object.pourrie);
+	var obj_coordonnee_random = this.obj_generator.iterator();	
+	this.obj_model_saucisse.preparer(
+		obj_coordonnee_random.x,
+		obj_coordonnee_random.y,
+		obj_coordonnee_random.rotation,
+		obj_coordonnee_random.vitesse,
+		obj_coordonnee_random.pourrie
+	);
 }
 
 // ============================================================================================================================
 // Classe ControllerSaucisses
 // Cette classe s'occupe de gérer n saucisses.
 // ============================================================================================================================
-function ControllerSaucisses(obj_stage, obj_queue, name, nb_saucisses, methode_generator)
+function ControllerSaucisses(obj_stage, obj_queue, name, nb_saucisses)
 {
 	this.obj_stage = obj_stage;
 	this.obj_queue = obj_queue;
 	this.name = name;
 	this.obj_controller_saucisses = new Array();
-	this.nb_saucisses;
-
+	this.nb_saucisses = nb_saucisses;
+	var obj_generator = new Generator();
+	
 	for (var i =0; i < this.nb_saucisses ; i++)
 	{
-		this.obj_controller_saucisses[i] = new ControllerSaucisse(obj_stage, obj_queue, name, methode_generator);
+		this.obj_controller_saucisses[i] = new ControllerSaucisse(obj_stage, obj_queue, name, obj_generator);
 	}
 }
 
@@ -227,4 +234,11 @@ ControllerSaucisses.prototype.preparer = function()
 		this.obj_controller_saucisses[i].preparer;
 	}
 }
-	
+
+ControllerSaucisses.prototype.run = function()
+{
+	for (var i =0; i < this.nb_saucisses ; i++)
+	{
+		this.obj_controller_saucisses[i].run();
+	}
+}	
