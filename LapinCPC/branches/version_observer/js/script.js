@@ -98,6 +98,23 @@ function startGame()
 }
 
 // ============================================================================================================================
+// regarder les mécanismes de closures !
+function Generator()
+{
+}
+
+Generator.prototype.iterator = function()
+{
+	return {
+		x:			Math.floor(Math.random() * 640 + 480),
+		y:			Math.floor(Math.random() * 470 + 5),
+		rotation:	Math.floor(Math.random() * 40 - 20), 
+		vitesse:	Math.floor(Math.random() * 6 + 2),
+		pourrie:	Math.floor(Math.random() < 0.5)
+	};
+}
+
+// ============================================================================================================================
 function launchGame()
 {
 	console.log("Load is ended!\nController creations are being done...");
