@@ -1,4 +1,6 @@
 "use strict;"
+var obj_stage;
+
 // ====================================================================
 // objet simulant l'observable observé par l'objet testé ViewScore
 // Dans le cadre des tests, cet objet est directement un observable et ne possède pas un Model propre.
@@ -27,7 +29,7 @@ ObjetScore.prototype.run = function(valeur)
 	this.notify('display');
 }
 
-ObjetScore.prototype.get = function()
+ObjetScore.prototype.getScore = function()
 {
 	return this.score;
 }
@@ -39,38 +41,169 @@ title testViewLife <b>class diagrams</b>
 
 class Observable {
 	String name
-	ArrayHashage<Observer> obj_observer_lists
+	ArrayHashage<Object> obj_observer_lists
 	==
-	add(obj_observer)
-	notity(type_notify)
+	void Observable(String name, Object obj_observable)
+	void add(Object obj_observer)
+	void notify(String type_notify)
 }
+
 
 class ObjetScore {
 	int score
 	==
+	void ObjetScore(String name)
 	int get()
 	__ notify __
-	preparer()
+	void preparer()
 	__ execution __
-	run()
+	void run()
 }
 
 Observable <|-- ObjetVie
 @enduml
 */
 // -----------------------------------------------------------------
-function test1() {
-	console.log("Test 1 : Affichage du score");
+function test0(obj_stage)
+{
+	console.log("**** Test 0 : Test des parametres de Viewer");
+	var obj_viewer_score;
+	
+	try
+	{
+		obj_viewer_score = new ViewScore();
+	}
+	catch(err)
+	{
+		console.log("ViewScore() - param error ", err);
+	}
 
-	var obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
-	var obj_text =  new createjs.Text("Test View Score 1", "24px Arial", "#00000");
+	try
+	{
+		obj_viewer_score = new ViewScore(obj_stage,100);
+	}
+	catch(err)
+	{
+		console.log("ViewScore(obj_stage,100) - param error ", err);
+	}
+
+	try
+	{
+		obj_viewer_score = new ViewScore(obj_stage,'viewer test', '8');
+	}
+	catch(err)
+	{
+		console.log("ViewScore(obj_stage,'viewer test', '8') - param error ", err);
+	}
+
+	try
+	{
+		obj_viewer_score = new ViewScore(obj_stage,'viewer test', 8, '74');
+	}
+	catch(err)
+	{
+		console.log("ViewScore(obj_stage,'viewer test', 8, '74') - param error ", err);
+	}
+
+	obj_viewer_score = new ViewScore(obj_stage,'viewer test', 8, 74);
+	
+	try
+	{
+		obj_viewer_score.prepare();
+	}
+	catch(err)
+	{
+		console.log("obj_view_score.prepare() - param error ", err);
+	}
+
+	try
+	{
+		obj_viewer_score.prepare('toto');
+	}
+	catch(err)
+	{
+		console.log("obj_view_score.prepare('toto') - param error ", err);
+	}
+
+	try
+	{
+		obj_viewer_score.display();
+	}
+	catch(err)
+	{
+		console.log("obj_view_score.display() - param error ", err);
+	}
+
+	try
+	{
+		obj_viewer_score.display('toto');
+	}
+	catch(err)
+	{
+		console.log("obj_view_score.display('toto') - param error ", err);
+	}
+	
+	obj_stage.removeChild(obj_viewer_score);
+}
+
+function test1(obj_stage)
+{
+	console.log("**** Test 1 : Test des parametres de Controller");
+	var obj_controller_score;
+
+	try
+	{
+		obj_controller_score = new ControllerScore();
+	}
+	catch(err)
+	{
+		console.log("ViewScore() - param error ", err);
+	}
+
+	try
+	{
+		obj_controller_score = new ControllerScore(obj_stage,100);
+	}
+	catch(err)
+	{
+		console.log("ControllerScore(obj_stage,100) - param error ", err);
+	}
+
+	try
+	{
+		obj_controller_score = new ControllerScore(obj_stage,'viewer test', '8');
+	}
+	catch(err)
+	{
+		console.log("ControllerScore(obj_stage,'viewer test', '8') - param error ", err);
+	}
+
+	try
+	{
+		obj_controller_score = new ControllerScore(obj_stage,'viewer test', 8, '74');
+	}
+	catch(err)
+	{
+		console.log("ControllerScore(obj_stage,'viewer test', 8, '74') - param error ", err);
+	}
+
+	obj_controller_score = new ControllerScore(obj_stage,'viewer test', 8, 74);
+	obj_stage.removeChild(obj_controller_score.getObserver())
+}
+
+function test2(obj_stage)
+{
+	console.log("Test 2 : Affichage du score avec le Controller");
+
+	var obj_text =  new createjs.Text("Test View Score 1 : ControllerScore", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 74;
 	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
 	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 100);
 	var obj_observable = new ObjetScore('observable');
 	
-	console.log("value de ",obj_observable.name, " = ", obj_observable.get());
+	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 
 	obj_observable.add(obj_controller_score.getObserver() );
 	
@@ -79,14 +212,16 @@ function test1() {
 
 	obj_observable.run(3);
 	obj_stage.update();
-
 }
 
 
-function startTest() {
-
+function startTest()
+{
 	console.clear();
+	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
-	test1();
+	test0(obj_stage);	
+	test1(obj_stage);
+	test2(obj_stage);
 }
 

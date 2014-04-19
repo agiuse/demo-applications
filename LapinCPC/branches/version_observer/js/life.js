@@ -51,22 +51,25 @@ function ViewLife(obj_stage, name, x, y )
 
 	this.obj_stage.addChild(this);
 	this.visible=true;
-	console.log(this.name + " View is created!");
+	console.log(this.name + " Viewer is created!");
 }
 
 ViewLife.prototype = new createjs.Text();
 
 ViewLife.prototype.display = function(obj_observable)
 {
-	console.debug(this.name + ": traitement de l'observable",obj_observable);
+	if (typeof obj_observable !== 'object') 
+			throw "Observable is not a Object!";
+
 	this.text = "Vies : " + obj_observable.getLife();
-	console.debug(this.name + " View is displayed!");
 }
 
 ViewLife.prototype.prepare = function(obj_observable)
 {
+	if (typeof obj_observable !== 'object') 
+			throw "Observable is not a Object!";
+
 	this.text = "Vies : " + obj_observable.getLife();
-	console.debug(this.name + " View is prepared!");
 }
 
 // ============================================================================================================================
