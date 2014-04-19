@@ -14,11 +14,13 @@ function ViewStage() {
 
 ViewStage.prototype = new createjs.Stage();
 
-ViewStage.prototype.getWidth = function() {
+ViewStage.prototype.getWidth = function()
+{
 	return this.STAGE_WIDTH;
 }
 
-ViewStage.prototype.getHeight = function() {
+ViewStage.prototype.getHeight = function()
+{
 	return this.STAGE_WIDTH;
 }
 
@@ -97,10 +99,12 @@ function startTest()
 	
 	obj_queue.on("complete", runTest, this);
 
-	obj_queue.loadManifest([
+	obj_queue.loadManifest(
+		[
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
-	]);
+		]
+	);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
 
@@ -143,27 +147,70 @@ function test1(obj_stage)
 }
 
 // -----------------------------------------------------------------
+// regarder les mécanismes de closures !
+function Generator(type)
+{
+	this.type = (type == undefined) ? 'static' : type;
+	this.elt_lists = new Array();
+	this.init();
+}
+
+Generator.prototype.init = function()
+{
+	this.inc = -1;
+}
+
+Generator.prototype.iterator = function()
+{
+	var elt;
+	switch (this.type) {
+	case 'static':
+		this.inc++
+		elt = this.elt_lists[this.inc];
+		if ( this.inc == this.elt_lists.length )
+			this.init();
+		break;
+	case 'random':
+		elt =  {
+			x:			Math.floor(Math.random() * 640 + 480),
+			y:			Math.floor(Math.random() * 470 + 5),
+			rotation:	Math.floor(Math.random() * 40 - 20), 
+			vitesse:	Math.floor(Math.random() * 6 + 2),
+			pourrie:	Math.floor(Math.random() < 0.5)
+		};
+		break;
+	}
+
+	return  elt;
+}
+
 function test2(obj_stage)
 {
 	console.log("**** Test 2 : Affichage d'une bonne et mauvaise saucisse avec Controller Saucisse");
+
+	var obj_generator = new Generator();
+	obj_generator.elt_lists.push({x:8, y:150, rotation:6, vitesse:4, pourrie:true});
+	obj_generator.elt_lists.push({x:108, y:150, rotation:-10, vitesse:6, pourrie:false});
 
 	var obj_text =  new createjs.Text("Test MVC Saucisse 2", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 100;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_1 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", 8,150,6,4,true);
-	obj_controller_2 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", 108,150,-10,6,false);
+	obj_controller_1 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", obj_generator);
+	obj_controller_1.preparer();
+	obj_controller_2 = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", obj_generator);
+	obj_controller_2.preparer();
 	console.log("Saucisse creation done.");
 	
 	console.log("Display saucisse bitmaps");
 	obj_stage.update();
 }
 
-// -----------------------------------------------------------------
 function test3(obj_stage)
 {
 	console.log("**** Test 3 : Déplacement d'une bonne et mauvaise saucisse avec Controller Saucisse");
+	var obj_generator = new Generator('random');
 
 	var obj_text =  new createjs.Text("Test MVC Saucisse 3", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 200;
@@ -171,8 +218,9 @@ function test3(obj_stage)
 	obj_stage.update();
 	
 	obj_lists={};
-	obj_lists['obj_controller_1'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", 700,250,6,4,true);
-	obj_lists['obj_controller_2'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", 700,250,-10,6,false);
+	obj_lists['obj_controller_1'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse mauvaise", obj_generator);
+	obj_lists['obj_controller_2'] = new ControllerSaucisse(obj_stage, obj_queue, "saucisse bonne", obj_generator);
+	obj_lists['obj_controller_2'].preparer();
 	console.log("Saucisse creation done.");
 	
 	createjs.Ticker.setFPS(30);
