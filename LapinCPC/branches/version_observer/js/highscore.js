@@ -148,7 +148,6 @@ class ViewHighScore {
 createjs.Text <|-- ViewHighScore
 @enduml
 */
-/*
 function ViewHighScore(obj_stage, name, x, y)
 {
 	createjs.Text.call(this, "Highscore : 0", "24px Arial", "#00000");
@@ -185,7 +184,7 @@ ViewHighScore.prototype.prepare = function(obj_observable)
 
 	this.text = "Highscore : " + obj_observable.getHighScore();
 }
-*/
+
 // ============================================================================================================================
 // Classe ModelHighView
 // Cette classe gère la valeur du HighScore.
@@ -210,7 +209,6 @@ class ModelHighScore {
 ModelHighScore *-- Observable : score_notifier
 @enduml
 */
-/*
 function ModelHighScore(name)
 {
 	this.name = (name === undefined) ? "ModelHighScore_default" : name;
@@ -243,7 +241,7 @@ ModelHighScore.prototype.add = function(obj_observer)
 {
 	this.score_notifier.add(obj_observer);
 }
-*/
+
 // ============================================================================================================================
 // Classe Controller
 // Cette classe permet de gérer le MVC 
@@ -275,7 +273,6 @@ Score .. ViewHighScore : "observable/observer"
 
 @enduml
 */
-/*
 function ControllerHighScore(obj_stage, name, x, y)
 {
 	if (  obj_stage instanceof createjs.Stage )
@@ -296,7 +293,7 @@ function ControllerHighScore(obj_stage, name, x, y)
 	console.log(this.name, " Controller is being created...");
 
 	this.obj_model_highscore = new ModelHighScore(this.name);
-	this.obj_model_highscore.add(new ViewHighScore(this.obj_stage, this.name, (x === undefined) ? 0 : x, (y === undefined) ? 0 : y ); // L'objet ViewHighScore est en observation du highscore
+	this.obj_model_highscore.add(new ViewHighScore(this.obj_stage, this.name, (x === undefined) ? 0 : x, (y === undefined) ? 0 : y)); // L'objet ViewHighScore est en observation du highscore
 	
 	console.log(this.name, " Controller is created...");
 }
@@ -311,6 +308,9 @@ ControllerHighScore.prototype.preparer = function(nb_points)
 // Si oui le highscore change (Model) et la vue est notifiée du changement.
 ControllerHighScore.prototype.display = function(obj_observable)
 {
+	if (typeof obj_observable !== 'object') 
+			throw "Observable is not a Object!";
+
 	if (obj_observable.getScore() > this.obj_model_highscore.getHighScore() )
 		this.obj_model_highscore.set( obj_observable.getScore() ); // envoie une notification 'display' au ViewHighScore via ModelHighScore 
 }
@@ -326,4 +326,4 @@ ControllerHighScore.prototype.getObserver = function()
 ControllerHighScore.prototype.getHighScore = function()
 {
 	return this.obj_model_highscore.getHighScore();
-}*/
+}

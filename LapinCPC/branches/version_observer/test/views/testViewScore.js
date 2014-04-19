@@ -66,12 +66,12 @@ Observable <|-- ObjetVie
 // -----------------------------------------------------------------
 function test0(obj_stage)
 {
-	console.log("**** Test 0 : Test des parametres de Viewer");
-	var obj_viewer_score;
+	console.log("**** Test 0 : Test des parametres de view\n --------------------------------------------");
+	var obj_view_score;
 	
 	try
 	{
-		obj_viewer_score = new ViewScore();
+		obj_view_score = new ViewScore();
 	}
 	catch(err)
 	{
@@ -80,7 +80,7 @@ function test0(obj_stage)
 
 	try
 	{
-		obj_viewer_score = new ViewScore(obj_stage,100);
+		obj_view_score = new ViewScore(obj_stage,100);
 	}
 	catch(err)
 	{
@@ -89,27 +89,27 @@ function test0(obj_stage)
 
 	try
 	{
-		obj_viewer_score = new ViewScore(obj_stage,'viewer test', '8');
+		obj_view_score = new ViewScore(obj_stage,'view test', '8');
 	}
 	catch(err)
 	{
-		console.log("ViewScore(obj_stage,'viewer test', '8') - param error ", err);
+		console.log("ViewScore(obj_stage,'view test', '8') - param error ", err);
 	}
 
 	try
 	{
-		obj_viewer_score = new ViewScore(obj_stage,'viewer test', 8, '74');
+		obj_view_score = new ViewScore(obj_stage,'view test', 8, '74');
 	}
 	catch(err)
 	{
-		console.log("ViewScore(obj_stage,'viewer test', 8, '74') - param error ", err);
+		console.log("ViewScore(obj_stage,'view test', 8, '74') - param error ", err);
 	}
 
-	obj_viewer_score = new ViewScore(obj_stage,'viewer test', 8, 74);
+	obj_view_score = new ViewScore(obj_stage,'view test', 8, 74);
 	
 	try
 	{
-		obj_viewer_score.prepare();
+		obj_view_score.prepare();
 	}
 	catch(err)
 	{
@@ -118,7 +118,7 @@ function test0(obj_stage)
 
 	try
 	{
-		obj_viewer_score.prepare('toto');
+		obj_view_score.prepare('toto');
 	}
 	catch(err)
 	{
@@ -127,7 +127,7 @@ function test0(obj_stage)
 
 	try
 	{
-		obj_viewer_score.display();
+		obj_view_score.display();
 	}
 	catch(err)
 	{
@@ -136,19 +136,19 @@ function test0(obj_stage)
 
 	try
 	{
-		obj_viewer_score.display('toto');
+		obj_view_score.display('toto');
 	}
 	catch(err)
 	{
 		console.log("obj_view_score.display('toto') - param error ", err);
 	}
 	
-	obj_stage.removeChild(obj_viewer_score);
+	obj_stage.removeChild(obj_view_score);
 }
 
 function test1(obj_stage)
 {
-	console.log("**** Test 1 : Test des parametres de Controller");
+	console.log("**** Test 1 : Test des parametres de Controller\n --------------------------------------------");
 	var obj_controller_score;
 
 	try
@@ -171,29 +171,29 @@ function test1(obj_stage)
 
 	try
 	{
-		obj_controller_score = new ControllerScore(obj_stage,'viewer test', '8');
+		obj_controller_score = new ControllerScore(obj_stage,'view test', '8');
 	}
 	catch(err)
 	{
-		console.log("ControllerScore(obj_stage,'viewer test', '8') - param error ", err);
+		console.log("ControllerScore(obj_stage,'view test', '8') - param error ", err);
 	}
 
 	try
 	{
-		obj_controller_score = new ControllerScore(obj_stage,'viewer test', 8, '74');
+		obj_controller_score = new ControllerScore(obj_stage,'view test', 8, '74');
 	}
 	catch(err)
 	{
-		console.log("ControllerScore(obj_stage,'viewer test', 8, '74') - param error ", err);
+		console.log("ControllerScore(obj_stage,'view test', 8, '74') - param error ", err);
 	}
 
-	obj_controller_score = new ControllerScore(obj_stage,'viewer test', 8, 74);
+	obj_controller_score = new ControllerScore(obj_stage,'view test', 8, 74);
 	obj_stage.removeChild(obj_controller_score.getObserver())
 }
 
 function test2(obj_stage)
 {
-	console.log("Test 2 : Affichage du score avec le Controller");
+	console.log("Test 2 : Affichage du score avec le Controller\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test View Score 1 : ControllerScore", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 74;
