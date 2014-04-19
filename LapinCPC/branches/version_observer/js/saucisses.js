@@ -27,6 +27,7 @@ class ViewSaucisse {
 createjs.Bitmap <|-- ViewSaucisse
 @enduml
 */
+
 function ViewSaucisse(obj_stage, obj_queue, name)
 {
 	createjs.Bitmap.call(this);	// appel du 'constructor' parent (pas obligatoire mais recommandÃ©)
@@ -87,7 +88,7 @@ class ModelSaucisse {
 	add(Object obj_observable)
 	__ Notify __
 	preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
-	setX()
+	setX(int x)
 }
 
 Observable <|-- Coordonnee
@@ -103,6 +104,7 @@ function ModelSaucisse(name) {
 	this.vitesse = 4;
 	console.log(this.name + " Model is created!");
 }
+
 
 ModelSaucisse.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
 {
@@ -174,16 +176,16 @@ class ControllerSaucisse {
 
 @enduml
 */
-function ControllerSaucisse(obj_stage, obj_queue, name, x, y, rotation, vitesse, pourrie)
+function ControllerSaucisse(obj_stage, obj_queue, name, methode_generator)
 {
 	this.obj_stage = obj_stage;
 	this.obj_queue = obj_queue;
 	this.name = name;
+	this.methode_generator = methode_generator
 	
 	console.log(this.name + " Controller is being created!");
 	this.obj_model_saucisse	= new ModelSaucisse( this.name );
 	this.obj_model_saucisse.add ( new ViewSaucisse(this.obj_stage, this.obj_queue, this.name) );
-	this.obj_model_saucisse.preparer(x, y, rotation, vitesse, pourrie);
 	console.log(this.name + " Controller creation is done!");
 }
 
@@ -191,11 +193,38 @@ ControllerSaucisse.prototype.run = function()
 {
 	this.obj_model_saucisse.setX(this.obj_model_saucisse.getX() - this.obj_model_saucisse.getVitesse());
 	if ( this.obj_model_saucisse.getX() < -32 )
-		this.obj_model_saucisse.preparer(
-			Math.floor(Math.random() * 640 + 480),
-			Math.floor(Math.random() * 470 + 5),
-			Math.floor(Math.random() * 40 - 20), 
-			Math.floor(Math.random() * 6 + 2),
-			Math.floor(Math.random() < 0.5)
-		); 
+		this.preparer();
 }
+
+ControllerSaucisse.prototype.preparer = function()
+{
+	var object = this.methode_generator.iterator();	
+	this.obj_model_saucisse.preparer(object.x, object.y, object.rotation, object.vitesse, object.pourrie);
+}
+
+// ============================================================================================================================
+// Classe ControllerSaucisses
+// Cette classe s'occupe de gérer n saucisses.
+// ============================================================================================================================
+function ControllerSaucisses(obj_stage, obj_queue, name, nb_saucisses, methode_generator)
+{
+	this.obj_stage = obj_stage;
+	this.obj_queue = obj_queue;
+	this.name = name;
+	this.obj_controller_saucisses = new Array();
+	this.nb_saucisses;
+
+	for (var i =0; i < this.nb_saucisses ; i++)
+	{
+		this.obj_controller_saucisses[i] = new ControllerSaucisse(obj_stage, obj_queue, name, methode_generator);
+	}
+}
+
+ControllerSaucisses.prototype.preparer = function()
+{
+	for (var i =0; i < this.nb_saucisses ; i++)
+	{
+		this.obj_controller_saucisses[i].preparer;
+	}
+}
+	
