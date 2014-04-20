@@ -258,12 +258,13 @@ class ControllerHighScore {
 	createjs.Stage obj_stage
 	String name
 	==
-	int get()
-	ViewScore getObserver()
+	void ControllerHighScore(createjs.Stage obj_stage, String name, int x, int y)
+	int getHighScore()
+	ControllerHighScore getObserver()
 	__ notify __
-	preparer(nb_points)
+	void preparer(int nb_points)
 	__ notified __
-	display(obj_observable)
+	void display(Object obj_observable)
 }
 
 ControllerHighScore *-- ViewHighScore
