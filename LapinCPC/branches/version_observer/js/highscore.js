@@ -52,15 +52,15 @@ function ViewScore(obj_stage, name, x, y)
 	
 	this.name = (name === undefined) ? 'ViewScore_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String!';
+		throw 'Parameter \'name\' is not a String literal!';
 
 	this.x = (x === undefined) ? 0 : x;
 	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-		throw 'Parameter \'X\' is not a number!';
+		throw 'Parameter \'X\' is not a number literal!';
 		
 	this.y = (y === undefined) ? 0 : y;
 	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-		throw 'Parameter \'Y\' is not a number!';
+		throw 'Parameter \'Y\' is not a number literal!';
 
 	console.log(this.name, ' View is being created...');
 
@@ -75,7 +75,7 @@ ViewScore.prototype = new createjs.Text();
 ViewScore.prototype.prepare = function(obj_observable)
 {
 	if (typeof obj_observable !== 'object') 
-			throw 'Observable is not a Object!';
+			throw '\'Observable\' is not a Object!';
 
 	this.text = "Score : " + obj_observable.getScore();
 }
@@ -83,7 +83,7 @@ ViewScore.prototype.prepare = function(obj_observable)
 ViewScore.prototype.display = function(obj_observable)
 {
 	if (typeof obj_observable !== 'object') 
-			throw 'Observable is not a Object!';
+			throw '\'Observable\' is not a Object!';
 	
 	this.text = 'Score : ' + obj_observable.getScore();
 }
@@ -98,17 +98,17 @@ function ControllerScore(obj_stage, name, x, y)
 	else
 		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-	this.name = (name === undefined) ? "ViewScore_default" : name;
+	this.name = (name === undefined) ? "ControllerScore_default" : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String!';
+		throw 'Parameter \'name\' is not a String literal!';
 
 	this.x = (x === undefined) ? 0 : x;
 	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-		throw 'Parameter \'X\' is not a number!';
+		throw 'Parameter \'X\' is not a number literal!';
 		
 	this.y = (y === undefined) ? 0 : y;
 	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-		throw 'Parameter \'Y\' is not a number!';
+		throw 'Parameter \'Y\' is not a number literal!';
 
 	console.log(this.name, ' Controller is being created...');
 	this.obj_view_score = new ViewScore(this.obj_stage, this.name, x, y);
@@ -124,7 +124,7 @@ ControllerScore.prototype.getObserver = function()
 // ============================================================================================================================
 // MVC HighScore
 // ============================================================================================================================
-var MVCHighScore={View: ViewHighScore, Controller: ControllerHighScore, Model: ModelHighScore};
+var MVCHighScore={View: ViewScore, Controller: ControllerHighScore, Model: ModelHighScore};
 /*
 @startuml
 title MVC <b>HighScore</b>
@@ -142,7 +142,7 @@ class Observable {
 
 class MVCHighScore.View {
 	createjs.Stage obj_stage
-	String name = 'ViewHighScore_default'
+	String name = 'ViewScore_default'
 	int x = 0
 	int y = 0
 	--
@@ -151,6 +151,7 @@ class MVCHighScore.View {
 	void View(createjs.Stage stage, String name, int x, int y)	
 	__ notified __
 	void prepare(Object obj_observable)
+	void display(Object obj_observable)
 }
 
 createjs.Text <|-- MVCHighScore.View
@@ -191,49 +192,6 @@ MVCHighScore.Model .. MVCHighScore.View : "observable/observer"
 */
 
 // ============================================================================================================================
-// Classe ViewHighScore
-// Cette classe s'occupe de l'affichage du HighScore à l'écran.
-// Elle observe la classe ModelHighView.
-// ============================================================================================================================
-function ViewHighScore(obj_stage, name, x, y)
-{
-	createjs.Text.call(this, 'Highscore : 0', '24px Arial', '#00000');
-	if (  obj_stage instanceof createjs.Stage )
-		this.obj_stage = obj_stage;
-	else
-		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-	this.name = (name === undefined) ? 'ViewHighScore_default' : name;
-	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String literal!';
-
-	this.x = (x === undefined) ? 0 : x;
-	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-		throw 'Parameter \'X\' is not a number literal!';
-		
-	this.y = (y === undefined) ? 0 : y;
-	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-		throw 'Parameter \'Y\' is not a number literal!';
-
-	console.log(this.name, ' View is being created...');
-
-	this.obj_stage.addChild(this);
-	this.visible=true;
-
-	console.log(this.name,' View is created!');
-}
-
-ViewHighScore.prototype = new createjs.Text();
-
-ViewHighScore.prototype.prepare = function(obj_observable)
-{
-	if (typeof obj_observable !== 'object') 
-			throw '\'Observable\' is not a Object!';
-
-	this.text = "Highscore : " + obj_observable.getHighScore();
-}
-
-// ============================================================================================================================
 // Classe ModelHighView
 // Cette classe gère la valeur du HighScore.
 // Cette classe gère le high score qui un observable de type Score
@@ -242,7 +200,7 @@ function ModelHighScore(name)
 {
 	this.name = (name === undefined) ? 'ModelHighScore_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter name is not a String literal!';
+		throw 'Parameter \'name\' is not a String literal!';
 
 	console.log(this.name, ' Model is being created...');
 	
@@ -252,7 +210,7 @@ function ModelHighScore(name)
 	console.log(this.name, ' Model is created!');
 }
 
-ModelHighScore.prototype.getHighScore = function()
+ModelHighScore.prototype.getScore = function()
 {
 	return this.nb_points;
 }
@@ -261,7 +219,7 @@ ModelHighScore.prototype.set = function(nb_points)
 {
 	this.nb_points = (nb_points === undefined) ? 0 : nb_points;
 	if (! ((typeof this.nb_points==='number')&&(this.nb_points%1===0))) 
-		throw 'Parameter \'nb_points\' is not a number!';
+		throw 'Parameter \'nb_points\' is not a number literal!';
 
 	this.score_notifier.notify('prepare');
 }
@@ -297,7 +255,7 @@ function ControllerHighScore(obj_stage, name, px, py)
 	console.log(this.name, ' Controller is being created...');
 
 	this.obj_model_highscore = new ModelHighScore(this.name);
-	this.obj_model_highscore.add(new ViewHighScore(this.obj_stage, this.name, x, y) );
+	this.obj_model_highscore.add(new ViewScore(this.obj_stage, this.name, x, y) );
 	
 	console.log(this.name, ' Controller is created.');
 }
@@ -315,7 +273,7 @@ ControllerHighScore.prototype.display = function(obj_observable)
 	if (typeof obj_observable !== 'object') 
 			throw '\'Observable\' is not a Object!';
 
-	if (obj_observable.getScore() > this.obj_model_highscore.getHighScore() )
+	if (obj_observable.getScore() > this.obj_model_highscore.getScore() )
 		this.obj_model_highscore.set( obj_observable.getScore() ); // envoie une notification 'display' au ViewHighScore via ModelHighScore 
 }
 
@@ -327,9 +285,9 @@ ControllerHighScore.prototype.getObserver = function()
 	return this;
 }
 
-ControllerHighScore.prototype.getHighScore = function()
+ControllerHighScore.prototype.getScore = function()
 {
-	return this.obj_model_highscore.getHighScore();
+	return this.obj_model_highscore.getScore();
 }
 
 

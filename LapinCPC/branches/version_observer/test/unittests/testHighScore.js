@@ -91,7 +91,7 @@ function test3()
 	throws ( function() {
 			obj = new MVCHighScore.Model(100);
 		},
-		'Parameter name is not a String literal!',
+		'Parameter \'name\' is not a String literal!',
 		"MVCHighScore.View.prepare() : Test of first parameter validate"
 	);
 
@@ -117,7 +117,7 @@ function test4()
 			var obj = new MVCHighScore.Model();
 			obj.add();
 		},
-		'Observer is not a Object!',
+		'\'Observer\' is not a Object!',
 		"MVCHighScore.Model.add() : bad method call test of add method with empty field!"
 	);
 
@@ -125,7 +125,7 @@ function test4()
 			var obj = new MVCHighScore.Model();
 			obj.add('toto');
 		},
-		'Observer is not a Object!',
+		'\'Observer\' is not a Object!',
 		"MVCHighScore.Model.add('toto') : bad method call test of add method with string literal value!"
 	);
 
@@ -133,7 +133,7 @@ function test4()
 			var obj = new MVCHighScore.Model();
 			obj.add(120);
 		},
-		'Observer is not a Object!',
+		'\'Observer\' is not a Object!',
 		"MVCHighScore.Model.add(120) : bad method call test of add method with number literal value!"
 	);
 
@@ -185,7 +185,7 @@ function test4()
 			obj.add(obj_observer);
 			obj.add(obj_observer);
 		},
-		'Observer is already added!',
+		'\'Observer\' is already added!',
 		"MVCHighScore.Model.add(obj_observer) : twice method call test of add method!"
 	);
 
@@ -194,7 +194,7 @@ function test4()
 			var obj = new MVCHighScore.Model();
 			obj.set('toto');
 		},
-		'Parameter \'nb_points\' is not a number!',
+		'Parameter \'nb_points\' is not a number literal!',
 		"MVCHighScore.set('toto') : bad method call test of set method with string literal value!"
 	);
 
@@ -213,14 +213,14 @@ function test4()
 	// test of getHighScore
 	{
 		var obj = new MVCHighScore.Model();
-		obj.getHighScore();
+		obj.getScore();
 		equal(obj.nb_points, 0, "MVCHighScore.Model.getHighScore() : right method return test of getHighScore method with default nb_points value");
 	}
 
 	{
 		var obj = new MVCHighScore.Model();
 		obj.set(10);
-		obj.getHighScore();
+		obj.getScore();
 		equal(obj.nb_points, 10, "MVCHighScore.Model.getHighScore() : right method return test of getHighScore method with new nb_points value");
 	}
 }
@@ -279,14 +279,14 @@ function test6()
 		obj_stage = new createjs.Stage();
 		obj = new MVCHighScore.Controller(obj_stage,'controller test');
 		obj.preparer();
-		equal(obj.obj_model_highscore.getHighScore(), 0, "MVCHighScore.Controller.preparer() : default method call test of preparer method");
+		equal(obj.obj_model_highscore.getScore(), 0, "MVCHighScore.Controller.preparer() : default method call test of preparer method");
 	}
 
 	{
 		obj = new MVCHighScore.Controller(obj_stage,'controller test');
 		obj_stage = new createjs.Stage();
 		obj.preparer(10);
-		equal(obj.obj_model_highscore.getHighScore(), 10, "MVCHighScore.Controller.preparer(10) : right method call test of preparer method");
+		equal(obj.obj_model_highscore.getScore(), 10, "MVCHighScore.Controller.preparer(10) : right method call test of preparer method");
 	}
 
 	throws ( function() {
@@ -294,7 +294,7 @@ function test6()
 			obj = new MVCHighScore.Controller(obj_stage,'controller test');
 			obj.preparer('toto');
 		},
-		'Parameter \'nb_points\' is not a number!',
+		'Parameter \'nb_points\' is not a number literal!',
 		"MVCHighScore.Controller.preparer('toto') : bad method call test of preparer method with string literal value"
 	);
 
@@ -338,9 +338,9 @@ function test6()
 	{
 		obj_stage = new createjs.Stage();
 		obj = new MVCHighScore.Controller(obj_stage,'controller test');
-		equal(obj.getHighScore(), 0, "right method return of getHighScore() with nb_points default value");
+		equal(obj.getScore(), 0, "right method return of getHighScore() with nb_points default value");
 		obj.preparer(1000);
-		equal(obj.getHighScore(), 1000, "right method return of getHighScore() with new nb_points value");	
+		equal(obj.getScore(), 1000, "right method return of getHighScore() with new nb_points value");	
 	}
 
 }
