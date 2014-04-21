@@ -25,14 +25,14 @@ function Observable(name, obj_observable)
 
 	this.name = (name === undefined) ? 'Observable_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter name is not a String literal!';
+		throw 'Parameter \'name\' is not a String literal!';
 
 	if (obj_observable === undefined )
 		this.obj_observable = this;
 	else
 	{
 		if (typeof obj_observable !== 'object') 
-			throw 'Observable is not a Object!';
+			throw '\'Observable\' is not a Object!';
 
 		this.obj_observable = obj_observable;
 	}
@@ -44,7 +44,7 @@ function Observable(name, obj_observable)
 Observable.prototype.add = function(obj_observer)
 {
 	if (typeof obj_observer !== 'object') 
-		throw 'Observer is not a Object!';
+		throw '\'Observer\' is not a Object!';
 
 	if ( (obj_observer.prepare === undefined) && (obj_observer.display === undefined) )
 		throw 'No \'prepare\' and \'display\' methods are defined!';
@@ -54,7 +54,7 @@ Observable.prototype.add = function(obj_observer)
 	if (! ( obj_observer.name in this.obj_observer_lists) )	
 		this.obj_observer_lists[obj_observer.name] = obj_observer;
 	else
-		throw 'Observer is already added!' 
+		throw '\'Observer\' is already added!' 
 	
 	console.debug(this.name, 'observable : obj_observer_lists =',this.obj_observer_lists);
 }

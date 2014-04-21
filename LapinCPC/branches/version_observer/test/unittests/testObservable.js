@@ -93,17 +93,17 @@ function startTest() {
 
 	console.clear();
 
-	test("Test de tous les parametres de l'Objet Observable()", test0);
-	test("Test de tous les parametres des methode de l'Observable()", test1);
-	test("Test de l'objet de test Observable A vide", test2);
-	test("Test de la notification entre l'observeur et l'observable", test3);
-	test("Test de l'ajout d'un observeur à la liste de l'observable", test4);
-	test("Test de la notification entre quatre observeurs et l'observable", test5);
+	test("Test de tous les parametres de l'Objet Observable()", test1);
+	test("Test de tous les parametres des methode de l'Observable()", test2);
+	test("Test de l'objet de test Observable A vide", test3);
+	test("Test de la notification entre l'observeur et l'observable", test4);
+	test("Test de l'ajout d'un observeur à la liste de l'observable", test5);
+	test("Test de la notification entre quatre observeurs et l'observable", test6);
 }
 
 
 // -----------------------------------------------------------------
-function test0()
+function test1()
 {
 
 	// Test l'appel vide
@@ -120,26 +120,26 @@ function test0()
 	throws( function() {
 			obj_observable = new Observable(100);
 		},
-		'Parameter name is not a String literal!',
+		'Parameter \'name\' is not a String literal!',
 		"Observable(100) : Test of first parameter 'name'!"
 	);
 
 	throws( function () {
 			obj_observable = new Observable('observable_test', 'toto');
 		},
-		'Observable is not a Object!',
+		'\'Observable\' is not a Object!',
 		"Observable('observable_test', 'toto') : Test of second parameter 'Observable'!"
 	);
 }
 
-function test1()
+function test2()
 {
 	// tests of add method
 	throws( function() {
 			obj_observable = new Observable('observable_1');
 			obj_observable.add();
 		},
-		'Observer is not a Object!',
+		'\'Observer\' is not a Object!',
 		"Observable.add() : Observable is not a Object!"
 	);
 
@@ -157,7 +157,7 @@ function test1()
 			obj_observable.add(obj_observer);
 			obj_observable.add(obj_observer);
 		},
-		'Observer is already added!',
+		'\'Observer\' is already added!',
 		"Observable.add(obj_observer) : Observer is already added!"
 
 	);
@@ -187,7 +187,7 @@ function test1()
 	);
 }
 
-function test2()
+function test3()
 {
 	var obj_observable = new ObservableA('observable_1');
 	equal( obj_observable.get(),10,' \'Observable_1\' value by default is equal to 10');
@@ -198,7 +198,7 @@ function test2()
 	}
 }
 
-function test3()
+function test4()
 {
 	obj_observable = new ObservableA('observable_1');
 	equal( obj_observable.get(),10,'\'Observable_1\' value by default is equal to 10');
@@ -213,7 +213,7 @@ function test3()
 	equal( obj_observer_1.get(),15,'\'observer_1\' value after prepare() notification is equal to 15');
 }
 
-function test4()
+function test5()
 {
 	obj_observable = new ObservableA('observable_1');
 	equal( obj_observable.get(),10,'\'Observable_1\' value by default is equal to 10');
@@ -232,7 +232,7 @@ function test4()
 	}
 }
 
-function test5()
+function test6()
 {
 	obj_observable = new ObservableA('observable_4');
 	obj_observer_1 = new ObserverA('observer_1');
