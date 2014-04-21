@@ -44,7 +44,7 @@ function Observable(name, obj_observable)
 Observable.prototype.add = function(obj_observer)
 {
 	if (typeof obj_observer !== 'object') 
-		throw 'Observable is not a Object!';
+		throw 'Observer is not a Object!';
 
 	if ( (obj_observer.prepare === undefined) && (obj_observer.display === undefined) )
 		throw 'No \'prepare\' and \'display\' methods are defined!';
