@@ -103,7 +103,6 @@ function startTest() {
 
 
 // -----------------------------------------------------------------
-// -----------------------------------------------------------------
 function test0()
 {
 
@@ -122,25 +121,25 @@ function test0()
 			obj_observable = new Observable(100);
 		},
 		'Parameter name is not a String literal!',
-		"Observable(100) : Parameter name is not a String literal!"
+		"Observable(100) : Test of first parameter 'name'!"
 	);
 
 	throws( function () {
 			obj_observable = new Observable('observable_test', 'toto');
 		},
 		'Observable is not a Object!',
-		"Observable('observable_test', 'toto') : Observable is not a Object!"
+		"Observable('observable_test', 'toto') : Test of second parameter 'Observable'!"
 	);
 }
 
 function test1()
 {
-	
+	// tests of add method
 	throws( function() {
 			obj_observable = new Observable('observable_1');
 			obj_observable.add();
 		},
-		'Observable is not a Object!',
+		'Observer is not a Object!',
 		"Observable.add() : Observable is not a Object!"
 	);
 
@@ -184,7 +183,7 @@ function test1()
 			obj_observable.notify('test');
 		},
 		'Unknown \'type_notify\' value!',
-		"Observavle.notify('test') : Unknown 'type_notify' value!"
+		"Observable.notify('test') : Unknown 'type_notify' value!"
 	);
 }
 
