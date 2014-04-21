@@ -37,19 +37,18 @@ class createjs.Text
 class createjs.Stage
 
 class ViewStage {
-	int STAGE_WIDTH = 640
-	int STAGE_HEIGHT = 480
+	ArrayHashage<Boolean> touches;
+	int sound_musique = 0.1
+	int sound_bruitage = 0.4
 	==
-	int getWidth()
-	int getHeight()
+	void ViewStage()
+	void go()
 }
 @enduml
 */
 function ViewStage()
 {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
-	this.STAGE_WIDTH = 640;
-	this.STAGE_HEIGHT = 480;
 	this.touches = {};
 	this.sound_musique = 0.1;
 	this.sound_bruitage = 0.4;
@@ -98,7 +97,31 @@ function startGame()
 }
 
 // ============================================================================================================================
-// regarder les mécanismes de closures !
+// Class Generator
+// Cette classe va permettre de generer une coordonnee au hasard
+// ============================================================================================================================
+/*
+@startuml
+title Class <B>Generator</B>
+class Object {
+	int x
+	int y
+	int rotation
+	int vitesse
+	Boolean pourrie
+	==
+	void Object()
+}
+
+class Generator {
+	==
+	void Generator()
+	Object iterator()
+}
+
+Generator -- Object
+@enduml
+*/
 function Generator()
 {
 }
@@ -110,7 +133,7 @@ Generator.prototype.iterator = function()
 		y:			Math.floor(Math.random() * 470 + 5),
 		rotation:	Math.floor(Math.random() * 40 - 20), 
 		vitesse:	Math.floor(Math.random() * 6 + 2),
-		pourrie:	Math.floor(Math.random() < 0.5)
+		pourrie:	( Math.floor(Math.random() < 0.5 ) === 0 )? false : true
 	};
 }
 
@@ -130,21 +153,26 @@ function launchGame()
 	obj_lists['joueur'].scoreHasObservedBy(obj_lists['highscore'].getObserver());
 	obj_lists['joueur'].preparer(0,240, 0, 6, 3, 0);
 	obj_lists['highscore'].preparer(0);
-	obj_lists['saucisses'] = new ControllerSaucisses(obj_stage, obj_queue, "Saucisses", 10);
+
+	var obj_generator = new Generator();
+	for (var i =0; i < 10 ; i++)
+	{
+		obj_lists['saucisse'+i] = new ControllerSaucisse(obj_stage, obj_queue, name, obj_generator);
+		obj_lists['saucisse'+i].preparer();
+	}
 	obj_stage.go();
 }
 
 
 // ============================================================================================================================
-function mainTick()
+function mainTick(event)
 {
-	// animation du ciel
 	for ( var object in obj_lists )
 	{
 		if ( obj_lists[object].run !== undefined )
 			obj_lists[object].run();
 	}
 
-	obj_stage.update();
+	obj_stage.update(event);
 }
 
