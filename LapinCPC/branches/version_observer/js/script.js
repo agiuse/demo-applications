@@ -91,7 +91,7 @@ function startGame()
             {src:"./images/joueur_hit.png", id:"player1"},
 			{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
-			{src:"./images/saucisse1.png", id:"mauvaisse_saucisse"},
+			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -129,8 +129,8 @@ function Generator()
 Generator.prototype.iterator = function()
 {
 	return {
-		x:			Math.floor(Math.random() * 640 + 480),
-		y:			Math.floor(Math.random() * 470 + 5),
+		x:			Math.floor(Math.random() * 480 + 640),
+		y:			Math.floor(Math.random() * 460 + 5),
 		rotation:	Math.floor(Math.random() * 40 - 20), 
 		vitesse:	Math.floor(Math.random() * 6 + 2),
 		pourrie:	( Math.floor(Math.random() < 0.5 ) === 0 )? false : true
