@@ -3,37 +3,36 @@
 // ============================================================================================================================
 // MVC HighScore
 // ============================================================================================================================
-var MVCScore={View: ViewScore, Controller: ControllerScore};
 /*
 @startuml
 title MVC <b>Score</b>
 class createjs.Text
 
-class MVCScore.View {
+class ViewScore {
 	createjs.Stage obj_stage
-	String name = 'ViewScore_default'
-	int x = 0
-	int y = 0
-	--
+	String name
+	int x
+	int y
 	Boolean visible = true
 	==
-	void View(createjs.Stage obj_stage, String name, int x, int y)
+	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-createjs.Text <|-- MVCScore.View
+createjs.Text <|-- ViewTextCore
 
-class MVCScore.Controller {
+class ControllerScore {
 	createjs.Stage obj_stage
 	String name
 	==
-	void Controller(createjs.Stage obj_stage, String name, int x, int y)
+	void ControllerScore(createjs.Stage obj_stage, String name, int x, int y)
 	ViewScore getObserver()
 }
 
-MVCScore.Controller *-- MVCScore.View
+ControllerScore *-- ViewScore
+}
 @enduml
 */
 
@@ -41,18 +40,18 @@ MVCScore.Controller *-- MVCScore.View
 // L'objet ViewScore s'occupe de l'affichage du Score
 // Cet objet observe l'observable Score
 // ============================================================================================================================
-function ViewScore(obj_stage, name, x, y)
+function ViewScore(obj_stage, name, x, y )
 {
-	createjs.Text.call(this, 'Score : 0', '24px Arial', '#000000' );
+	createjs.Text.call(this, 'Score : 0', '24px Arial', '#00000' );
 
-	if (  obj_stage instanceof createjs.Stage )
+	if (  obj_stage instanceof createjs.Stage)
 		this.obj_stage = obj_stage;
 	else
 		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-	this.name = (name === undefined) ? 'ViewScore_default' : name;
+	this.name = (name === undefined) ? 'ViewTextCore_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String literal!';
+		throw 'Parameter \'name\' is not a string literal!';
 
 	this.x = (x === undefined) ? 0 : x;
 	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
@@ -63,11 +62,9 @@ function ViewScore(obj_stage, name, x, y)
 		throw 'Parameter \'Y\' is not a number literal!';
 
 	console.log(this.name, ' View is being created...');
-
 	this.obj_stage.addChild(this);
 	this.visible=true;
-	
-	console.log(this.name, ' View is created!');
+	console.log(this.name + ' View is created!');
 }
 
 ViewScore.prototype = new createjs.Text();
@@ -100,7 +97,7 @@ function ControllerScore(obj_stage, name, x, y)
 	
 	this.name = (name === undefined) ? "ControllerScore_default" : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String literal!';
+		throw 'Parameter \'name\' is not a string literal!';
 
 	this.x = (x === undefined) ? 0 : x;
 	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
@@ -124,7 +121,6 @@ ControllerScore.prototype.getObserver = function()
 // ============================================================================================================================
 // MVC HighScore
 // ============================================================================================================================
-var MVCHighScore={View: ViewScore, Controller: ControllerHighScore, Model: ModelHighScore};
 /*
 @startuml
 title MVC <b>HighScore</b>
@@ -140,7 +136,9 @@ class Observable {
 	void notify(String type_notify)
 }
 
-class MVCHighScore.View {
+package "MVCHighScore" #DDDDDD {
+
+class ViewHighScore {
 	createjs.Stage obj_stage
 	String name = 'ViewScore_default'
 	int x = 0
@@ -148,48 +146,98 @@ class MVCHighScore.View {
 	--
 	Boolean visible=true
 	==
-	void View(createjs.Stage stage, String name, int x, int y)	
+	void ViewHighScore(createjs.Stage stage, String name, int x, int y)	
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-createjs.Text <|-- MVCHighScore.View
 
-class MVCHighScore.Model {
+class ModelHighScore {
 	String name = 'ModelHighScore_default'
 	--
 	int nb_points = 0
 	Observable score_notifier
 	==
-	void Model(String name)
-	int getHighScore()
+	void ModelHighScore(String name)
+	int getScore()
 	void add(Object obj_observer)
 	__ notify __
 	void set(int nb_points)
 }
 
-MVCHighScore.Model *-- Observable : score_notifier
 
-class MVCHighScore.Controller {
+class ControllerHighScore {
 	createjs.Stage obj_stage
 	String name = 'ControllerHighScore_default'
 	==
-	void Controller(createjs.Stage obj_stage, String name, int x, int y)
-	int getHighScore()
-	MVCHighScore.Controller getObserver()
+	void ControllerHighScore(createjs.Stage obj_stage, String name, int x, int y)
+	int getScore()
+	ControllerHighScore getObserver()
 	__ notify __
 	void preparer(int nb_points)
 	__ notified __
 	void display(Object obj_observable)
 }
 
-MVCHighScore.Controller *-- MVCHighScore.View
-MVCHighScore.Controller *-- MVCHighScore.Model
-MVCHighScore.Model .. MVCHighScore.View : "observable/observer"
+ModelHighScore *-- Observable : score_notifier
+ControllerHighScore *-- ViewScore
+ControllerHighScore *-- ModelHighScore
+ModelHighScore .. ViewScore : "observable/observer"
+createjs.Text <|-- ViewScore
+}
 
 @enduml
 */
+
+// ============================================================================================================================
+// L'objet ViewScore s'occupe de l'affichage du Score
+// Cet objet observe l'observable Score
+// ============================================================================================================================
+function ViewHighScore(obj_stage, name, x, y )
+{
+	createjs.Text.call(this, 'High Score : 0', '24px Arial', '#00000' );
+
+	if (  obj_stage instanceof createjs.Stage)
+		this.obj_stage = obj_stage;
+	else
+		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
+	
+	this.name = (name === undefined) ? 'ViewTextCore_default' : name;
+	if ( typeof this.name !== 'string' )
+		throw 'Parameter \'name\' is not a string literal!';
+
+	this.x = (x === undefined) ? 0 : x;
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
+		throw 'Parameter \'X\' is not a number literal!';
+		
+	this.y = (y === undefined) ? 0 : y;
+	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
+		throw 'Parameter \'Y\' is not a number literal!';
+
+	console.log(this.name, ' View is being created...');
+	this.obj_stage.addChild(this);
+	this.visible=true;
+	console.log(this.name + ' View is created!');
+}
+
+ViewHighScore.prototype = new createjs.Text();
+
+ViewHighScore.prototype.prepare = function(obj_observable)
+{
+	if (typeof obj_observable !== 'object') 
+			throw '\'Observable\' is not a Object!';
+
+	this.text = 'High Score : ' + obj_observable.getScore();
+}
+
+ViewHighScore.prototype.display = function(obj_observable)
+{
+	if (typeof obj_observable !== 'object') 
+			throw '\'Observable\' is not a Object!';
+	
+	this.text = 'High Score : ' + obj_observable.getScore();
+}
 
 // ============================================================================================================================
 // Classe ModelHighView
@@ -200,7 +248,7 @@ function ModelHighScore(name)
 {
 	this.name = (name === undefined) ? 'ModelHighScore_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String literal!';
+		throw 'Parameter \'name\' is not a string literal!';
 
 	console.log(this.name, ' Model is being created...');
 	
@@ -209,6 +257,7 @@ function ModelHighScore(name)
 	
 	console.log(this.name, ' Model is created!');
 }
+
 
 ModelHighScore.prototype.getScore = function()
 {
@@ -242,7 +291,7 @@ function ControllerHighScore(obj_stage, name, px, py)
 	
 	this.name = (name === undefined) ? 'ControllerScore_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw 'Parameter \'name\' is not a String literal!';
+		throw 'Parameter \'name\' is not a string literal!';
 
 	var x = (px === undefined) ? 0 : px ;
 	if (! ((typeof x==='number')&&(x%1===0))) 
