@@ -1,16 +1,31 @@
+"use strict";
 // ============================================================================================================================
-// MVC Player
-// ============================================================================================================================
-
-// ============================================================================================================================
-// Classe ViewSaucisse
-// Cette classe s'occupe d'afficher une bonne ou mauvaise saucisse
+// MVC Saucisse
 // ============================================================================================================================
 /*
 @startuml
-title Class <B>View Saucisse</B>
+title MVC <B>Saucisse</B>
 
 class createjs.Bitmap
+class createjs.LoadQueue
+class createjs.Stage
+
+class Observable {
+	String name
+	ArrayHashage<Object> obj_observer_lists
+	==
+	void Observable(String name, Object obj_observable)
+	void add(Object obj_observer)
+	void notify(String type_notify)
+}
+
+class Generator {
+	==
+	void Generator()
+	Object iterator()
+}
+
+Package "MVCSaucisse" #DDDDDD {
 
 class ViewSaucisse {
 	createjs.Stage obj_stage
@@ -28,9 +43,65 @@ class ViewSaucisse {
 	void display(Object obj_observable)
 }
 
+class ModelSaucisse {
+	String name
+
+	--
+	int x
+	int y
+	int rotation
+
+	int vitesse
+	Boolean pourrie
+	==
+	void ModelSaucisse(String name)
+	int getX()
+
+	int getY()
+	int getRotation()
+	int getSpeed()
+	Boolean isPourrie()
+	void add(Object obj_observable)
+
+	__ Notify __
+	void preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
+	void set(int x)
+}
+
+class ControllerSaucisse {
+	createjs.Stage obj_stage
+	createjs.LoadQueue obj_queue
+
+	String Name
+	Generator obj_generator
+	--
+	==
+	void ControllerSaucisse(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
+
+	void run()
+	__ notify __
+	void preparer()
+}
+
+ModelSaucisse *-- Observable: coordonnee_notifier
 createjs.Bitmap <|-- ViewSaucisse
+createjs.Stage -- ViewSaucisse
+createjs.LoadQueue -- ViewSaucisse
+ModelSaucisse .. ViewSaucisse : "observable/observer"
+ViewSaucisse .. Observable : "observable/observer"
+ControllerSaucisse *-- ModelSaucisse
+ControllerSaucisse *-- ViewSaucisse
+ControllerSaucisse -- Generator
+}
+	
 @enduml
 */
+
+// ============================================================================================================================
+// Classe ViewSaucisse
+// Cette classe s'occupe d'afficher une bonne ou mauvaise saucisse
+// ============================================================================================================================
+
 
 function ViewSaucisse(obj_stage, obj_queue, name)
 {
@@ -39,117 +110,98 @@ function ViewSaucisse(obj_stage, obj_queue, name)
 	if (  obj_stage instanceof createjs.Stage)
 		this.obj_stage = obj_stage;
 	else
-		throw "Parameter obj_stage is not createjs.Stage instance!";
+		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
 	if (  obj_queue instanceof createjs.LoadQueue)
 		this.obj_queue = obj_queue;
 	else
-		throw "Parameter obj_queue is not createjs.LoadQueue instance!";
+		throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-	this.name = (name === undefined) ? "ViewPlayer_default" : name;
+	this.name = (name === undefined) ? 'ViewSaucisse_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw "Parameter name is not a String!";
+		throw 'Parameter \'name\' is not a string literal!';
 
-	console.log(this.name, " View is being created...");
+	console.log(this.name, ' View is being created...');
+
 	this.obj_stage.addChild(this);
-	console.log(this.name + " View is created!");
+
+	console.log(this.name, ' View is created!');
 }
-//NÃ©cessaire afin que Saucisse hÃ©rite de createjs.Bitmap
+
 ViewSaucisse.prototype = new createjs.Bitmap();		
 
 ViewSaucisse.prototype.prepare = function (obj_observable)
 { 
 	if (typeof obj_observable !== 'object') 
-			throw "Observable is not a Object!";
+			throw '\'Observable\' is not a Object!';
 
 	this.x = obj_observable.getX();
 	this.y = obj_observable.getY();
 	if (obj_observable.isPourrie()) {
-		this.image = this.obj_queue.getResult("mauvaise_saucisse");
+		this.image = this.obj_queue.getResult('mauvaise_saucisse');
 	} else {
-		this.image =  this.obj_queue.getResult("bonne_saucisse");
+		this.image =  this.obj_queue.getResult('bonne_saucisse');
 	}
+
+	console.log(this.name, ' View is being prepared!');
 	this.rotation = obj_observable.getRotation() ;
-	console.log(this.name + " View is ready!");
+	this.visible=true;
+	console.log(this.name, ' View is ready!');
 }
 
 ViewSaucisse.prototype.display = function (obj_observable)
 { 
 	if (typeof obj_observable !== 'object') 
-			throw "Observable is not a Object!";
+			throw '\'Observable\' is not a Object!';
 
+	console.log(this.name, ' View is being displayed!');
 	this.x = obj_observable.getX();
 	console.debug(this.name + " View is displayed!");
+	console.log(this.name, ' View is displayed!');
 }
 
 // ============================================================================================================================
 // Classe ModelSaucisse
 // Cette classe gère les données de la Saucisse.
 // ============================================================================================================================
-/*
-@startuml
-title Class <b>Model Saucisse</b>
-class Observable
-class ModelSaucisse {
-	String name
-	--
-	int x
-	int y
-	int rotation
-	int vitesse
-	Boolean pourrie
-	==
-	void ModelSaucisse(String name)
-	int getX()
-	int getY()
-	int getRotation()
-	int getVitesse()
-	Boolean isPourrie()
-	void add(Object obj_observable)
-	__ Notify __
-	void preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
-	void setX(int x)
-}
 
-ModelSaucisse *-- Observable: coordonnee_notifier	
-@enduml
-*/
 function ModelSaucisse(name)
 {
-	this.name = (name === undefined) ? "ModelPlayer_default" : name;
+	this.name = (name === undefined) ? 'ModelSaucisse_default' : name;
 	if ( typeof this.name !== 'string' )
-		throw "Parameter name is not a String!";
+		throw 'Parameter \'name\' is not a string literal!';
 
+	console.log(this.name, ' Model is being created...');
 	this.coordonnee_notifier = new Observable(this.name + "_notifier", this);
-	this.x = 0;
-	this.y = 0;
-	this.rotation = 0;
-	this.vitesse = 4;
-	this.pourrie = false;
-	console.log(this.name + " Model is created!");
+	this.x = 0;		// default value
+	this.y = 0;		// default value
+	this.rotation = 0;	// default value
+	this.vitesse = 4;	// default value
+	this.pourrie = false;	// default value
+	console.log(this.name, ' Model is created!');
 }
 
 ModelSaucisse.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
 {
 	this.x = (x === undefined) ? 0 : x;
-	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-		throw "Parameter X is not a number!";
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) 		
+		throw 'Parameter \'X\' is not a number literal!';
 		
-	this.y = (y === undefined) ? 224 : y;
+	this.y = (y === undefined) ? 0 : y;
 	if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-		throw "Parameter Y is not a number!";
+		throw 'Parameter \'Y\' is not a number literal!';
 
 	this.rotation = (rotation === undefined) ? 0 : rotation;
 	if (! ((typeof this.rotation==='number')&&(this.rotation%1===0))) 
-		throw "Parameter Rotation is not a number!";
+		throw 'Parameter \'rotation\' is not a number literal!';
 		
-	this.vitesse = (vitesse === undefined) ? 6 : vitesse;
+	this.vitesse = (vitesse === undefined) ? 4 : vitesse;
 	if (! ((typeof this.vitesse==='number')&&(this.vitesse%1===0))) 
-		throw "Parameter Vitesse is not a number!";
+		throw 'Parameter \'vitesse\' is not a number literal!';
 
 	this.pourrie = (pourrie===undefined) ? false : pourrie;
 	if (! (typeof this.pourrie==='boolean')) 
-		throw "Parameter 'pourrie' is not a boolean!";
+		throw 'Parameter \'pourrie\' is not a boolean literal!';
 
 	this.coordonnee_notifier.notify('prepare');
 }
@@ -169,7 +221,7 @@ ModelSaucisse.prototype.getRotation = function()
 	return this.rotation;
 }
 
-ModelSaucisse.prototype.getVitesse = function()
+ModelSaucisse.prototype.getSpeed = function()
 {
 	return this.vitesse;
 }
@@ -184,11 +236,11 @@ ModelSaucisse.prototype.add = function(obj_observer)
 	this.coordonnee_notifier.add(obj_observer);
 }
 
-ModelSaucisse.prototype.setX = function (x)
+ModelSaucisse.prototype.set = function (x)
 {
 	this.x = (x === undefined) ? 0 : x;
 	if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-		throw "Parameter X is not a number!";
+		throw 'Parameter \'X\' is not a number literal!';
 
 	this.coordonnee_notifier.notify('display');
 }
@@ -197,62 +249,44 @@ ModelSaucisse.prototype.setX = function (x)
 // Classe ControllerSaucisse
 // Cette classe lie l'objet ViewSaucisse et ModelSaucisse via un patron "Observeur/Observer".
 // ============================================================================================================================
-/*
-@startuml
-title Class <B>Controller Saucisse</B>
-class createjs.Bitmap
-class ViewSaucisse
-class ModelSaucisse
-
-class ControllerSaucisse {
-	createjs.Stage obj_stage
-	createjs.LoadQueue obj_queue
-	String Name
-	Generator obj_generator
-	--
-	==
-	void ControllerSaucisse(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
-	void run()
-	__ notify __
-	void preparer()
-}
-
-
-@enduml
-*/
-function ControllerSaucisse(obj_stage, obj_queue, name, obj_generator)
+function ControllerSaucisse(obj_stage, obj_queue, obj_generator, name)
 {
 	if (  obj_stage instanceof createjs.Stage)
 		this.obj_stage = obj_stage;
 	else
-		throw "Parameter obj_stage is not createjs.Stage instance!";
+		throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
 	if (  obj_queue instanceof createjs.LoadQueue)
 		this.obj_queue = obj_queue;
 	else
-		throw "Parameter obj_queue is not createjs.LoadQueue instance!";
+		throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-	this.name = (name === undefined) ? "ControllerPlayer_default" : name;
+	this.name = (name === undefined) ? "ControllerSaucisse_default" : name;
 	if ( typeof this.name !== 'string' )
-		throw "Parameter name is not a String!";
+		throw 'Parameter \'name\' is not a string literal!';
 
 	this.obj_generator = obj_generator;
 	if (  obj_generator instanceof Generator)
 		this.obj_generator = obj_generator;
 	else
-		throw "Parameter obj_generator is not Generator instance!";
+		throw 'Parameter \'obj_generator\' is not Generator instance!';
 	
-	console.log(this.name + " Controller is being created!");
+	console.log(this.name, ' Controller is being created!');
 	this.obj_model_saucisse	= new ModelSaucisse( this.name );
-	this.obj_model_saucisse.add ( new ViewSaucisse(this.obj_stage, this.obj_queue, this.name) );
-	console.log(this.name + " Controller creation is done!");
+	this.obj_view_saucisse = new ViewSaucisse(this.obj_stage, this.obj_queue, this.name);
+	this.obj_model_saucisse.add ( this.obj_view_saucisse  );
+	this.preparer();
+	console.log(this.name, ' Controller creation is done!');
 }
 
 ControllerSaucisse.prototype.run = function()
 {
-	this.obj_model_saucisse.setX(this.obj_model_saucisse.getX() - this.obj_model_saucisse.getVitesse());
-	if ( this.obj_model_saucisse.getX() < -32 )
+	var x = this.obj_model_saucisse.getX();
+	if ( x <= -this.obj_view_saucisse.image.width ) {
 		this.preparer();
+	} else {
+		this.obj_model_saucisse.set(x - this.obj_model_saucisse.getSpeed());
+	}
 }
 
 ControllerSaucisse.prototype.preparer = function()
