@@ -11,4 +11,4 @@ Projet contenant un ensemble d'applications Demo
 
  * *BOL* : Application Web Bank Of Line écrite en Java [BOL].
 
- * *Lapin CanardPC* : Application Javascript avec le framework createjs (Flash) provenant de la rubrique [_Développez Couché_|http://cpc.cx/809] dans le revu de jeux papier Canard PC [LapinPC].
+ * *Lapin CanardPC* : Application Javascript avec le framework createjs (Flash) provenant de la rubrique _Développez Couché_ [http://cpc.cx/809] dans le revu de jeux papier Canard PC [LapinPC].
