@@ -15,7 +15,19 @@ createjs.Stage.prototype.addChild = function(obj_createjs)
  
 createjs.LoadQueue.prototype.getResult = function(index)
 {
-	return { width: 128, height: 64 };
+	var elt;
+	switch (index) {
+	case 'player0':
+		elt = { width: 128, height: 64 };
+		break;
+	case 'bonne_saucisse':
+		elt = { width: 64, height: 32 };
+		break;
+	case 'mauvaise_saucisse':
+		elt = { width: 64, height: 32 };
+		break;
+	}
+	return elt;
 }
 
 
