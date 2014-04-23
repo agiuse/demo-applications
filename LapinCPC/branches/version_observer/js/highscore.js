@@ -7,6 +7,9 @@
 @startuml
 title MVC <b>Score</b>
 class createjs.Text
+class createjs.Stage
+
+package "MVCScore" #DDDDDD {
 
 class ViewScore {
 	createjs.Stage obj_stage
@@ -21,8 +24,6 @@ class ViewScore {
 	void display(Object obj_observable)
 }
 
-createjs.Text <|-- ViewTextCore
-
 class ControllerScore {
 	createjs.Stage obj_stage
 	String name
@@ -31,8 +32,11 @@ class ControllerScore {
 	ViewScore getObserver()
 }
 
+createjs.Text <|-- ViewScore
+createjs.Stage -- ViewScore
 ControllerScore *-- ViewScore
 }
+
 @enduml
 */
 
@@ -126,6 +130,7 @@ ControllerScore.prototype.getObserver = function()
 title MVC <b>HighScore</b>
 
 class createjs.Text
+class createjs.Stage
 
 class Observable {
 	String name
@@ -181,10 +186,13 @@ class ControllerHighScore {
 }
 
 ModelHighScore *-- Observable : score_notifier
-ControllerHighScore *-- ViewScore
+ControllerHighScore *-- ViewHighScore
 ControllerHighScore *-- ModelHighScore
-ModelHighScore .. ViewScore : "observable/observer"
-createjs.Text <|-- ViewScore
+ModelHighScore .. ViewHighScore : "observable/observer"
+Observable .. ViewHighScore : "observable/observer"
+createjs.Text <|-- ViewHighScore
+createjs.Stage -- ViewHighScore
+
 }
 
 @enduml
@@ -304,7 +312,8 @@ function ControllerHighScore(obj_stage, name, px, py)
 	console.log(this.name, ' Controller is being created...');
 
 	this.obj_model_highscore = new ModelHighScore(this.name);
-	this.obj_model_highscore.add(new ViewScore(this.obj_stage, this.name, x, y) );
+	this.obj_view_highscore = new ViewHighScore(this.obj_stage, this.name, x, y); // reference en variable nécessaire pour les tests !
+	this.obj_model_highscore.add( this.obj_view_highscore );
 	
 	console.log(this.name, ' Controller is created.');
 }

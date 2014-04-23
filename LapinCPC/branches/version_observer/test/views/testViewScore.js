@@ -1,5 +1,4 @@
 "use strict;"
-var obj_stage;
 
 // ====================================================================
 // objet simulant l'observable observé par l'objet testé ViewScore
@@ -53,175 +52,109 @@ class ObjetScore {
 	int score
 	==
 	void ObjetScore(String name)
-	int get()
+	int getScore()
 	__ notify __
 	void preparer()
 	__ execution __
 	void run()
 }
 
-Observable <|-- ObjetVie
+Observable <|-- ObjetScore
+
+class createjs.Text
+class createjs.Stage
+
+package "MVCScore" #DDDDDD {
+
+class ViewScore {
+	createjs.Stage obj_stage
+	String name
+	int x
+	int y
+	Boolean visible = true
+	==
+	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
+	__ notified __
+	void prepare(Object obj_observable)
+	void display(Object obj_observable)
+}
+
+class ControllerScore {
+	createjs.Stage obj_stage
+	String name
+	==
+	void ControllerScore(createjs.Stage obj_stage, String name, int x, int y)
+	ViewScore getObserver()
+}
+
+ObjetScore .. ViewScore : "observer/observable"
+createjs.Text <|-- ViewScore
+createjs.Stage -- ViewScore
+ControllerScore *-- ViewScore
+
 @enduml
 */
+var obj_stage;
+
 // -----------------------------------------------------------------
-function test0(obj_stage)
+function startTest()
 {
-	console.log("**** Test 0 : Test des parametres de view\n --------------------------------------------");
-	var obj_view_score;
-	
-	try
-	{
-		obj_view_score = new ViewScore();
-	}
-	catch(err)
-	{
-		console.log("ViewScore() - param error ", err);
-	}
+	console.clear();
 
-	try
-	{
-		obj_view_score = new ViewScore(obj_stage,100);
-	}
-	catch(err)
-	{
-		console.log("ViewScore(obj_stage,100) - param error ", err);
-	}
+	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
-	try
-	{
-		obj_view_score = new ViewScore(obj_stage,'view test', '8');
-	}
-	catch(err)
-	{
-		console.log("ViewScore(obj_stage,'view test', '8') - param error ", err);
-	}
+	module("View Score");
+	test("Affichage du score avec le View Score", test1);
 
-	try
-	{
-		obj_view_score = new ViewScore(obj_stage,'view test', 8, '74');
-	}
-	catch(err)
-	{
-		console.log("ViewScore(obj_stage,'view test', 8, '74') - param error ", err);
-	}
-
-	obj_view_score = new ViewScore(obj_stage,'view test', 8, 74);
-	
-	try
-	{
-		obj_view_score.prepare();
-	}
-	catch(err)
-	{
-		console.log("obj_view_score.prepare() - param error ", err);
-	}
-
-	try
-	{
-		obj_view_score.prepare('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_view_score.prepare('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_view_score.display();
-	}
-	catch(err)
-	{
-		console.log("obj_view_score.display() - param error ", err);
-	}
-
-	try
-	{
-		obj_view_score.display('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_view_score.display('toto') - param error ", err);
-	}
-	
-	obj_stage.removeChild(obj_view_score);
+	module("Controller Score");
+	test("Affichage du score avec le Controller", test2);
 }
 
-function test1(obj_stage)
+
+function test1()
 {
-	console.log("**** Test 1 : Test des parametres de Controller\n --------------------------------------------");
-	var obj_controller_score;
+	console.log("**** Test 1\n --------------------------------------------");
+	var obj_text =  new createjs.Text("Test MVC Score 1 : View Score", "24px Arial", "#00000");
+	obj_text.x = 8 ; obj_text.y = 0;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
 
-	try
-	{
-		obj_controller_score = new ControllerScore();
-	}
-	catch(err)
-	{
-		console.log("ViewScore() - param error ", err);
-	}
+	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
+	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
+	
+	var obj_view_score = new ViewScore(obj_stage, 'view_score_1',8, 26); // creer le View HighScore
+	equal(obj_view_score.text, "Score : 0", "Verification of text contain of createjs.Text object");	
+	
+	obj_observable.add(obj_view_score ); // ajout le view score à observer l'objet Score
+	console.log("  Test1 environment is ready!");
 
-	try
-	{
-		obj_controller_score = new ControllerScore(obj_stage,100);
-	}
-	catch(err)
-	{
-		console.log("ControllerScore(obj_stage,100) - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_score = new ControllerScore(obj_stage,'view test', '8');
-	}
-	catch(err)
-	{
-		console.log("ControllerScore(obj_stage,'view test', '8') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_score = new ControllerScore(obj_stage,'view test', 8, '74');
-	}
-	catch(err)
-	{
-		console.log("ControllerScore(obj_stage,'view test', 8, '74') - param error ", err);
-	}
-
-	obj_controller_score = new ControllerScore(obj_stage,'view test', 8, 74);
-	obj_stage.removeChild(obj_controller_score.getObserver())
+	obj_observable.run(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	console.log("  Score Test Modem is ok!");
+	
+	obj_stage.update();
+	equal(obj_view_score.text, "Score : 30", "Verification of text contain of createjs.Text object");	
 }
 
-function test2(obj_stage)
+function test2()
 {
-	console.log("Test 2 : Affichage du score avec le Controller\n --------------------------------------------");
+	console.log("Test 2\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test View Score 1 : ControllerScore", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test View Score 2 : Controller Score", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 74;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
 	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 100);
+	equal(obj_controller_score.obj_view_score.text, "Score : 0", "Verification of text contain of createjs.Text object");
 	var obj_observable = new ObjetScore('observable');
 	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 
 	obj_observable.add(obj_controller_score.getObserver() );
 	
-	obj_observable.run(14);
+	obj_observable.run(3000);
 	obj_stage.update();
-
-	obj_observable.run(3);
-	obj_stage.update();
+	equal(obj_controller_score.obj_view_score.text, "Score : 3000", "Verification of text contain of createjs.Text object");
 }
 
-
-function startTest()
-{
-	console.clear();
-	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
-
-	test0(obj_stage);	
-	test1(obj_stage);
-	test2(obj_stage);
-}
 
