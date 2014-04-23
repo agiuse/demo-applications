@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+<html lang="fr"
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>Test de MVC HighScore</title>
+  <link rel="stylesheet" href="../resources/qunit-1.14.0.css">
+  <script type="text/javascript" src="../lib/qunit-1.14.0.js"></script>
   <script type="text/javascript" src="../../lib/easeljs-0.7.1.min.js"></script>
   <script type="text/javascript" src="../../lib/preloadjs-0.4.1.min.js"></script>
   <script type="text/javascript" src="../../lib/soundjs-0.4.1.min.js"></script>
@@ -9,9 +12,10 @@
   <script type="text/javascript" src="../../js/highscore.js"></script>
   <script type="text/javascript" src="./testViewHighScore.js"></script>
  </head>
- <body onload="startTest();">
+<body onload="startTest();">
+ <div id="qunit"></div>
+ <div id="qunit-fixture"></div>
+ <canvas height="480" width="1000" id="gameCanvas" style="display: block; margin: auto;"></canvas>
+</body>
 
- <canvas height="480" width="640" id="gameCanvas" style="display: block; margin: auto;"></canvas>
- 
-
-</body></html>
+</html>
