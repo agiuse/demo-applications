@@ -8,6 +8,7 @@ Il y a plusieurs façon de faire de l'héritage en javascript :
 
 
 = Via le prototype =
+Commençons tout de suite par un exemple.
 <code language=javascript>
 function A(x) {
 	this.x = x;
@@ -42,3 +43,10 @@ Les inconvénients de cette manière de faire sont :
 
  * L'utilisation de constructeur complexe.
    Le mot de clef {{{new}}} étant exécuté à la première lecture de code par l'interpréteur, si le constructeur possède des paramètres, ceux-ci sont _undefined_ par défaut et peuvent donc provoquer des erreurs lors de l'exécution du constructeur ! 
+
+ * Impossible d'enrichir une méthode dans l'objet *B*.
+   La méthode {{{B.get()}}} est redéfinie complètement. La méthode {{{A.get()}}} est remplacée par la nouvelle méthode. Il faut donc réécrire le code dans la nouvelle méthode et donc avoir deux bout de code identique à faire évoluer et à maintenir.
+
+= Via la variable __proto__ =
+Commençons tout de suite par un exemple.
+...
