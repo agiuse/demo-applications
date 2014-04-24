@@ -1,0 +1,99 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Cette partie a pour but d'expliquer des fonctionnements de base de javascript. J'illustrerai mes propose par des exemples opérationnels.
+
+Dans un premier temps, je décrirai les phases d'interprétation de manière macro. Puis, je détaillerai le mécanisme d'héritage.
+
+= L'interprétation =
+L'interpréteur, nommé moteur ou _engine_ en anglais, est embarqué par défaut dans le navigateur. Chaque navigateur embarque son interpréteur :
+ * *V8* pour Google Chrome
+ * *JägerMonkey* pour Firefox
+ * *Chakra* pour Internet Explorer 9
+
+== Analyse de code ==
+Il faut savoir que toutes fonctions sont des objets. L'objet de base en javascript se nomme {{{Object}}}.
+
+=== chargement ===
+D'abord le navigateur charge l'ensemble des fichiers javascript, balise html {{{<script>}}} en mémoire.
+
+=== première lecture du code ===
+Il établit la liste des fonctions ayant comme mot clef {{{function}}} et les variables globales déclarées par les mots clefs {{{var}}} et {{{const}}}.
+
+<code language=javascript>
+const i = 3;
+var j;
+
+function A(x) {
+...
+}
+
+A.prototype.get() {
+...
+}
+
+function B() {
+...
+}
+
+B.prototype.set(x) {
+...
+}
+
+var my_a = new A(10);</code>
+
+On obtient :
+{{{
+ * A
+   * __prototype__ A
+     * constructor: function(x) {...}
+     * __proto__ Object
+ * B
+   * __prototype__ B
+     * constructor: function() {...}
+     * __proto__ Object
+ * i undefined
+ * j undefined
+ * my_a undefined
+}}}
+
+Ensuite, il exécute toutes les lignes globales pour initialiser les variables globales, pour déclarer les méthodes au niveau objet :
+
+On obtient :
+{{{
+ * A:
+   * __prototype__: A
+     * constructor: function(x) {... }
+     * get: function() { ... }
+     * __proto__: Object
+ * B:
+   * __prototype__: undefined
+     * constructor: function() {... }
+     * set: function(x) { ... }
+     * __proto__: Object
+ * i: 3
+ * j: undefined
+ * my_a: A
+   * x:  10
+}}}
+
+Attention à l'ordre des commandes ! Le code suivant provoque une erreur :
+<code language=javascript>
+const i = 3;
+var j;
+var my_a = new A(10);
+
+function A(x) {
+  this.set(x);
+}
+
+A.prototype.get() {
+...
+}
+
+A.prototype.set(x) {
+...
+}</code>
+
+En effet, lors de l'interprétation de la commande {{{var my_a = new A(10)}}}, l'interpréteur exécute le constructeur A, puis l'interpréteur exécute à l'intérieur du constructeur la méthode {{{set(x)}}}. Or cette méthode n'est pas encore déclarée !
