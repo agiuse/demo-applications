@@ -4,7 +4,7 @@
 
 Cette partie a pour but d'expliquer des fonctionnements de base de javascript. J'illustrerai mes propose par des exemples opérationnels.
 
-Dans un premier temps, je décrirai les phases d'interprétation de manière macro. Puis, je détaillerai le mécanisme d'héritage.
+Dans un premier temps, je décrirai les phases d'interprétation de manière macro. Puis, je détaillerai le [javascript_heritage mécanisme d'héritage].
 
 = L'interprétation =
 L'interpréteur, nommé moteur ou _engine_ en anglais, est embarqué par défaut dans le navigateur. Chaque navigateur embarque son interpréteur :
@@ -19,7 +19,7 @@ Il faut savoir que toutes fonctions sont des objets. L'objet de base en javascri
 D'abord le navigateur charge l'ensemble des fichiers javascript, balise html {{{<script>}}} en mémoire.
 
 === première lecture du code ===
-Il établit la liste des fonctions ayant comme mot clef {{{function}}} et les variables globales déclarées par les mots clefs {{{var}}} et {{{const}}}.
+L'interpréteur établit la liste des fonctions ayant comme mot clef {{{function}}} et les variables globales déclarées par les mots clefs {{{var}}} et {{{const}}}.
 
 <code language=javascript>
 const i = 3;
@@ -58,7 +58,8 @@ On obtient :
  * my_a undefined
 }}}
 
-Ensuite, il exécute toutes les lignes globales pour initialiser les variables globales, pour déclarer les méthodes au niveau objet :
+=== exécution du code ===
+L'interpréteur exécute toutes les lignes globales pour initialiser les variables globales, pour déclarer les méthodes au niveau objet :
 
 On obtient :
 {{{
@@ -96,4 +97,4 @@ A.prototype.set(x) {
 ...
 }</code>
 
-En effet, lors de l'interprétation de la commande {{{var my_a = new A(10)}}}, l'interpréteur exécute le constructeur A, puis l'interpréteur exécute à l'intérieur du constructeur la méthode {{{set(x)}}}. Or cette méthode n'est pas encore déclarée !
+En effet, lors de l'interprétation de la commande {{{var my_a = new A(10)}}}, l'interpréteur exécute le _constructeur A_, puis l'interpréteur exécute à l'intérieur du constructeur la méthode {{{set(x)}}}. Or cette méthode n'est pas encore déclarée !
