@@ -214,19 +214,19 @@ class ViewLife {
 	void prepare(Object obj_observable)
 }
 
-class ViewPlayer {
+class mvcPlayer.View {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-	String name
+	String name = "View_default"
 	==
-	void ViewPlayer(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(OBject obj_observable)
 }
 
-class ModelPlayer {
-	String name
+class mvcPlayer.Model {
+	String name = "Model_default"
 	--
 	int x = 0
 	int y = 224
@@ -236,7 +236,7 @@ class ModelPlayer {
 	Observable nb_vies_notifier
 	Observable nb_points_notifier
 	==
-	void ModelPlayer(String name)
+	void Model(String name)
 	void addLifeNotifier(Object obj_observer)
 	void addScoreNotifier(Object obj_observer)
 	vodi addCoordonneeNotifier(Object obj_observer)
@@ -251,13 +251,13 @@ class ModelPlayer {
 	set(int x, int y , int rotation)
 }
 
-class ControllerPlayer {
+class mvcPlayer.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-	String Name
+	String Name = "Controller_default"
 	ArrayHashage<Boolean> touches
 	==
-	void ControllerPlayer(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notifier __
 	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
 	__ subscription by some external observers__
@@ -274,21 +274,21 @@ class ControllerPlayer {
 
 createjs.Text <|-- ViewLife
 createjs.Text <|-- ViewScore
-createjs.Bitmap <|-- ViewPlayer
-ControllerPlayer *-- ViewPlayer
-ControllerPlayer *-- ModelPlayer
-ModelPlayer *-- Observable : coordonnee_notifier
-ModelPlayer *-- Observable : nb_vies_notifier
-ModelPlayer *-- Observable : nb_points_notifier
-ModelPlayer .. ViewScore :  "observable/observer"
-ModelPlayer .. ViewLife : "observable/observer"
-ModelPlayer .. ViewPlayer : "observable/observer"
+createjs.Bitmap <|-- mvcPlayer.View
+mvcPlayer.Controller *-- mvcPlayer.View
+mvcPlayer.Controller *-- mvcPlayer.Model
+mvcPlayer.Model *-- Observable : coordonnee_notifier
+mvcPlayer.Model *-- Observable : nb_vies_notifier
+mvcPlayer.Model *-- Observable : nb_points_notifier
+mvcPlayer.Model .. ViewScore :  "observable/observer"
+mvcPlayer.Model .. ViewLife : "observable/observer"
+mvcPlayer.Model .. mvcPlayer.View : "observable/observer"
 @enduml
 */
 
 var obj_queue;
 var obj_stage;
-var obj_lists;
+var obj_controller_player;
 var simult_touches = new Array();
 var count=0;
 var count_max=0;
@@ -314,20 +314,25 @@ function runTest()
 	obj_stage = new ViewStage();
 	obj_lists = {};
 	
-	test0(obj_stage, obj_queue);
-	test1(obj_stage);
-	test2(obj_stage, obj_queue);
-	test3(obj_stage, obj_queue);
-	test4(obj_stage, obj_queue);
-	test5(obj_stage, obj_queue);
-	test6(obj_stage, obj_queue);
+	module("View et Model Player");
+	test("Affichage d'un vaisseau avec le View/Model Player", test1);
+	test("Affichage d'un vaisseau avec le View/Model Player", test2);
+	
+	module("Controller Player");
+	test("Affichage d'un vaisseau avec le Controller Player", test3);
+	test("Déplacement d'un vaisseau", test4);
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
+
 }
 
 function test_run(event)
 {
+	if ( obj_controller_player.run !== undefined )
+		obj_controller_player.run();
+
+	obj_stage.update(event);
 
 	if ( count > 0 ) {
 		count--;
@@ -342,276 +347,33 @@ function test_run(event)
 					count=count_max;
 					obj_stage.touches[touche.key]=true;
 				} else {
-					delete obj_stage.touches[touche.key];	
+					delete obj_stage.touches[touche.key];
+					if (touche.count !== undefined ) {
+						count_max=touche.count;
+						count=count_max;
+					}
 				}
 			}
+		} else {
+			createjs.Ticker.removeEventListener("tick", test_run);
 		}
 	}
-	
-	for ( var object in obj_lists )
-	{
-		if ( obj_lists[object].run !== undefined )
-			obj_lists[object].run();
-	}
-
-	obj_stage.update(event);
 }
 
 // -----------------------------------------------------------------
-function test0(obj_stage, obj_queue)
+function test1()
 {
-	console.log("**** Test 0 : Test des parametres du view Player\n --------------------------------------------");
-	var obj_view_player;
-	
-	try
-	{
-		obj_view_player = new ViewPlayer();
-	}
-	catch(err)
-	{
-		console.log("ViewPlayer() - param error ", err);
-	}
-
-	try
-	{
-		obj_view_player = new ViewPlayer(obj_stage,100);
-	}
-	catch(err)
-	{
-		console.log("ViewPlayer(obj_stage,100) - param error ", err);
-	}
-
-	try
-	{
-		obj_view_player = new ViewPlayer(obj_stage, obj_queue, 100);
-	}
-	catch(err)
-	{
-		console.log("ViewPlayer(obj_stage, obj_queue, 100) - param error ", err);
-	}
-
-	obj_view_player = new ViewPlayer(obj_stage, obj_queue, 'view test');
-	
-	try
-	{
-		obj_view_player.prepare();
-	}
-	catch(err)
-	{
-		console.log("obj_view_player.prepare() - param error ", err);
-	}
-
-	try
-	{
-		obj_view_player.prepare('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_view_player.prepare('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_view_player.display();
-	}
-	catch(err)
-	{
-		console.log("obj_view_player.display() - param error ", err);
-	}
-
-	try
-	{
-		obj_view_player.display('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_view_player.display('toto') - param error ", err);
-	}
-
-	obj_stage.removeChild(obj_view_player);
-}
-
-function test1(obj_stage)
-{
-	console.log("**** Test 1 : Test des parametres du Model Player\n --------------------------------------------");
-	var obj_model_player = new ModelPlayer();
-	
-	try
-	{
-		obj_model_player.addLifeNotifier();
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addLifeNotifier() - param error ", err);
-	}	
-
-	try
-	{
-		obj_model_player.addLifeNotifier('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addLifeNotifier('toto') - param error ", err);
-	}	
-
-	try
-	{
-		obj_model_player.addLifeNotifier(120);
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addLifeNotifier(120) - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.addScoreNotifier();
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addScoreNotifier() - param error ", err);
-	}	
-
-	try
-	{
-		obj_model_player.addScoreNotifier('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addScoreNotifier('toto') - param error ", err);
-	}	
-
-	try
-	{
-		obj_model_player.addScoreNotifier(120);
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addScoreNotifier(120) - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.addCoordonneeNotifier();
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addCoordonneeNotifier() - param error ", err);
-	}	
-
-	try
-	{
-		obj_model_player.addCoordonneeNotifier('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addCoordonneeNotifier('toto') - param error ", err);
-	}
-	
-	try
-	{
-		obj_model_player.addCoordonneeNotifier(120);
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.addCoordonneNotifier(120) - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer(8, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer(8, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer(8, 30, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer(8, 30, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer(8, 30, 1, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer(8, 30, 1, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer(8, 30, 1, 6, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer(8, 30, 1, 6, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.preparer(8, 30, 1, 6, 3, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.preparer(8, 30, 1, 6, 3, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.set('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.set('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.set(8, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.set(8, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_model_player.set(8, 30, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_model_player.set(8, 30, 'toto') - param error ", err);
-	}
-}
-
-function test2(obj_stage, obj_queue)
-{
-	console.log("**** Test 2 : Affichage d'un vaisseau avec le View/Model Player\n --------------------------------------------");
+	console.log("**** Test 1 :\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Player 1 : View and Model Player", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 0;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_observable = new ModelPlayer("Model_player");
+	obj_observable = new mvcPlayer.Model("Model_player");
 	console.log(" Fin de la création de objet Player de test\nView-Player creation starting");
 
-	obj_view_player = new ViewPlayer(obj_stage, obj_queue, "View_player");
+	obj_view_player = new mvcPlayer.View(obj_stage, obj_queue, "View_player");
 	console.log(" View Player creation done.\nAdd View-Player to observable object test");
 
 	obj_observable.addCoordonneeNotifier(obj_view_player);
@@ -621,22 +383,30 @@ function test2(obj_stage, obj_queue)
 	
 	console.log("Display Player bitmaps");
 	obj_stage.update();
+	
+	equal(obj_view_player.x, 8, "Check that createjs.Bitmap X value is equal at 8!"); 
+	equal(obj_view_player.y, 30, "Check that createjs.Bitmap Y value is equal at 30!"); 
+	equal(obj_view_player.rotation, 0, "Check that createjs.Bitmap Rotation value is equal at 0!"); 
+	equal(obj_observable.getX(), 8, "Check that Model X value is equal at 8!"); 
+	equal(obj_observable.getY(), 30, "Check that Modem Y value is equal at 30!"); 
+	equal(obj_observable.getRotation(), 0, "Check that Model Rotation value is equal at 0!"); 
+	equal(obj_observable.getSpeed(), 6, "Check that Model Speed value is equal at 6!"); 
 }
 
 // -----------------------------------------------------------------
-function test3(obj_stage, obj_queue)
+function test2()
 {
-	console.log("**** Test 3 : Affichage d'un vaisseau avec le Modcel and View Player\n --------------------------------------------");
+	console.log("**** Test 2 :\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Player 2 : View and Model Player", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 100;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_observable = new ModelPlayer("Model_player");
+	obj_observable = new mvcPlayer.Model("Model_player");
 	console.log(" Fin de la création de objet Player de test\nView-Player creation starting");
 
-	obj_view_player = new ViewPlayer(obj_stage, obj_queue, "View_player");
+	obj_view_player = new mvcPlayer.View(obj_stage, obj_queue, "View_player");
 	console.log(" View Player creation done.\nAdd View-Player to observable object test");
 	obj_observable.addCoordonneeNotifier(obj_view_player);
 	console.log(" View Player creation is done.\nView-Score creation is in progress.");
@@ -653,172 +423,29 @@ function test3(obj_stage, obj_queue)
 	
 	console.log("Display Player bitmaps");
 	obj_stage.update();
-}
 
-function test4(obj_stage, obj_queue)
-{
-	console.log("**** Test 4 : Test des parametres du Controller Player\n --------------------------------------------");
-	var obj_controller_player;
-	try
-	{
-		obj_controller_player = new ControllerPlayer();
-	}
-	catch(err)
-	{
-		console.log("ControllerPlayer() - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player = new ControllerPlayer(obj_stage,100);
-	}
-	catch(err)
-	{
-		console.log("ContollerHighScore(obj_stage,100) - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, 100);
-	}
-	catch(err)
-	{
-		console.log("ControllerPlayer(obj_stage, obj_queue, 100) - param error ", err);
-	}
-
-
-	obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, 'controller test');
-	
-	try
-	{
-		obj_controller_player.preparer('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.preparer(8, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer(8, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.preparer(8, 30, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer(8, 30, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.preparer(8, 30, 1, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer(8, 30, 1, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.preparer(8, 30, 1, 6, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer(8, 30, 1, 6, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.preparer(8, 30, 1, 6, 3, 'toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.preparer(8, 30, 1, 6, 3, 'toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.scoreHasObservedBy();
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.scoreHasObservedBy() - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.scoreHasObservedBy('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.scoreHasObservedBy('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.scoreHasObservedBy(100);
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.scoreHasObservedBy(100) - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.scoreHasObservedBy('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.scoreHasObservedBy('toto') - param error ", err);
-	}
-	try
-	{
-		obj_controller_player.lifeHasObservedBy();
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.lifeHasObservedBy() - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.lifeHasObservedBy('toto');
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.lifeHasObservedBy('toto') - param error ", err);
-	}
-
-	try
-	{
-		obj_controller_player.lifeHasObservedBy(100);
-	}
-	catch(err)
-	{
-		console.log("obj_controller_player.lifeHasObservedBy(100) - param error ", err);
-	}
-
-	obj_controller_player.preparer(0,700);
+	equal(obj_view_player.x, 8, "Check that createjs.Bitmap X value is equal at 8!"); 
+	equal(obj_view_player.y, 130, "Check that createjs.Bitmap Y value is equal at 130!"); 
+	equal(obj_view_player.rotation, 0, "Check that createjs.Bitmap Rotation value is equal at 0!"); 
+	equal(obj_observable.getX(), 8, "Check that Model X value is equal at 8!"); 
+	equal(obj_observable.getY(), 130, "Check that Modem Y value is equal at 130!"); 
+	equal(obj_observable.getRotation(), 0, "Check that Model Rotation value is equal at 0!"); 
+	equal(obj_observable.getSpeed(), 6, "Check that Model Speed value is equal at 6!"); 
+	equal(obj_observable.getLife(), 3, "Check that Model Speed value is equal at 3!"); 
+	equal(obj_observable.getScore(), 103, "Check that Model Speed value is equal at 103!"); 
 }
 
 // -----------------------------------------------------------------
-function test5(obj_stage, obj_queue)
+function test3()
 {
-	console.log("**** Test 5 : Affichage d'un vaisseau avec le Controller Player\n --------------------------------------------");
+	console.log("**** Test 3 :\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Player 3 ; ControllerPlayer", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Player 3 : Controller Player", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 200;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_controller_player = new ControllerPlayer(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
+	obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
 	console.log(" Controller Player creation is done.\nView-Score creation is in progress.");
 	
 	obj_view_score = new ViewScore(obj_stage, "View Score", 208,240);
@@ -833,23 +460,39 @@ function test5(obj_stage, obj_queue)
 
 	console.log(" Controller Player creation done.");
 	obj_stage.update();
+	equal(obj_controller_player.obj_view_joueur.x, 8, "Check that createjs.Bitmap X value is equal at 8!"); 
+	equal(obj_controller_player.obj_view_joueur.y, 230, "Check that createjs.Bitmap Y value is equal at 230!"); 
+	equal(obj_controller_player.obj_view_joueur.rotation, 0, "Check that createjs.Bitmap Rotation value is equal at 0!"); 
+	equal(obj_controller_player.obj_model_joueur.getX(), 8, "Check that Model X value is equal at 8!"); 
+	equal(obj_controller_player.obj_model_joueur.getY(), 230, "Check that Modem Y value is equal at 230!"); 
+	equal(obj_controller_player.obj_model_joueur.getRotation(), 0, "Check that Model Rotation value is equal at 0!"); 
+	equal(obj_controller_player.obj_model_joueur.getSpeed(), 6, "Check that Model Speed value is equal at 6!"); 
+	equal(obj_controller_player.obj_model_joueur.getLife(), 3, "Check that Model Speed value is equal at 3!"); 
+	equal(obj_controller_player.obj_model_joueur.getScore(), 103, "Check that Model Speed value is equal at 103!"); 
 
 }
 
 // -----------------------------------------------------------------
-function test6(obj_stage, obj_queue)
+function test4()
 {
-	console.log("**** Test 6 : Déplacement d'un vaisseau\n --------------------------------------------");
+	console.log("**** Test 4 :\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Player 4 : ControllerPlayer", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Player 4 : Controller Player", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 300;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists['obj_controller_player'] = new ControllerPlayer(obj_stage, obj_queue, "View_player");
-	console.log(" Controller Player creation done.");
-	obj_lists['obj_controller_player'].preparer(0,330,0,4);
+	var vitesse = 4;
+	var x = 0;
+	var y = 330;
 	
+	obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player");
+	console.log(" Controller Player creation done.");
+	obj_controller_player.preparer(x,y,0,vitesse);
+	equal(obj_controller_player.obj_model_joueur.getX(), 0, "Check that Model X value is equal at 0!"); 
+	equal(obj_controller_player.obj_model_joueur.getY(), 330, "Check that Modem Y value is equal at 330!"); 
+	equal(obj_controller_player.obj_model_joueur.getSpeed(), 4, "Check that Model Speed value is equal at 4!"); 
+
 	obj_stage.touches = {};
 	
 	simult_touches=[
@@ -867,6 +510,6 @@ function test6(obj_stage, obj_queue)
 		{key:40,value:true,count:1},
 		{key:37,value:true,count:20},
 		{key:37,value:false},
-		{key:40,value:false}
+		{key:40,value:false,count:30}
 	];
 }
