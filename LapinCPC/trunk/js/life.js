@@ -6,47 +6,49 @@
 title MVC <b>Life</b>
 class createjs.Text
 
-package "MVCLife" #DDDDDD {
+package "mvcLife" #DDDDDD {
 
-class ViewLife {
+class View {
 	createjs.Stage obj_stage
 	String name
 	int x
 	int y
 	Boolean visible = true
 	==
-	void ViewLife(createjs.Stage obj_stage, String name, int x, int y)
+	void View(createjs.Stage obj_stage, String name, int x, int y)
 	__ notified __
 	void display(Object obj_observable)
 	void prepare(Object obj_observable)
 }
 
-createjs.Text <|-- ViewLife
+createjs.Text <|-- View
 
-class ControllerLife {
+class Controller {
 	createjs.Stage obj_stage
 
 	String name
 	==
-	void ControllerLife(createjs.Stage obj_stage, String name, int x, int y)
-	ViewLife getObserver()
+	void Controller(createjs.Stage obj_stage, String name, int x, int y)
+	View getObserver()
 }
 
-ControllerLife *-- ViewLife
+Controller *-- View
 
 }
 @enduml
 */
+var mvcLife = {};
 
 // ============================================================================================================================
 // Classe ViewLife
 // Cette classe s'occupe de l'affichage de la vie
 // ============================================================================================================================
-;( function(window)
+;( function()
 {
 	'use strict';
 
-	function ViewLife(obj_stage, name, x, y )
+
+	mvcLife.View = function(obj_stage, name, x, y )
 	{
 		createjs.Text.call(this, 'Vies : -', '24px Arial', '#00000' );
 
@@ -55,7 +57,7 @@ ControllerLife *-- ViewLife
 		else
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-		this.name = (name === undefined) ? 'ViewLife_default' : name;
+		this.name = (name === undefined) ? 'View_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -73,9 +75,9 @@ ControllerLife *-- ViewLife
 		console.log(this.name + ' View is created!');
 	}
 
-	ViewLife.prototype = new createjs.Text();
+	mvcLife.View.prototype = new createjs.Text();
 
-	ViewLife.prototype.display = function(obj_observable)
+	mvcLife.View.prototype.display = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -83,7 +85,7 @@ ControllerLife *-- ViewLife
 		this.text = 'Vies : ' + obj_observable.getLife();
 	}
 
-	ViewLife.prototype.prepare = function(obj_observable)
+	mvcLife.View.prototype.prepare = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -91,9 +93,7 @@ ControllerLife *-- ViewLife
 		this.text = 'Vies : ' + obj_observable.getLife();
 	}
 
-	window.ViewLife = ViewLife;
-
-}(window));
+}());
 
 // ============================================================================================================================
 // Classe  ControllerLife
@@ -101,18 +101,18 @@ ControllerLife *-- ViewLife
 // Une classe externe s'occupe de Model de la vie comme ModelPlayer.
 // Note : pas de ModelLife pour cette classe
 // ============================================================================================================================
-;( function(window)
+;( function()
 {
 	'use strict';
 
-	function ControllerLife(obj_stage, name, x, y)
+	mvcLife.Controller = function(obj_stage, name, x, y)
 	{
 		if (  obj_stage instanceof createjs.Stage)
 			this.obj_stage = obj_stage;
 		else
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-		this.name = (name === undefined) ? 'ControllerLife_default' : name;
+		this.name = (name === undefined) ? 'Controller_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -126,16 +126,14 @@ ControllerLife *-- ViewLife
 	
 		console.log(this.name, ' Controller is being created...');
 
-		this.obj_view_vie = new ViewLife(this.obj_stage, this.name, x, y);
+		this.obj_view_vie = new mvcLife.View(this.obj_stage, this.name, x, y);
 
 		console.log(this.name, ' Controller is created!');
 	}
 
-	ControllerLife.prototype.getObserver = function()
+	mvcLife.Controller.prototype.getObserver = function()
 	{
 		return this.obj_view_vie;
 	}
 
-	window.ControllerLife = ControllerLife;
-
-}(window));
+}());
