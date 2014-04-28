@@ -263,7 +263,7 @@ function test3()
 	obj_stage.addChild( obj_text_score );
 	
 	obj_stage.update();
-	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_highscore.getObserver().text, "High Score : 20", "Verification of text contain of createjs.Text object");
 }
 
 function test4()

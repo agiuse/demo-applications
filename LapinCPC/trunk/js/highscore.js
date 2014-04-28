@@ -7,46 +7,45 @@ title MVC <b>Score</b>
 class createjs.Text
 class createjs.Stage
 
-package "MVCScore" #DDDDDD {
-
-class ViewScore {
+class mvcScore.View {
 	createjs.Stage obj_stage
 	String name
 	int x
 	int y
 	Boolean visible = true
 	==
-	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
+	void View(createjs.Stage obj_stage, String name, int x, int y)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-class ControllerScore {
+class mvcScore.Controller {
 	createjs.Stage obj_stage
 	String name
 	==
-	void ControllerScore(createjs.Stage obj_stage, String name, int x, int y)
-	ViewScore getObserver()
+	void Controller(createjs.Stage obj_stage, String name, int x, int y)
+	mvcScore.View getObserver()
 }
 
-createjs.Text <|-- ViewScore
-createjs.Stage -- ViewScore
-ControllerScore *-- ViewScore
-}
+createjs.Text <|-- mvcScore.View
+createjs.Stage -- mvcScore.View
+mvcScore.Controller *-- mvcScore.View
 
 @enduml
 */
 
 // ============================================================================================================================
-// L'objet ViewScore s'occupe de l'affichage du Score
+// L'objet mvcScore.View s'occupe de l'affichage du Score
 // Cet objet observe l'observable Score
 // ============================================================================================================================
+var mvcScore = {};
+
 ;(function(window)
 {
 	'use strict';
 
-	function ViewScore(obj_stage, name, x, y )
+	mvcScore.View = function(obj_stage, name, x, y )
 	{
 		createjs.Text.call(this, 'Score : 0', '24px Arial', '#00000' );
 
@@ -73,9 +72,9 @@ ControllerScore *-- ViewScore
 		console.log(this.name + ' View is created!');
 	}
 
-	ViewScore.prototype = new createjs.Text();
+	mvcScore.View.prototype = new createjs.Text();
 
-	ViewScore.prototype.prepare = function(obj_observable)
+	mvcScore.View.prototype.prepare = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -83,7 +82,7 @@ ControllerScore *-- ViewScore
 		this.text = "Score : " + obj_observable.getScore();
 	}
 
-	ViewScore.prototype.display = function(obj_observable)
+	mvcScore.View.prototype.display = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -91,25 +90,25 @@ ControllerScore *-- ViewScore
 		this.text = 'Score : ' + obj_observable.getScore();
 	}
 
-	window.ViewScore = ViewScore;
+	window.mvcScore.View = mvcScore.View;
 	
 }(window));
 
 // ============================================================================================================================
-// Class ControllerScore
+// Class mvcScore.Controller
 // ============================================================================================================================
 ;(function(window)
 {
 	'use strict';
 
-	function ControllerScore(obj_stage, name, x, y)
+	mvcScore.Controller = function(obj_stage, name, x, y)
 	{
 		if (  obj_stage instanceof createjs.Stage )
 			this.obj_stage = obj_stage;
 		else
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-		this.name = (name === undefined) ? "ControllerScore_default" : name;
+		this.name = (name === undefined) ? "mvcScore.Controller_default" : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -122,17 +121,17 @@ ControllerScore *-- ViewScore
 			throw 'Parameter \'Y\' is not a number literal!';
 
 		console.log(this.name, ' Controller is being created...');
-		this.obj_view_score = new ViewScore(this.obj_stage, this.name, x, y);
+		this.obj_view_score = new mvcScore.View(this.obj_stage, this.name, x, y);
 		console.log(this.name, ' Controller is created!');
 	}
 
 	// Renvoie la référence de l'objet observeur géré par le Controller
-	ControllerScore.prototype.getObserver = function()
+	mvcScore.Controller.prototype.getObserver = function()
 	{
 		return this.obj_view_score;
 	}
 
-	window.ControllerScore = ControllerScore;
+	window.mvcScore.Controller = mvcScore.Controller;
 	
 }(window));
 
@@ -159,7 +158,7 @@ package "MVCHighScore" #DDDDDD {
 
 class ViewHighScore {
 	createjs.Stage obj_stage
-	String name = 'ViewScore_default'
+	String name = 'mvcScore.View_default'
 	int x = 0
 	int y = 0
 	--
@@ -213,7 +212,7 @@ createjs.Stage -- ViewHighScore
 */
 
 // ============================================================================================================================
-// L'objet ViewScore s'occupe de l'affichage du Score
+// L'objet mvcScore.View s'occupe de l'affichage du Score
 // Cet objet observe l'observable Score
 // ============================================================================================================================
 ;(function(window)
@@ -331,7 +330,7 @@ createjs.Stage -- ViewHighScore
 		else
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	
-		this.name = (name === undefined) ? 'ControllerScore_default' : name;
+		this.name = (name === undefined) ? 'mvcScore.Controller_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
