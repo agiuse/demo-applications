@@ -78,10 +78,12 @@ function runTest()
 	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 	obj_lists={};
 
-	test1(obj_stage, obj_queue);
-	test2(obj_stage, obj_queue);
-	test3(obj_stage, obj_queue);
-	test4(obj_stage, obj_queue);
+	module("View and Model Saucisse");
+	test("Affichage d'une bonne et mauvaise saucisse", test1);
+	module("Controller Saucisse");
+	test("Affichage d'une bonne et mauvaise saucisse", test2);
+	test3();
+	test4();
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
@@ -100,37 +102,53 @@ function test_run(event)
 
 
 // -----------------------------------------------------------------
-function test1(obj_stage, obj_queue)
+function test1()
 {
-	console.log("**** Test 1 : Affichage d'une bonne et mauvaise saucisse avec le Viewer/Model Saucisse\n --------------------------------------------");
+	console.log("**** Test 1 :\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Saucisse 1 : Viewer et Model Saucisse", "24px Arial", "#00000");
 	obj_text.x = 0 ; obj_text.y = 0;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_observable_1 = new ModelSaucisse("saucisse mauvaise");
-	obj_observable_2 = new ModelSaucisse("saucisse bonne");
+	obj_observable_1 = new mvcSaucisse.Model("saucisse mauvaise");
+	obj_observable_2 = new mvcSaucisse.Model("saucisse bonne");
 
 	console.log(" Fin de la création des objets Saucisses de test\nView-Saucisses creation starting");
-	obj_view_saucisse_1 = new ViewSaucisse(obj_stage, obj_queue, "View_Saucisse_1");
-	obj_view_saucisse_2 = new ViewSaucisse(obj_stage, obj_queue, "View_Saucisse_2");
+	obj_view_saucisse_1 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_1");
+	obj_view_saucisse_2 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_2");
 	console.log(" View Saucisse creation done.\nAdd View-Saucisse to observable object test");
 	obj_observable_1.add(obj_view_saucisse_1);
 	obj_observable_2.add(obj_view_saucisse_2);
 	console.log("Add View Saucisses to observable object test are done.\nInitialization of saucisses");
 	
 	obj_observable_1.preparer(8,50,6,4,true);
+	equal(obj_view_saucisse_1.x, 8, "Check that createjs.Bitmap X value of saucisse 1 is equal at 8!"); 
+	equal(obj_view_saucisse_1.y, 50, "Check that createjs.Bitmap Y value of saucisse 1 is equal at 50!"); 
+	equal(obj_view_saucisse_1.rotation, 6, "Check that createjs.Bitmap Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_observable_1.getX(), 8, "Check that Model X value of saucisse 1 is equal at 8!"); 
+	equal(obj_observable_1.getY(), 50, "Check that Modem Y value of saucisse 1 is equal at 50!"); 
+	equal(obj_observable_1.getRotation(), 6, "Check that Model Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_observable_1.getSpeed(), 4, "Check that Model Speed value of saucisse 1 is equal at 4!"); 
+	equal(obj_observable_1.isPourrie(), true, "Check that Model Pourrie value of saucisse 1 is equal at true!"); 
+
 	obj_observable_2.preparer(108,50,-10,6,false);
-	
+	equal(obj_view_saucisse_2.x, 108, "Check that createjs.Bitmap X value of saucisse 2 is equal at 108!"); 
+	equal(obj_view_saucisse_2.y, 50, "Check that createjs.Bitmap Y value of saucisse 2 is equal at 50!"); 
+	equal(obj_view_saucisse_2.rotation, -10, "Check that createjs.Bitmap Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_observable_2.getX(), 108, "Check that Model X value of saucisse 2 is equal at 108!"); 
+	equal(obj_observable_2.getY(), 50, "Check that Modem Y value of saucisse 2 is equal at 50!"); 
+	equal(obj_observable_2.getRotation(), -10, "Check that Model Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_observable_2.getSpeed(), 6, "Check that Model Speed value of saucisse 2 is equal at 6!"); 
+	equal(obj_observable_2.isPourrie(), false, "Check that Model Pourrie value of saucisse 2 is equal at false!"); 
+
 	console.log("Display saucisse bitmaps");
 	obj_stage.update();
 }
 
-
-function test2(obj_stage, obj_queue)
+function test2()
 {
-	console.log("**** Test 2 : Affichage d'une bonne et mauvaise saucisse avec Controller Saucisse\n --------------------------------------------");
+	console.log("**** Test 2 :\n --------------------------------------------");
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push({x:8, y:150, rotation:6, vitesse:4, pourrie:true});
@@ -141,15 +159,33 @@ function test2(obj_stage, obj_queue)
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_1 = new ControllerSaucisse(obj_stage, obj_queue, obj_generator, "saucisse mauvaise");
-	obj_controller_2 = new ControllerSaucisse(obj_stage, obj_queue, obj_generator, "saucisse bonne");
+	obj_controller_1 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse mauvaise");
+	obj_controller_2 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse bonne");
 	console.log("Saucisse creation done.");
 	
 	console.log("Display saucisse bitmaps");
 	obj_stage.update();
+
+	equal(obj_controller_1.obj_view_saucisse.x, 8, "Check that createjs.Bitmap X value of saucisse 1 is equal at 8!"); 
+	equal(obj_controller_1.obj_view_saucisse.y, 150, "Check that createjs.Bitmap Y value of saucisse 1 is equal at 150!"); 
+	equal(obj_controller_1.obj_view_saucisse.rotation, 6, "Check that createjs.Bitmap Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_controller_1.obj_model_saucisse.getX(), 8, "Check that Model X value of saucisse 1 is equal at 8!"); 
+	equal(obj_controller_1.obj_model_saucisse.getY(), 150, "Check that Modem Y value of saucisse 1 is equal at 150!"); 
+	equal(obj_controller_1.obj_model_saucisse.getRotation(), 6, "Check that Model Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_controller_1.obj_model_saucisse.getSpeed(), 4, "Check that Model Speed value of saucisse 1 is equal at 4!"); 
+	equal(obj_controller_1.obj_model_saucisse.isPourrie(), true, "Check that Model Pourrie value of saucisse 1 is equal at true!"); 
+
+	equal(obj_controller_2.obj_view_saucisse.x, 108, "Check that createjs.Bitmap X value of saucisse 2 is equal at 108!"); 
+	equal(obj_controller_2.obj_view_saucisse.y, 150, "Check that createjs.Bitmap Y value of saucisse 2 is equal at 150!"); 
+	equal(obj_controller_2.obj_view_saucisse.rotation, -10, "Check that createjs.Bitmap Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_controller_2.obj_model_saucisse.getX(), 108, "Check that Model X value of saucisse 2 is equal at 108!"); 
+	equal(obj_controller_2.obj_model_saucisse.getY(), 150, "Check that Modem Y value of saucisse 2 is equal at 150!"); 
+	equal(obj_controller_2.obj_model_saucisse.getRotation(), -10, "Check that Model Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_controller_2.obj_model_saucisse.getSpeed(), 6, "Check that Model Speed value of saucisse 2 is equal at 6!"); 
+	equal(obj_controller_2.obj_model_saucisse.isPourrie(), false, "Check that Model Pourrie value of saucisse 2 is equal at false!"); 
 }
 
-function test3(obj_stage, obj_queue)
+function test3()
 {
 	console.log("**** Test 3 : Déplacement d'une bonne et mauvaise saucisse avec Controller Saucisse\n --------------------------------------------");
 	var obj_generator = new Generator('random_test3');
@@ -159,12 +195,12 @@ function test3(obj_stage, obj_queue)
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_lists['obj_controller_1'] = new ControllerSaucisse(obj_stage, obj_queue, obj_generator, "saucisse 1");
-	obj_lists['obj_controller_2'] = new ControllerSaucisse(obj_stage, obj_queue, obj_generator, "saucisse 2");
+	obj_lists['obj_controller_1'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 1");
+	obj_lists['obj_controller_2'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 2");
 	console.log("Saucisse creation done.");	
 }
 
-function test4(obj_stage)
+function test4()
 {
 	console.log("**** Test 4 : Déplacement de quatre bonnes et mauvaises saucisses avec le Controller Saucisses\n --------------------------------------------");
 
@@ -177,7 +213,7 @@ function test4(obj_stage)
 	
 	for (var i =0; i < 10 ; i++)
 	{
-		obj_lists['saucisse'+i] = new ControllerSaucisse(obj_stage, obj_queue, obj_generator);
+		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator);
 	}
 	
 }
