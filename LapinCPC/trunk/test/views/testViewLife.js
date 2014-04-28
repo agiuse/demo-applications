@@ -1,6 +1,6 @@
 "use strict;"
 // ====================================================================
-// Class simulant l'observable observé par l'objet testé ViewLife
+// Class simulant l'observable observé par l'objet testé mvcLife.View
 // Cet objet est directement un observable et n'est pas un Model
 // Comme par exemple l'observable vie ou coordonnee dans l'objet ModelPlayer
 // -----------------------------------------------------------------
@@ -39,7 +39,7 @@ ObjetVie.prototype.add = function(obj_observer)
 // ====================================================================
 /*
 @startuml
-title testViewLife <b>class diagrams</b>
+title MVC View <b>class diagrams</b>
 
 class Observable {
 	String name
@@ -65,139 +65,65 @@ class ObjetVie {
 Observable *-- ObjetVie : life_notifier
 
 class createjs.Text
-class ViewLife {
+class mvcLife.View {
 	createjs.Stage stage
 	String name
 	int x
 	int y
 	Boolean visible = true
 	==
-	ViewLife(createjs.Stage stage, String name, int x, int y)
+	View(createjs.Stage stage, String name, int x, int y)
 	__ notified __
 	display(Object obj_observable)
 	prepare(Object obj_observable)
 }
 
-createjs.Text <|-- ViewLife
+createjs.Text <|-- mvcLife.View
 
-class ViewLife
-class ControllerLife {
+class mvcLife.Controller {
 	createjs.Stage stage
 	String name
 	==
-	ControllerLife(createjs.Stage stage, String name, int x, int y)
-	ViewLife getObserver()
+	Controller(createjs.Stage stage, String name, int x, int y)
+	mvcLife.View getObserver()
 }
 
-ControllerLife *-- ViewLife
+mvcLife.Controller *-- mvcLife.View
 
 @enduml
 */
+
 // -----------------------------------------------------------------
-function test0(obj_stage) {
-	console.log("**** Test 0 : Test des erreurs du Viewer et des valeurs par défaut");
-	try {
-		obj_viewer_vies = new ViewLife("obj_stage", 'viewer_life_1', 8, 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-
-	try {
-		obj_viewer_vies = new ViewLife(obj_stage, 100, '8', 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-
-	try {
-		obj_viewer_vies = new ViewLife(obj_stage, 'viewer_life_1', '8', 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}	
-
-	try {
-		obj_viewer_vies = new ViewLife(obj_stage, 'viewer_life_1', 8, '100');
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-	
-	obj_viewer_vies = new ViewLife(obj_stage);
-	console.log("obj_viewer_vies =", obj_viewer_vies);
-	obj_stage.removeChild(obj_viewer_vies);
-	
-}
-// -----------------------------------------------------------------
-function test1(obj_stage)
+function test1()
 {
-	console.log("Test 1 : Affichage de la vie avec le Viewer");
-
-	var obj_text =  new createjs.Text("Test MVC Life 1 : Affichage via le Viewer !", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Life 1 : Affichage via la View !", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 74;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_viewer_vies = new ViewLife(obj_stage, 'viewer_life_1', 8, 100);
+	obj_view_vies = new mvcLife.View(obj_stage, 'view_life_1', 8, 100);
 	obj_observable = new ObjetVie('observable');
-	obj_observable.add( obj_viewer_vies );
+	obj_observable.add( obj_view_vies );
 		
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getLife());
 
 	obj_observable.run(1230);
 	obj_stage.update();
 
+	equal(obj_view_vies.text, "Vies : 1230", "Check that createjs.Text attribut text contains the value 1230!");
 }
 
 // -----------------------------------------------------------------
-function test2(obj_stage)
-{
-	console.log("**** Test 2 : Test des erreurs du Controller et des valeurs par défaut");
-	try {
-		obj_controller_vies = new ControllerLife("obj_stage", 'controller_life_1', 8, 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-
-	try {
-		obj_controller_vies = new ControllerLife(obj_stage, 100, 8, 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-	
-	try {
-		obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1', '8', 100);
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-	
-	try {
-		obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1', 8, '100');
-	}
-	catch(err) {
-		console.log("params error = ",err);
-	}
-
-	obj_controller_vies = new ControllerLife(obj_stage);
-	console.log("obj_controller_vies =", obj_controller_vies);
-	
-}
-
-// -----------------------------------------------------------------
-function test3(obj_stage)
+function test2()
 {
 	console.log("Test 2 : Affichage de la vie avec le Controller");
 
-	var obj_text =  new createjs.Text("Test MVC Life 2 : Affichage via le Controller!", "24px Arial", "#00000");
+	var obj_text =  new createjs.Text("Test MVC Life 2 : Affichage via le Controller !", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 174;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_controller_vies = new ControllerLife(obj_stage, 'controller_life_1', 8, 200);
+	obj_controller_vies = new mvcLife.Controller(obj_stage, 'controller_life_1', 8, 200);
 	obj_observable = new ObjetVie('observable');
 	obj_observable.add(obj_controller_vies.getObserver() );
 		
@@ -206,17 +132,22 @@ function test3(obj_stage)
 	obj_observable.run(1230);
 	obj_stage.update();
 
+	equal(obj_controller_vies.getObserver().text, "Vies : 1230", "Check that createjs.Text attribut text contains the value 1230!");
 }
+
+var obj_stage;
 
 function startTest()
 {
 
 	console.clear();
-	var obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
+	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
-	test0(obj_stage);
-	test1(obj_stage);
-	test2(obj_stage);
-	test3(obj_stage);
+	module(" View Life");
+	test("Affichage de l'attribut vie gérée par l'objet ObjetVie avec le View Life", test1);
+	
+	module("Controller Life");
+	test("Affichage de l'attribut vie gérée par l'objet ObjetVie avec le Controller Life", test2);
+
 }
 

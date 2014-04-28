@@ -6,9 +6,7 @@
 title MVC <b>Life</b>
 class createjs.Text
 
-package "mvcLife" #DDDDDD {
-
-class View {
+class mvcLife.View {
 	createjs.Stage obj_stage
 	String name
 	int x
@@ -21,20 +19,19 @@ class View {
 	void prepare(Object obj_observable)
 }
 
-createjs.Text <|-- View
+createjs.Text <|-- mvcLife.View
 
-class Controller {
+class mvcLife.Controller {
 	createjs.Stage obj_stage
 
 	String name
 	==
 	void Controller(createjs.Stage obj_stage, String name, int x, int y)
-	View getObserver()
+	mvcLife.View getObserver()
 }
 
-Controller *-- View
+mvcLife.Controller *-- mvcLife.View
 
-}
 @enduml
 */
 var mvcLife = {};
