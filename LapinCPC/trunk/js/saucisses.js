@@ -24,27 +24,24 @@ class Generator {
 	Object iterator()
 }
 
-Package "MVCSaucisse" #DDDDDD {
-
-class ViewSaucisse {
+class mvcSaucisse.View {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-	String name
+	String name = View_Default"
 	--
 	int x
 	int y
 	int rotation
 	Image image
 	==
-	void ViewSaucisse(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-class ModelSaucisse {
-	String name
-
+class mvcSaucisse.Model {
+	String name = "Model_default"
 	--
 	int x
 	int y
@@ -53,7 +50,7 @@ class ModelSaucisse {
 	int vitesse
 	Boolean pourrie
 	==
-	void ModelSaucisse(String name)
+	void Model(String name)
 	int getX()
 
 	int getY()
@@ -67,44 +64,44 @@ class ModelSaucisse {
 	void set(int x)
 }
 
-class ControllerSaucisse {
+class mvcSaucisse.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-
-	String Name
+	String Name = "Controller_Default"
 	Generator obj_generator
 	--
 	==
-	void ControllerSaucisse(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
+	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
 
 	void run()
 	__ notify __
 	void preparer()
 }
 
-ModelSaucisse *-- Observable: coordonnee_notifier
-createjs.Bitmap <|-- ViewSaucisse
-createjs.Stage -- ViewSaucisse
-createjs.LoadQueue -- ViewSaucisse
-ModelSaucisse .. ViewSaucisse : "observable/observer"
-ViewSaucisse .. Observable : "observable/observer"
-ControllerSaucisse *-- ModelSaucisse
-ControllerSaucisse *-- ViewSaucisse
-ControllerSaucisse -- Generator
-}
+mvcSaucisse.Model *-- Observable: coordonnee_notifier
+createjs.Bitmap <|-- mvcSaucisse.View
+createjs.Stage -- mvcSaucisse.View
+createjs.LoadQueue -- mvcSaucisse.View
+mvcSaucisse.Model .. mvcSaucisse.View : "observable/observer"
+mvcSaucisse.View .. Observable : "observable/observer"
+mvcSaucisse.Controller *-- mvcSaucisse.Model
+mvcSaucisse.Controller *-- mvcSaucisse.View
+mvcSaucisse.Controller -- Generator
 	
 @enduml
 */
 
+var mvcSaucisse = {};
+
 // ============================================================================================================================
-// Classe ViewSaucisse
+// Classe mvcSaucisse.View
 // Cette classe s'occupe d'afficher une bonne ou mauvaise saucisse
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ViewSaucisse(obj_stage, obj_queue, name)
+	mvcSaucisse.View = function(obj_stage, obj_queue, name)
 	{
 		createjs.Bitmap.call(this);
 
@@ -118,7 +115,7 @@ ControllerSaucisse -- Generator
 		else
 			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-		this.name = (name === undefined) ? 'ViewSaucisse_default' : name;
+		this.name = (name === undefined) ? 'View_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -129,9 +126,9 @@ ControllerSaucisse -- Generator
 		console.log(this.name, ' View is created!');
 	}
 
-	ViewSaucisse.prototype = new createjs.Bitmap();		
+	mvcSaucisse.View.prototype = new createjs.Bitmap();		
 
-	ViewSaucisse.prototype.prepare = function (obj_observable)
+	mvcSaucisse.View.prototype.prepare = function (obj_observable)
 	{ 
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -150,7 +147,7 @@ ControllerSaucisse -- Generator
 		console.log(this.name, ' View is ready!');
 	}
 
-	ViewSaucisse.prototype.display = function (obj_observable)
+	mvcSaucisse.View.prototype.display = function (obj_observable)
 	{ 
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -161,21 +158,21 @@ ControllerSaucisse -- Generator
 		console.log(this.name, ' View is displayed!');
 	}
 
-	window.ViewSaucisse = ViewSaucisse;
+	window.mvcSaucisse.View = mvcSaucisse.View;
 
 }(window));
 
 // ============================================================================================================================
-// Classe ModelSaucisse
+// Classe mvcSaucisse.Model
 // Cette classe gère les données de la Saucisse.
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ModelSaucisse(name)
+	mvcSaucisse.Model = function(name)
 	{
-		this.name = (name === undefined) ? 'ModelSaucisse_default' : name;
+		this.name = (name === undefined) ? 'Model_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -189,7 +186,7 @@ ControllerSaucisse -- Generator
 		console.log(this.name, ' Model is created!');
 	}
 
-	ModelSaucisse.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
+	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
 	{
 		this.x = (x === undefined) ? 0 : x;
 		if (! ((typeof this.x==='number')&&(this.x%1===0))) 		
@@ -214,37 +211,37 @@ ControllerSaucisse -- Generator
 		this.coordonnee_notifier.notify('prepare');
 	}
 
-	ModelSaucisse.prototype.getX = function()
+	mvcSaucisse.Model.prototype.getX = function()
 	{
 		return this.x;
 	}
 
-	ModelSaucisse.prototype.getY = function()
+	mvcSaucisse.Model.prototype.getY = function()
 	{
 		return this.y;
 	}
 
-	ModelSaucisse.prototype.getRotation = function()
+	mvcSaucisse.Model.prototype.getRotation = function()
 	{
 		return this.rotation;
 	}
 
-	ModelSaucisse.prototype.getSpeed = function()
+	mvcSaucisse.Model.prototype.getSpeed = function()
 	{
 		return this.vitesse;
 	}
 
-	ModelSaucisse.prototype.isPourrie = function ()
+	mvcSaucisse.Model.prototype.isPourrie = function ()
 	{
 		return this.pourrie;
 	}
 
-	ModelSaucisse.prototype.add = function(obj_observer)
+	mvcSaucisse.Model.prototype.add = function(obj_observer)
 	{
 		this.coordonnee_notifier.add(obj_observer);
 	}
 
-	ModelSaucisse.prototype.set = function (x)
+	mvcSaucisse.Model.prototype.set = function (x)
 	{
 		this.x = (x === undefined) ? 0 : x;
 		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
@@ -253,18 +250,18 @@ ControllerSaucisse -- Generator
 		this.coordonnee_notifier.notify('display');
 	}
 
-	window.ModelSaucisse = ModelSaucisse;
+	window.mvcSaucisse.Model = mvcSaucisse.Model;
 
 }(window));
 // ============================================================================================================================
-// Classe ControllerSaucisse
-// Cette classe lie l'objet ViewSaucisse et ModelSaucisse via un patron "Observeur/Observer".
+// Classe mvcSaucisse.Controller
+// Cette classe lie l'objet mvcSaucisse.View et mvcSaucisse.Model via un patron "Observeur/Observer".
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ControllerSaucisse(obj_stage, obj_queue, obj_generator, name)
+	mvcSaucisse.Controller = function(obj_stage, obj_queue, obj_generator, name)
 	{
 		if (  obj_stage instanceof createjs.Stage)
 			this.obj_stage = obj_stage;
@@ -276,7 +273,7 @@ ControllerSaucisse -- Generator
 		else
 			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-		this.name = (name === undefined) ? "ControllerSaucisse_default" : name;
+		this.name = (name === undefined) ? "Controller_default" : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -287,14 +284,14 @@ ControllerSaucisse -- Generator
 			throw 'Parameter \'obj_generator\' is not Generator instance!';
 	
 		console.log(this.name, ' Controller is being created!');
-		this.obj_model_saucisse	= new ModelSaucisse( this.name );
-		this.obj_view_saucisse = new ViewSaucisse(this.obj_stage, this.obj_queue, this.name);
+		this.obj_model_saucisse	= new mvcSaucisse.Model( this.name );
+		this.obj_view_saucisse = new mvcSaucisse.View(this.obj_stage, this.obj_queue, this.name);
 		this.obj_model_saucisse.add ( this.obj_view_saucisse  );
 		this.preparer();
 		console.log(this.name, ' Controller creation is done!');
 	}
 
-	ControllerSaucisse.prototype.run = function()
+	mvcSaucisse.Controller.prototype.run = function()
 	{
 		var x = this.obj_model_saucisse.getX();
 		if ( x <= -this.obj_view_saucisse.image.width ) {
@@ -304,7 +301,7 @@ ControllerSaucisse -- Generator
 		}
 	}
 
-	ControllerSaucisse.prototype.preparer = function()
+	mvcSaucisse.Controller.prototype.preparer = function()
 	{
 		var obj_coordonnee_random = this.obj_generator.iterator();	
 		this.obj_model_saucisse.preparer(
@@ -316,6 +313,6 @@ ControllerSaucisse -- Generator
 		);
 	}
 
-	window.ControllerSaucisse = ControllerSaucisse;
+	window.mvcSaucisse.Controller = mvcSaucisse.Controller;
 
 }(window));
