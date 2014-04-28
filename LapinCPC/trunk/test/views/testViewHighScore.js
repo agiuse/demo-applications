@@ -37,7 +37,7 @@ ObjetScore.prototype.add = function(obj_observer)
 // ====================================================================
 /*
 @startuml
-title testViewHighScore <b>class diagrams</b>
+title test MVC <B>HighScore</B>
 
 class Observable {
 	String name
@@ -63,34 +63,6 @@ class ObjetScore {
 
 Observable *-- ObjetScore : score_notifier
 
-package "MVCScore" #DDDDDD {
-
-class ViewScore {
-	createjs.Stage obj_stage
-	String name
-	int x
-	int y
-	Boolean visible = true
-	==
-	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
-	__ notified __
-	void prepare(Object obj_observable)
-	void display(Object obj_observable)
-}
-
-class ControllerScore {
-	createjs.Stage obj_stage
-	String name
-	==
-	void ControllerScore(createjs.Stage obj_stage, String name, int x, int y)
-	ViewScore getObserver()
-}
-
-createjs.Text <|-- ViewScore
-createjs.Stage -- ViewScore
-ControllerScore *-- ViewScore
-}
-
 class createjs.Text
 class createjs.Stage
 
@@ -103,30 +75,27 @@ class Observable {
 	void notify(String type_notify)
 }
 
-package "MVCHighScore" #DDDDDD {
-
-class ViewHighScore {
+class mvcHighScore.View {
 	createjs.Stage obj_stage
-	String name = 'ViewScore_default'
+	String name = 'View_default'
 	int x = 0
 	int y = 0
 	--
 	Boolean visible=true
 	==
-	void ViewHighScore(createjs.Stage stage, String name, int x, int y)	
+	void View(createjs.Stage stage, String name, int x, int y)	
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-
-class ModelHighScore {
-	String name = 'ModelHighScore_default'
+class mvcHighScore.Model {
+	String name = 'Model_default'
 	--
 	int nb_points = 0
 	Observable score_notifier
 	==
-	void ModelHighScore(String name)
+	void Model(String name)
 	int getScore()
 	void add(Object obj_observer)
 	__ notify __
@@ -134,41 +103,34 @@ class ModelHighScore {
 }
 
 
-class ControllerHighScore {
+class mvcHighScore.Controller {
 	createjs.Stage obj_stage
-	String name = 'ControllerHighScore_default'
+	String name = 'Controller_default'
 	==
-	void ControllerHighScore(createjs.Stage obj_stage, String name, int x, int y)
+	void Controller(createjs.Stage obj_stage, String name, int x, int y)
 	int getScore()
-	ControllerHighScore getObserver()
+	mvcHighScore.Controller getObserver()
 	__ notify __
 	void preparer(int nb_points)
 	__ notified __
 	void display(Object obj_observable)
 }
 
-ModelHighScore *-- Observable : score_notifier
-ControllerHighScore *-- ViewHighScore
-ControllerHighScore *-- ModelHighScore
-ModelHighScore .. ViewHighScore : "observable/observer"
-createjs.Text <|-- ViewHighScore
-createjs.Stage -- ViewHighScore
+mvcHighScore.Model *-- Observable : score_notifier
+mvcHighScore.Controller *-- mvcHighScore.View
+mvcHighScore.Controller *-- mvcHighScore.Model
+mvcHighScore.Model .. mvcHighScore.View : "observable/observer"
+createjs.Text <|-- mvcHighScore.View
+createjs.Stage -- mvcHighScore.View
 
-}
-
-ObjetScore .. ViewScore : "observable/observer"
-ObjetScore .. ControllerHighScore : "observable/observer"
-
+ObjetScore .. mvcScore.View : "observable/observer"
+ObjetScore .. mvcHighScore.Controller : "observable/observer"
 
 @enduml
 */
 
 var obj_stage;
 
-function getStage()
-{
-	return obj_stage;
-}
 // -----------------------------------------------------------------
 function startTest()
 {
@@ -197,16 +159,16 @@ function test1()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_view_highscore = new ViewHighScore(obj_stage, 'view_highscore_1',8, 26); // creer le View HighScore
+	var obj_view_highscore = new mvcHighScore.View(obj_stage, 'view_highscore_1',8, 26); // creer le View HighScore
 	
 	obj_observable.add(obj_view_highscore ); // ajout le view highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 
-	obj_observable.preparer(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	obj_observable.preparer(30); // lance une notification 'prepare' au mvcHighScore.View pour afficher la valeur 30
 	console.log("  Score Test Modem is ok!");
 	
 	obj_stage.update();
-	equal(obj_view_highscore.text, "High Score : 30", "Verification of text contain of createjs.Text object");
+	equal(obj_view_highscore.text, "High Score : 30", "Check that createjs.Text attribut text contains the value 30!");
 }
 
 function test2()
@@ -218,19 +180,19 @@ function test2()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	var obj_observable = new ModelHighScore('model highscore'); // creer l'observable Score à 0 sans notification
+	var obj_observable = new mvcHighScore.Model('model highscore'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_view_highscore = new ViewHighScore(obj_stage, 'view_highscore_1',8, 82); // creer le View HighScore
+	var obj_view_highscore = new mvcHighScore.View(obj_stage, 'view_highscore_1',8, 82); // creer le View HighScore
 	
 	obj_observable.add(obj_view_highscore ); // ajout le view highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 
-	obj_observable.set(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	obj_observable.set(30); // lance une notification 'prepare' au mvcScore.HighView pour afficher la valeur 30
 	console.log("  Score Test Modem is ok!");
 	
 	obj_stage.update();
-	equal(obj_view_highscore.text, "High Score : 30", "Verification of text contain of createjs.Text object");
+	equal(obj_view_highscore.text, "High Score : 30", "Check that createjs.Text attribut text contains the value 30!");
 }
 
 function test3()
@@ -245,25 +207,25 @@ function test3()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 408, 162); // creer le MVC HighScore
+	var obj_controller_highscore = new mvcHighScore.Controller(obj_stage, 'controller_highscore_1', 408, 162); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 
-	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ViewHighScore & affiche 20 dans HighScore
+	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à mvcHighScore.View & affiche 20 dans HighScore
 	var obj_text_ohscore =  new createjs.Text("HighScore : "+ obj_controller_highscore.getScore(), "24px Arial", "#00000");
 	obj_text_ohscore.x = 8 ; obj_text_ohscore.y = 162;
 	obj_stage.addChild( obj_text_ohscore );
 	console.log("  HighScore is ok!");
 
-	obj_observable.preparer(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	obj_observable.preparer(30); // lance une notification 'prepare' au ObjetScore pour afficher la valeur 30
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	var obj_text_score =  new createjs.Text("Score : "+ obj_observable.getScore(), "24px Arial", "#00000");
 	obj_text_score.x = 208 ; obj_text_score.y = 162;
 	obj_stage.addChild( obj_text_score );
 	
 	obj_stage.update();
-	equal(obj_controller_highscore.getObserver().text, "High Score : 20", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Check that createjs.Text attribut text contains the value 20!");
 }
 
 function test4()
@@ -278,19 +240,19 @@ function test4()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 408, 218); // creer le MVC HighScore
+	var obj_controller_highscore = new mvcHighScore.Controller(obj_stage, 'controller_highscore_1', 408, 218); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 	
-	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ViewHighScore & affiche 0 dans HighScore
+	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ObjetScore & affiche 0 dans HighScore
 	var obj_text_ohscore =  new createjs.Text("HighScore : "+ obj_controller_highscore.getScore(), "24px Arial", "#00000");
 	obj_text_ohscore.x = 8 ; obj_text_ohscore.y = 218;
 	obj_stage.addChild( obj_text_ohscore );
 	console.log("  HighScore is ok!");
 
 	// Modifie le score de l'objet ObjetScore à 14.
-	// lance une notification 'display' à ViewScore et controllerHighScore
+	// lance une notification 'display' à ObjetScore et controllerHighScore
 	obj_observable.run(14);
 	var obj_text_score =  new createjs.Text("Score : "+ obj_observable.getScore(), "24px Arial", "#00000");
 	obj_text_score.x = 208 ; obj_text_score.y = 218;
@@ -298,7 +260,7 @@ function test4()
 
 	obj_stage.update();
 	
-	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Check that createjs.Text attribut text contains the value 20!");
 }
 
 function test5()
@@ -313,12 +275,12 @@ function test5()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 408, 274); // creer le MVC HighScore
+	var obj_controller_highscore = new mvcHighScore.Controller(obj_stage, 'controller_highscore_1', 408, 274); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 	
-	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ViewHighScore & affiche 0 dans HighScore
+	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ObjetScore & affiche 0 dans HighScore
 	var obj_text_ohscore =  new createjs.Text("HighScore : "+ obj_controller_highscore.getScore(), "24px Arial", "#00000");
 	obj_text_ohscore.x = 8 ; obj_text_ohscore.y = 274;
 	obj_stage.addChild( obj_text_ohscore );
@@ -331,7 +293,7 @@ function test5()
 
 	obj_stage.update();
 	
-	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 30", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 30", "Check that createjs.Text attribut text contains the value 30!");
 }
 
 function test6()
@@ -346,12 +308,12 @@ function test6()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_controller_highscore = new ControllerHighScore(obj_stage, 'controller_highscore_1', 408, 330); // creer le MVC HighScore
+	var obj_controller_highscore = new mvcHighScore.Controller(obj_stage, 'controller_highscore_1', 408, 330); // creer le MVC HighScore
 	
 	obj_observable.add(obj_controller_highscore.getObserver() ); // ajout le controller highscore à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 	
-	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ViewHighScore & affiche 0 dans HighScore
+	obj_controller_highscore.preparer(20);	// lance une notification 'prepare' à ObjetScore & affiche 0 dans HighScore
 	var obj_text_ohscore =  new createjs.Text("HighScore : "+ obj_controller_highscore.getScore(), "24px Arial", "#00000");
 	obj_text_ohscore.x = 8 ; obj_text_ohscore.y = 330;
 	obj_stage.addChild( obj_text_ohscore );
@@ -364,6 +326,6 @@ function test6()
 
 	obj_stage.update();
 
-	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_highscore.obj_view_highscore.text, "High Score : 20", "Check that createjs.Text attribut text contains the value 20!");
 }
 
