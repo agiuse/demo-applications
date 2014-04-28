@@ -31,43 +31,43 @@ function testViewConstructor()
 	console.log('testViewConstructor\n-----------------------------------------');
 
 	throws( function() {
-		obj = new ViewPlayer();
+		obj = new mvcPlayer.View();
 		},
 		'Parameter \'obj_stage\' is not createjs.Stage instance!',
-		"ViewPlayer() : 'Test of first parameter \'obj_stage\'!'"
+		"mvcPlayer.View() : 'Test of first parameter \'obj_stage\'!'"
 	);
 
 	throws( function() {
-			obj = new ViewPlayer(new createjs.Stage(),100);
+			obj = new mvcPlayer.View(new createjs.Stage(),100);
 		},
 		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
-		"ViewPlayer(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
+		"mvcPlayer.View(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	throws( function() {
-			obj = new ViewPlayer(new createjs.Stage(),new createjs.LoadQueue(), 100);
+			obj = new mvcPlayer.View(new createjs.Stage(),new createjs.LoadQueue(), 100);
 		},
 		'Parameter \'name\' is not a string literal!',
-		"ViewPlayer(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
+		"mvcPlayer.View(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
-		obj = new ViewPlayer(obj_stage, obj_queue);
-		equal(obj.obj_stage, obj_stage,"ViewPlayer(obj_stage, obj_queue) : Stage ok");
-		equal(obj.obj_queue, obj_queue,"ViewPlayer(obj_stage, obj_queue) : LoadQueue ok");
-		equal(obj.name, 'ViewPlayer_default',"ViewPlayer(obj_stage, obj_queue) : name default value ok");
+		obj = new mvcPlayer.View(obj_stage, obj_queue);
+		equal(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue) : Stage ok");
+		equal(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue) : LoadQueue ok");
+		equal(obj.name, 'View_default',"mvcPlayer.View(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
-		obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
-		equal(obj.obj_stage, obj_stage,"ViewPlayer(obj_stage, obj_queue, 'view test') : Stage ok");
-		equal(obj.obj_queue, obj_queue,"ViewPlayer(obj_stage, obj_queue, 'view test') : LoadQueue ok");
-		equal(obj.name, 'view test',"ViewPlayer(obj_stage, obj_queue, 'view test') :  new name value ok");
+		obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		equal(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : Stage ok");
+		equal(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : LoadQueue ok");
+		equal(obj.name, 'view test',"mvcPlayer.View(obj_stage, obj_queue, 'view test') :  new name value ok");
 	}
 }
 
@@ -78,31 +78,31 @@ function testViewMethodprepare()
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.prepare();
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.prepare() : bad method call of prepare method with empty field"
+		"mvcPlayer.View.prepare() : bad method call of prepare method with empty field"
 	);
 
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.prepare('toto');
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.prepare('toto') : bad method call of prepare method with string literal value"
+		"mvcPlayer.View.prepare('toto') : bad method call of prepare method with string literal value"
 	);
 
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.prepare(100);
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.prepare(100) : bad method call of prepare method with number literal value"
+		"mvcPlayer.View.prepare(100) : bad method call of prepare method with number literal value"
 	);
 }
 
@@ -114,31 +114,31 @@ function testViewMethoddisplay()
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.display();
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.display() : bad method call of prepare display with empty field"
+		"mvcPlayer.View.display() : bad method call of prepare display with empty field"
 	);
 
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.display('toto');
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.display('toto') : bad method call of display method with string literal value"
+		"mvcPlayer.View.display('toto') : bad method call of display method with string literal value"
 	);
 
 	throws ( function() {
 			obj_queue = new createjs.LoadQueue();
 			obj_stage = new createjs.Stage();
-			obj = new ViewPlayer(obj_stage, obj_queue, 'view test');
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
 			obj.display(100);
 		},
 		'\'Observable\' is not a Object!',
-		"ViewPlayer.display(100) : bad method call of display method with number literal value"
+		"mvcPlayer.View.display(100) : bad method call of display method with number literal value"
 	);
 }
 
@@ -147,32 +147,32 @@ function testModelConstructor()
 {
 	console.log('testModelConstructor\n-----------------------------------------');
 	throws ( function() {
-			obj = new ModelPlayer(100);
+			obj = new mvcPlayer.Model(100);
 		},
 		'Parameter \'name\' is not a string literal!',
-		"ModelPlayer(100) : Test of parameter validate"
+		"mvcPlayer.Model(100) : Test of parameter validate"
 	);
 
 	{
-		obj = new ModelPlayer();
-		equal(obj.name, 'ModelPlayer_default', "ModelPlayer() : Test of right \'name\' default value");
-		equal(obj.x, 0, "ModelPlayer() : Test of right \'X\' default value");
-		equal(obj.y, 224, "ModelPlayer() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "ModelPlayer() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "ModelPlayer() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "ModelPlayer() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "ModelPlayer() : Test of right \'nb_points\' default value");
+		obj = new mvcPlayer.Model();
+		equal(obj.name, 'Model_default', "mvcPlayer.Model() : Test of right \'name\' default value");
+		equal(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
+		equal(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
+		equal(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
+		equal(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
+		equal(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
+		equal(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
 	}
 	
 	{
-		obj = new ModelPlayer('model test');
-		equal(obj.name, 'model test', "ModelPlayer('model test') : Test of right \'name\' value");
-		equal(obj.x, 0, "ModelPlayer() : Test of right \'X\' default value");
-		equal(obj.y, 224, "ModelPlayer() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "ModelPlayer() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "ModelPlayer() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "ModelPlayer() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "ModelPlayer() : Test of right \'nb_points\' default value");
+		obj = new mvcPlayer.Model('model test');
+		equal(obj.name, 'model test', "mvcPlayer.Model('model test') : Test of right \'name\' value");
+		equal(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
+		equal(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
+		equal(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
+		equal(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
+		equal(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
+		equal(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
 	}
 }
 
@@ -182,7 +182,7 @@ function testModelMethodpreparer()
 	console.log('testModelMethodpreparer\n-----------------------------------------');
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
@@ -190,65 +190,65 @@ function testModelMethodpreparer()
 	);
 
 	throws( function() {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
-		"ModelPlayer.preparer(10, 'toto') : 'Test of parameter \'Y\'!'"
+		"mvcPlayer.Model.preparer(10, 'toto') : 'Test of parameter \'Y\'!'"
 	);
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
-		"ModelPlayer.preparer(10, 10, 'toto') : 'Test of parameter \'rotation\'!'"
+		"mvcPlayer.Model.preparer(10, 10, 'toto') : 'Test of parameter \'rotation\'!'"
 	);
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 'toto');
 		},
 		'Parameter \'vitesse\' is not a number literal!',
-		"ModelPlayer.preparer(10, 10, -6, 'toto') : 'Test of parameter \'vitesse\'!'"
+		"mvcPlayer.Model.preparer(10, 10, -6, 'toto') : 'Test of parameter \'vitesse\'!'"
 	);
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 6, 'toto');
 		},
 		'Parameter \'nb_vies\' is not a number literal!',
-		"ModelPlayer.preparer(10, 10, -6, 6, 'toto') : 'Test of parameter \'nb_vies\'!'"
+		"mvcPlayer.Model.preparer(10, 10, -6, 6, 'toto') : 'Test of parameter \'nb_vies\'!'"
 	);
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 6, 3, 'toto');
 		},
 		'Parameter \'nb_points\' is not a number literal!',
-		"ModelPlayer.preparer(10, 10, -6, 6, 3, 'toto'): 'Test of parameter \'nb_points\'!'"
+		"mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 'toto'): 'Test of parameter \'nb_points\'!'"
 	);
 
 	{
-		obj = new ModelPlayer();
+		obj = new mvcPlayer.Model();
 		obj.preparer();
-		equal(obj.x, 0, "ModelPlayer.preparer() : Test of right \'X\' default value");
-		equal(obj.y, 224, "ModelPlayer.preparer() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "ModelPlayer.preparer() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "ModelPlayer.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "ModelPlayer.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "ModelPlayer.preparer() : Test of right \'nb_points\' default value");
+		equal(obj.x, 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
+		equal(obj.y, 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
+		equal(obj.rotation, 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
+		equal(obj.vitesse, 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
+		equal(obj.nb_vies, 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
+		equal(obj.nb_points, 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
-		obj = new ModelPlayer('model test');
+		obj = new mvcPlayer.Model('model test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.x, 10, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.y, 100, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.rotation, -6, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.vitesse, 8, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.nb_vies, 4, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.nb_points, 1000, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		equal(obj.x, 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		equal(obj.y, 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		equal(obj.rotation, -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		equal(obj.vitesse, 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		equal(obj.nb_vies, 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		equal(obj.nb_points, 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 }
 
@@ -257,23 +257,23 @@ function testModelMethodSet()
 	console.log('testModelMethodSet\n-----------------------------------------');
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.set('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
-		"ModelPlayer.set('toto') : 'Test of parameter \'X\'!'"
+		"mvcPlayer.Model.set('toto') : 'Test of parameter \'X\'!'"
 	);
 
 	throws( function() {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.set(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
-		"ModelPlayer.set(10, 'toto') : 'Test of parameter \'Y\'!'"
+		"mvcPlayer.Model.set(10, 'toto') : 'Test of parameter \'Y\'!'"
 	);
 
 	throws( function () {
-			obj = new ModelPlayer('model test' );
+			obj = new mvcPlayer.Model('model test' );
 			obj.set(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
@@ -281,19 +281,19 @@ function testModelMethodSet()
 	);
 
 	{
-		obj = new ModelPlayer('model test');
+		obj = new mvcPlayer.Model('model test');
 		obj.set();
-		equal(obj.x, 0, "ModelPlayer.set() : Test of right \'X\' default value");
-		equal(obj.y, 224, "ModelPlayer.set() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "ModelPlayer.set() : Test of right \'rotation\' default value");
+		equal(obj.x, 0, "mvcPlayer.Model.set() : Test of right \'X\' default value");
+		equal(obj.y, 224, "mvcPlayer.Model.set() : Test of right \'Y\' default value");
+		equal(obj.rotation, 0, "mvcPlayer.Model.set() : Test of right \'rotation\' default value");
 	}
 	
 	{
-		obj = new ModelPlayer('model test');
+		obj = new mvcPlayer.Model('model test');
 		obj.set(10, 100, -6);
-		equal(obj.x, 10, "ModelPlayer.set(10, 10, -6) : Test of right new \'X\' value");
-		equal(obj.y, 100, "ModelPlayer.set(10, 10, -6) : Test of right new \'Y\'  value");
-		equal(obj.rotation, -6, "ModelPlayer.set(10, 10, -6) : Test of right new \'rotation\' value");
+		equal(obj.x, 10, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'X\' value");
+		equal(obj.y, 100, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'Y\'  value");
+		equal(obj.rotation, -6, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'rotation\' value");
 	}
 }
 
@@ -303,233 +303,233 @@ function testModelMethodAdds()
 
 	// test of addCoordonneeNotifier	
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addCoordonneeNotifier();
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addCoordonneeNotifier() : bad method call test of addCoordonneeNotifier method with empty field!"
+		"mvcPlayer.Model.addCoordonneeNotifier() : bad method call test of addCoordonneeNotifier method with empty field!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addCoordonneeNotifier('toto');
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addCoordonneeNotifier('toto') : bad method call test of addCoordonneeNotifier method with string literal value!"
+		"mvcPlayer.Model.addCoordonneeNotifier('toto') : bad method call test of addCoordonneeNotifier method with string literal value!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addCoordonneeNotifier(120);
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addCoordonneeNotifier(120) : bad method call test of addCoordonneeNotifier method with number literal value!"
+		"mvcPlayer.Model.addCoordonneeNotifier(120) : bad method call test of addCoordonneeNotifier method with number literal value!"
 	);
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addCoordonneeNotifier(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"ModelPlayer.addCoordonneeNotifier(obj_observer) : bad method call test of addCoordonneeNotifier method with no observer object value!"
+		"mvcPlayer.Model.addCoordonneeNotifier(obj_observer) : bad method call test of addCoordonneeNotifier method with no observer object value!"
 	);
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addCoordonneeNotifier(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which prepare method is defined!"
+			"mvcPlayer.Model.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which prepare method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addCoordonneeNotifier(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which display method is defined!"
+			"mvcPlayer.Model.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which display method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addCoordonneeNotifier(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which display and prepare methods are defined!"
+			"mvcPlayer.Model.addCoordonneeNotifier(obj_observer) : right method call test of addCoordonneeNotifier method with observer object which display and prepare methods are defined!"
 		);
 	}
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addCoordonneeNotifier(obj_observer);
 			obj.addCoordonneeNotifier(obj_observer);
 		},
 		'\'Observer\' is already added!',
-		"ModelPlayer.addCoordonneeNotifier(obj_observer) : twice method call test of addCoordonneeNotifier method!"
+		"mvcPlayer.Model.addCoordonneeNotifier(obj_observer) : twice method call test of addCoordonneeNotifier method!"
 	);
 
 	// test of addCoordonneeNotifier	
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier();
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addLifeNotifier() : bad method call test of addLifeNotifier method with empty field!"
+		"mvcPlayer.Model.addLifeNotifier() : bad method call test of addLifeNotifier method with empty field!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier('toto');
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addLifeNotifier('toto') : bad method call test of addLifeNotifier method with string literal value!"
+		"mvcPlayer.Model.addLifeNotifier('toto') : bad method call test of addLifeNotifier method with string literal value!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier(120);
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addLifeNotifier(120) : bad method call test of addLifeNotifier method with number literal value!"
+		"mvcPlayer.Model.addLifeNotifier(120) : bad method call test of addLifeNotifier method with number literal value!"
 	);
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"ModelPlayer.addLifeNotifier(obj_observer) : bad method call test of addLifeNotifier method with no observer object value!"
+		"mvcPlayer.Model.addLifeNotifier(obj_observer) : bad method call test of addLifeNotifier method with no observer object value!"
 	);
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addLifeNotifier(obj_observer);
 		deepEqual(
 			obj.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which prepare method is defined!"
+			"mvcPlayer.Model.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which prepare method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addLifeNotifier(obj_observer);
 		deepEqual(
 			obj.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which display method is defined!"
+			"mvcPlayer.Model.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which display method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addLifeNotifier(obj_observer);
 		deepEqual(
 			obj.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which display and prepare methods are defined!"
+			"mvcPlayer.Model.addLifeNotifier(obj_observer) : right method call test of addLifeNotifier method with observer object which display and prepare methods are defined!"
 		);
 	}
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier(obj_observer);
 			obj.addLifeNotifier(obj_observer);
 		},
 		'\'Observer\' is already added!',
-		"ModelPlayer.addLifeNotifier(obj_observer) : twice method call test of addLifeNotifier method!"
+		"mvcPlayer.Model.addLifeNotifier(obj_observer) : twice method call test of addLifeNotifier method!"
 	);
 
 	// test of addScoreNotifier	
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier();
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addScoreNotifier() : bad method call test of addScoreNotifier method with empty field!"
+		"mvcPlayer.Model.addScoreNotifier() : bad method call test of addScoreNotifier method with empty field!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier('toto');
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addScoreNotifier('toto') : bad method call test of addScoreNotifier method with string literal value!"
+		"mvcPlayer.Model.addScoreNotifier('toto') : bad method call test of addScoreNotifier method with string literal value!"
 	);
 
 	throws( function() {
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier(120);
 		},
 		'\'Observer\' is not a Object!',
-		"ModelPlayer.addScoreNotifier(120) : bad method call test of addScoreNotifier method with number literal value!"
+		"mvcPlayer.Model.addScoreNotifier(120) : bad method call test of addScoreNotifier method with number literal value!"
 	);
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"ModelPlayer.addScoreNotifier(obj_observer) : bad method call test of addScoreNotifier method with no observer object value!"
+		"mvcPlayer.Model.addScoreNotifier(obj_observer) : bad method call test of addScoreNotifier method with no observer object value!"
 	);
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addScoreNotifier(obj_observer);
 		deepEqual(
 			obj.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which prepare method is defined!"
+			"mvcPlayer.Model.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which prepare method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addScoreNotifier(obj_observer);
 		deepEqual(
 			obj.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which display method is defined!"
+			"mvcPlayer.Model.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which display method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new ModelPlayer();
+		var obj = new mvcPlayer.Model();
 		obj.addScoreNotifier(obj_observer);
 		deepEqual(
 			obj.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ModelPlayer.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which display and prepare methods are defined!"
+			"mvcPlayer.Model.addScoreNotifier(obj_observer) : right method call test of addScoreNotifier method with observer object which display and prepare methods are defined!"
 		);
 	}
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new ModelPlayer();
+			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier(obj_observer);
 			obj.addScoreNotifier(obj_observer);
 		},
 		'\'Observer\' is already added!',
-		"ModelPlayer.addScoreNotifier(obj_observer) : twice method call test of addScoreNotifier method!"
+		"mvcPlayer.Model.addScoreNotifier(obj_observer) : twice method call test of addScoreNotifier method!"
 	);
 }
 
@@ -537,25 +537,25 @@ function testModelMethodGetters()
 {
 	console.log('testModelMethodGetters\n-----------------------------------------');
 	{
-		obj = new ModelPlayer();
+		obj = new mvcPlayer.Model();
 		obj.preparer();
-		equal(obj.getX(), 0, "ModelPlayer.preparer() : Test of right \'X\' default value");
-		equal(obj.getY(), 224, "ModelPlayer.preparer() : Test of right \'Y\' default value");
-		equal(obj.getRotation(), 0, "ModelPlayer.preparer() : Test of right \'rotation\' default value");
-		equal(obj.getSpeed(), 6, "ModelPlayer.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.getLife(), 3, "ModelPlayer.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.getScore(), 0, "ModelPlayer.preparer() : Test of right \'nb_points\' default value");
+		equal(obj.getX(), 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
+		equal(obj.getY(), 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
+		equal(obj.getRotation(), 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
+		equal(obj.getSpeed(), 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
+		equal(obj.getLife(), 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
+		equal(obj.getScore(), 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
-		obj = new ModelPlayer('model test');
+		obj = new mvcPlayer.Model('model test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.getX(), 10, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.getY(), 100, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.getRotation(), -6, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.getSpeed(), 8, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.getLife(), 4, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.getScore(), 1000, "ModelPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		equal(obj.getX(), 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		equal(obj.getY(), 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		equal(obj.getRotation(), -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		equal(obj.getSpeed(), 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		equal(obj.getLife(), 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		equal(obj.getScore(), 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 
 }
@@ -565,42 +565,42 @@ function testControllerConstructor()
 {
 	console.log('testControllerConstructor\n-----------------------------------------');
 	throws( function() {
-		obj = new ControllerPlayer();
+		obj = new mvcPlayer.Controller();
 		},
 		'Parameter \'obj_stage\' is not createjs.Stage instance!',
-		"ControllerPlayer() : 'Test of first parameter \'obj_stage\'!'"
+		"mvcPlayer.Controller() : 'Test of first parameter \'obj_stage\'!'"
 	);
 
 	throws( function() {
-			obj = new ControllerPlayer(new createjs.Stage(),100);
+			obj = new mvcPlayer.Controller(new createjs.Stage(),100);
 		},
 		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
-		"ControllerPlayer(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
+		"mvcPlayer.Controller(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	throws( function() {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue, 100);
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 100);
 		},
 		'Parameter \'name\' is not a string literal!',
-		"ControllerPlayer(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
+		"mvcPlayer.Controller(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
-		obj = new ControllerPlayer(obj_stage, obj_queue);
-		equal(obj.obj_stage, obj_stage,"ControllerPlayer(obj_stage, obj_queue) : Stage ok");
-		equal(obj.obj_queue, obj_queue,"ControllerPlayer(obj_stage, obj_queue) : LoadQueue ok");
-		equal(obj.name, 'ControllerPlayer_default',"ControllerPlayer(obj_stage, obj_queue) : name default value ok");
+		obj = new mvcPlayer.Controller(obj_stage, obj_queue);
+		equal(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue) : Stage ok");
+		equal(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue) : LoadQueue ok");
+		equal(obj.name, 'Controller_default',"mvcPlayer.Controller(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
-		obj = new ControllerPlayer(obj_stage, obj_queue, 'controller test');
-		equal(obj.obj_stage, obj_stage,"ControllerPlayer(obj_stage, obj_queue, 'view test') : Stage ok");
-		equal(obj.obj_queue, obj_queue,"ControllerPlayer(obj_stage, obj_queue, 'view test') : LoadQueue ok");
-		equal(obj.name, 'controller test',"ControllerPlayer(obj_stage, obj_queue, 'view test') :  new name value ok");
+		obj = new mvcPlayer.Controller(obj_stage, obj_queue, 'controller test');
+		equal(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : Stage ok");
+		equal(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : LoadQueue ok");
+		equal(obj.name, 'controller test',"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') :  new name value ok");
 	}
 }
 
@@ -609,73 +609,73 @@ function testControllerMethodpreparer()
 	console.log('testControllerMethodpreparer\n-----------------------------------------');
 
 	throws( function () {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
-		"ControllerPlayer.preparer('toto') : 'Test of parameter \'X\'!'"
+		"mvcPlayer.Controller.preparer('toto') : 'Test of parameter \'X\'!'"
 	);
 
 	throws( function() {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
-		"ControllerPlayer.preparer(10, 'toto') : 'Test of parameter \'Y\'!'"
+		"mvcPlayer.Controller.preparer(10, 'toto') : 'Test of parameter \'Y\'!'"
 	);
 
 	throws( function () {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
-		"ControllerPlayer.preparer(10, 10, 'toto') : 'Test of parameter \'rotation\'!'"
+		"mvcPlayer.Controller.preparer(10, 10, 'toto') : 'Test of parameter \'rotation\'!'"
 	);
 
 	throws( function () {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer(10, 10, -6, 'toto');
 		},
 		'Parameter \'vitesse\' is not a number literal!',
-		"ControllerPlayer.preparer(10, 10, -6, 'toto') : 'Test of parameter \'vitesse\'!'"
+		"mvcPlayer.Controller.preparer(10, 10, -6, 'toto') : 'Test of parameter \'vitesse\'!'"
 	);
 
 	throws( function () {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer(10, 10, -6, 6, 'toto');
 		},
 		'Parameter \'nb_vies\' is not a number literal!',
-		"ControllerPlayer.preparer(10, 10, -6, 6, 'toto') : 'Test of parameter \'nb_vies\'!'"
+		"mvcPlayer.Controller.preparer(10, 10, -6, 6, 'toto') : 'Test of parameter \'nb_vies\'!'"
 	);
 
 	throws( function () {
-			obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
 			obj.preparer(10, 10, -6, 6, 3, 'toto');
 		},
 		'Parameter \'nb_points\' is not a number literal!',
-		"ControllerPlayer.preparer(10, 10, -6, 6, 3, 'toto'): 'Test of parameter \'nb_points\'!'"
+		"mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 'toto'): 'Test of parameter \'nb_points\'!'"
 	);
 
 	{
-		obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer();
-		equal(obj.obj_model_joueur.getX(), 0, "ControllerPlayer.preparer() : Test of right \'X\' default value");
-		equal(obj.obj_model_joueur.getY(), 224, "ControllerPlayer.preparer() : Test of right \'Y\' default value");
-		equal(obj.obj_model_joueur.getRotation(), 0, "ControllerPlayer.preparer() : Test of right \'rotation\' default value");
-		equal(obj.obj_model_joueur.getSpeed(), 6, "ControllerPlayer.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.obj_model_joueur.getLife(), 3, "ControllerPlayer.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.obj_model_joueur.getScore(), 0, "ControllerPlayer.preparer() : Test of right \'nb_points\' default value");
+		equal(obj.obj_model_joueur.getX(), 0, "mvcPlayer.Controller.preparer() : Test of right \'X\' default value");
+		equal(obj.obj_model_joueur.getY(), 224, "mvcPlayer.Controller.preparer() : Test of right \'Y\' default value");
+		equal(obj.obj_model_joueur.getRotation(), 0, "mvcPlayer.Controller.preparer() : Test of right \'rotation\' default value");
+		equal(obj.obj_model_joueur.getSpeed(), 6, "mvcPlayer.Controller.preparer() : Test of right \'vitesse\' default value");
+		equal(obj.obj_model_joueur.getLife(), 3, "mvcPlayer.Controller.preparer() : Test of right \'nb_vies\' default value");
+		equal(obj.obj_model_joueur.getScore(), 0, "mvcPlayer.Controller.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
-		obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.obj_model_joueur.getX(), 10, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.obj_model_joueur.getY(), 100, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.obj_model_joueur.getRotation(), -6, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.obj_model_joueur.getSpeed(), 8, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.obj_model_joueur.getLife(), 4, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.obj_model_joueur.getScore(), 1000, "ControllerPlayer.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		equal(obj.obj_model_joueur.getX(), 10, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		equal(obj.obj_model_joueur.getY(), 100, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		equal(obj.obj_model_joueur.getRotation(), -6, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		equal(obj.obj_model_joueur.getSpeed(), 8, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		equal(obj.obj_model_joueur.getLife(), 4, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		equal(obj.obj_model_joueur.getScore(), 1000, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 }
 
@@ -683,79 +683,79 @@ function testControllerMethodscoreHasObservedBy()
 { 
 	console.log('testControllerMethodscoreHasObservedBy\n-----------------------------------------');
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy();
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy() : bad method call test of scoreHasObservedBy method with empty field!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy() : bad method call test of scoreHasObservedBy method with empty field!"
 	);
 
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy('toto');
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy('toto') : bad method call test of scoreHasObservedBy method with string literal value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy('toto') : bad method call test of scoreHasObservedBy method with string literal value!"
 	);
 
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy(120);
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(120) : bad method call test of scoreHasObservedBy method with number literal value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(120) : bad method call test of scoreHasObservedBy method with number literal value!"
 	);
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : bad method call test of scoreHasObservedBy method with no observer object value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : bad method call test of scoreHasObservedBy method with no observer object value!"
 	);
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.scoreHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which prepare method is defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which prepare method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.scoreHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which display method is defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which display method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.scoreHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_points_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which display and prepare methods are defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : right method call test of scoreHasObservedBy method with observer object which display and prepare methods are defined!"
 		);
 	}
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy(obj_observer);
 			obj.scoreHasObservedBy(obj_observer);
 		},
 		'\'Observer\' is already added!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : twice method call test of scoreHasObservedBy method!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').scoreHasObservedBy(obj_observer) : twice method call test of scoreHasObservedBy method!"
 	);
 
 }
@@ -765,79 +765,79 @@ function testControllerMethodlifeHasObservedBy()
 	console.log('testControllerMethodlifeHasObservedBy\n-----------------------------------------');
 
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy();
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy() : bad method call test of lifeHasObservedBy method with empty field!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy() : bad method call test of lifeHasObservedBy method with empty field!"
 	);
 
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy('toto');
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy('toto') : bad method call test of lifeHasObservedBy method with string literal value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy('toto') : bad method call test of lifeHasObservedBy method with string literal value!"
 	);
 
 	throws( function() {
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy(120);
 		},
 		'\'Observer\' is not a Object!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(120) : bad method call test of lifeHasObservedBy method with number literal value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(120) : bad method call test of lifeHasObservedBy method with number literal value!"
 	);
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : bad method call test of lifeHasObservedBy method with no observer object value!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : bad method call test of lifeHasObservedBy method with no observer object value!"
 	);
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.lifeHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which prepare method is defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which prepare method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.lifeHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which display method is defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which display method is defined!"
 		);
 	}
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.lifeHasObservedBy(obj_observer);
 		deepEqual(
 			obj.obj_model_joueur.nb_vies_notifier.obj_observer_lists,
 			{'observer_1' : obj_observer},
-			"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which display and prepare methods are defined!"
+			"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : right method call test of lifeHasObservedBy method with observer object which display and prepare methods are defined!"
 		);
 	}
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy(obj_observer);
 			obj.lifeHasObservedBy(obj_observer);
 		},
 		'\'Observer\' is already added!',
-		"ControllerPlayer(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : twice method call test of lifeHasObservedBy method!"
+		"mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test').lifeHasObservedBy(obj_observer) : twice method call test of lifeHasObservedBy method!"
 	);
 }
 
@@ -847,7 +847,7 @@ function testControllerMethodMove()
 
 	{	// Test of moveToUp() methode
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 10, 0, 8);
 		obj.moveToUp();
 		equal(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
@@ -862,7 +862,7 @@ function testControllerMethodMove()
 	
 	{	// Test of moveToDown() methode
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 404, 0, 8);
 		obj.moveToDown();
 		equal(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
@@ -877,7 +877,7 @@ function testControllerMethodMove()
 
 	{	// Test of moveToLeft() methode
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, 0, 8);
 		obj.moveToLeft();
 		equal(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
@@ -892,7 +892,7 @@ function testControllerMethodMove()
 
 	{	// Test of moveToRight() methode
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, 0, 8);
 		obj.moveToRight();
 		equal(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
@@ -908,7 +908,7 @@ function testControllerMethodMove()
 	// Test of AnnulerRotation() method
 	{
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, -6);
 		obj.annulerRotation();
 		equal(obj.obj_model_joueur.getRotation(), -5, "decrease of rotation value from -6 to -5");
@@ -927,7 +927,7 @@ function testControllerMethodRun()
 
 	{	// move to up
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 10, 0, 8);
 		obj_stage.touches[38] = true;
 		obj.run();
@@ -949,7 +949,7 @@ function testControllerMethodRun()
 
 	{	// move to down
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 404, 0, 8);
 		obj_stage.touches[40] = true;
 		obj.run();
@@ -971,7 +971,7 @@ function testControllerMethodRun()
 
 	{	// move to left
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, 0, 8);
 		obj_stage.touches[37] = true;
 		obj.run();
@@ -994,7 +994,7 @@ function testControllerMethodRun()
 
 	{	// move to right
 		var obj_stage = new createjs.Stage();
-		var obj = new ControllerPlayer(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, 0, 8);
 		obj_stage.touches[39] = true;
 		obj.run();

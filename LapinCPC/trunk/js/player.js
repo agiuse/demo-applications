@@ -7,6 +7,9 @@
 title MVC <B>Player</B>
 
 class createjs.Bitmap
+class createjs.Stage
+class createjs.LoadQueue
+
 class ControllerHighScore
 class ViewScore
 class ViewLife 
@@ -20,24 +23,23 @@ class Observable {
 	void notify(String type_notify)
 }
 
-package "MVCPlayer" #DDDDDD {
-
-class ViewPlayer {
+class mvcPlayer.View {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-	String name
+	String name = "View_default"
 	==
-	void ViewPlayer(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(OBject obj_observable)
 }
 
-createjs.Bitmap <|-- ViewPlayer
+createjs.Bitmap <|-- mvcPlayer.View
+createjs.LoadQueue -- mvcPlayer.View
+createjs.Stage -- mvcPlayer.View
 
-
-class ModelPlayer {
-	String name
+class mvcPlayer.Model {
+	String name = "Model_default"
 	--
 	int x = 0
 	int y = 224
@@ -47,7 +49,7 @@ class ModelPlayer {
 	Observable nb_vies_notifier
 	Observable nb_points_notifier
 	==
-	void ModelPlayer(String name)
+	void Model(String name)
 	void addLifeNotifier(Object obj_observer)
 	void addScoreNotifier(Object obj_observer)
 	vodi addCoordonneeNotifier(Object obj_observer)
@@ -62,17 +64,17 @@ class ModelPlayer {
 	set(int x, int y , int rotation)
 }
 
-ModelPlayer *-- Observable : coordonnee_notifier
-ModelPlayer *-- Observable : nb_vies_notifier
-ModelPlayer *-- Observable : nb_points_notifier
+mvcPlayer.Model *-- Observable : coordonnee_notifier
+mvcPlayer.Model *-- Observable : nb_vies_notifier
+mvcPlayer.Model *-- Observable : nb_points_notifier
 
-class ControllerPlayer {
+class mvcPlayer.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
-	String Name
+	String Name = "Controller_default"
 	ArrayHashage<Boolean> touches
 	==
-	void ControllerPlayer(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notifier __
 	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
 	__ subscription by some external observers__
@@ -87,30 +89,29 @@ class ControllerPlayer {
 	void moveToUp()
 }
 
-ControllerPlayer *-- ViewPlayer
-ControllerPlayer *-- ModelPlayer
-ModelPlayer .. ControllerHighScore : "observable/observer"
-ModelPlayer .. ViewScore :  "observable/observer"
-ModelPlayer .. ViewLife : "observable/observer"
-ModelPlayer .. ViewPlayer : "observable/observer"
-
-}
+mvcPlayer.Controller *-- mvcPlayer.View
+mvcPlayer.Controller *-- mvcPlayer.Model
+mvcPlayer.Model .. ControllerHighScore : "observable/observer"
+mvcPlayer.Model .. ViewScore :  "observable/observer"
+mvcPlayer.Model .. ViewLife : "observable/observer"
+mvcPlayer.Model .. mvcPlayer.View : "observable/observer"
 
 createjs.Text <|-- ViewScore
 createjs.Text <|-- ViewLife
 
 @enduml
 */
+var mvcPlayer = {};
 
 // ============================================================================================================================
-// Classe ViewPlayer
+// Classe mvcPlayer.View
 // Cette classe s'occupe d'afficher le vaisseau
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ViewPlayer(obj_stage, obj_queue, name )
+	mvcPlayer.View = function(obj_stage, obj_queue, name )
 	{
 		createjs.Bitmap.call(this);
 
@@ -124,7 +125,7 @@ createjs.Text <|-- ViewLife
 		else
 			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-		this.name = (name === undefined) ? 'ViewPlayer_default' : name;
+		this.name = (name === undefined) ? 'View_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 
@@ -135,9 +136,9 @@ createjs.Text <|-- ViewLife
 		console.log(this.name, ' View is created!');
 	}
 
-	ViewPlayer.prototype = new createjs.Bitmap();
+	mvcPlayer.View.prototype = new createjs.Bitmap();
 
-	ViewPlayer.prototype.prepare = function(obj_observable)
+	mvcPlayer.View.prototype.prepare = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -150,7 +151,7 @@ createjs.Text <|-- ViewLife
 		console.log(this.name, ' View is ready!');
 	}
 
-	ViewPlayer.prototype.display = function(obj_observable)
+	mvcPlayer.View.prototype.display = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
@@ -162,21 +163,21 @@ createjs.Text <|-- ViewLife
 		console.log(this.name, ' View is displayed!');
 	}
 
-	window.ViewPlayer = ViewPlayer;
+	window.mvcPlayer.View = mvcPlayer.View;
 
 }(window));
 
 // ============================================================================================================================
-// Classe ModelPlayer
+// Classe mvcPlayer.Model
 // Cette classe gère les données du joueur.
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ModelPlayer(name)
+	mvcPlayer.Model = function(name)
 	{
-		this.name = (name === undefined) ? 'ModelPlayer_default' : name;
+		this.name = (name === undefined) ? 'Model_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 	
@@ -196,7 +197,7 @@ createjs.Text <|-- ViewLife
 		console.log(this.name, ' Model is created!');
 	}
 
-	ModelPlayer.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
+	mvcPlayer.Model.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
 	{
 		this.x = (x === undefined) ? 0 : x;
 		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
@@ -230,7 +231,7 @@ createjs.Text <|-- ViewLife
 		this.nb_points_notifier.notify('prepare');
 	}
 
-	ModelPlayer.prototype.set = function(x, y, rotation)
+	mvcPlayer.Model.prototype.set = function(x, y, rotation)
 	{
 		this.x = (x === undefined) ? 0 : x;
 		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
@@ -249,12 +250,12 @@ createjs.Text <|-- ViewLife
 		console.log(this.name, ' Model is displayed!');
 	}
 
-	ModelPlayer.prototype.addCoordonneeNotifier = function(obj_observer)
+	mvcPlayer.Model.prototype.addCoordonneeNotifier = function(obj_observer)
 	{
 		this.coordonnee_notifier.add(obj_observer);
 	}
 
-	ModelPlayer.prototype.addLifeNotifier = function(obj_observer)
+	mvcPlayer.Model.prototype.addLifeNotifier = function(obj_observer)
 	{
 		if (typeof obj_observer !== 'object') 
 			throw '\'Observer\' is not a Object!';
@@ -262,7 +263,7 @@ createjs.Text <|-- ViewLife
 		this.nb_vies_notifier.add(obj_observer);
 	}
 
-	ModelPlayer.prototype.addScoreNotifier = function(obj_observer)
+	mvcPlayer.Model.prototype.addScoreNotifier = function(obj_observer)
 	{
 		if (typeof obj_observer !== 'object') 
 			throw '\'Observer\' is not a Object!';
@@ -270,49 +271,49 @@ createjs.Text <|-- ViewLife
 		this.nb_points_notifier.add(obj_observer);
 	}
 
-	ModelPlayer.prototype.getX = function()
+	mvcPlayer.Model.prototype.getX = function()
 	{
 		return this.x;
 	}
 
-	ModelPlayer.prototype.getY = function()
+	mvcPlayer.Model.prototype.getY = function()
 	{
 		return this.y;
 	}
 
-	ModelPlayer.prototype.getRotation = function()
+	mvcPlayer.Model.prototype.getRotation = function()
 	{
 		return this.rotation;
 	}
 
-	ModelPlayer.prototype.getLife = function()
+	mvcPlayer.Model.prototype.getLife = function()
 	{
 		return this.nb_vies;
 	}
 
-	ModelPlayer.prototype.getScore = function()
+	mvcPlayer.Model.prototype.getScore = function()
 	{
 		return this.nb_points;
 	}
 
-	ModelPlayer.prototype.getSpeed = function()
+	mvcPlayer.Model.prototype.getSpeed = function()
 	{
 		return this.vitesse;
 	}
 
-	window.ModelPlayer = ModelPlayer;
+	window.mvcPlayer.Model = mvcPlayer.Model;
 
 }(window));
 
 // ============================================================================================================================
-// Classe ControllerPlayer
-// Cette classe lie l'objet ViewPlayer et ModelPlayer via un patron "Observeur/Observer"
+// Classe mvcPlayer.Controller
+// Cette classe lie l'objet mvcPlayer.View et mvcPlayer.Model via un patron "Observeur/Observer"
 // ============================================================================================================================
 ;( function(window)
 {
 	'use strict';
 
-	function ControllerPlayer(obj_stage, obj_queue, name) 
+	mvcPlayer.Controller = function(obj_stage, obj_queue, name) 
 	{
 		if (  obj_stage instanceof createjs.Stage)
 			this.obj_stage = obj_stage;
@@ -324,36 +325,36 @@ createjs.Text <|-- ViewLife
 		else
 			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
 
-		this.name = (name === undefined) ? 'ControllerPlayer_default' : name;
+		this.name = (name === undefined) ? 'Controller_default' : name;
 		if ( typeof this.name !== 'string' )
 			throw 'Parameter \'name\' is not a string literal!';
 	
 		console.log(this.name, ' Controller is being created...');
 
-		this.obj_view_joueur = new ViewPlayer(this.obj_stage, this.obj_queue, this.name+'_view');
-		this.obj_model_joueur = new ModelPlayer(this.name + '_model');
+		this.obj_view_joueur = new mvcPlayer.View(this.obj_stage, this.obj_queue, this.name+'_view');
+		this.obj_model_joueur = new mvcPlayer.Model(this.name + '_model');
 		this.obj_model_joueur.addCoordonneeNotifier( this.obj_view_joueur );
 	 	console.log(this.name, ' Controller is created!');
 	}
 
-	ControllerPlayer.prototype.preparer = function(x, y, rotation, vitesse, nb_vies, nb_points)
+	mvcPlayer.Controller.prototype.preparer = function(x, y, rotation, vitesse, nb_vies, nb_points)
 	{
 		this.obj_model_joueur.preparer(x, y, rotation, vitesse, nb_vies, nb_points);
 	}
 
 	// Abonne à l'observable Score par un observateur extérieur
-	ControllerPlayer.prototype.scoreHasObservedBy = function(obj_observer)
+	mvcPlayer.Controller.prototype.scoreHasObservedBy = function(obj_observer)
 	{
 		this.obj_model_joueur.addScoreNotifier(obj_observer);
 	}
 
 	// Abonne à l'observable Life par un observateur extérieur
-	ControllerPlayer.prototype.lifeHasObservedBy = function(obj_observer)
+	mvcPlayer.Controller.prototype.lifeHasObservedBy = function(obj_observer)
 	{
 		this.obj_model_joueur.addLifeNotifier(obj_observer);
 	}
 
-	ControllerPlayer.prototype.run = function()
+	mvcPlayer.Controller.prototype.run = function()
 	{	
 		// gestion des touches flÃ¨che haut et flÃ¨che bas
 		if ( 38 in this.obj_stage.touches) 
@@ -369,11 +370,12 @@ createjs.Text <|-- ViewLife
 			if ( 39 in this.obj_stage.touches )
 				this.moveToRight();
 			else
-				this.annulerRotation();
+				if (this.obj_model_joueur.getRotation() !== 0)
+					this.annulerRotation();
 
 	}
 
-	ControllerPlayer.prototype.moveToUp = function()	// Methode observe par la Vue du joueur
+	mvcPlayer.Controller.prototype.moveToUp = function()	// Methode observe par la Vue du joueur
 	{
 		var y = this.obj_model_joueur.getY();
 
@@ -396,7 +398,7 @@ createjs.Text <|-- ViewLife
 		}
 	}
 
-	ControllerPlayer.prototype.moveToDown = function()	// Methode observe par la Vue du joueur
+	mvcPlayer.Controller.prototype.moveToDown = function()	// Methode observe par la Vue du joueur
 	{
 		var y = this.obj_model_joueur.getY();
 
@@ -419,7 +421,7 @@ createjs.Text <|-- ViewLife
 		}
 	}
 
-	ControllerPlayer.prototype.moveToRight = function()	// Methode observe par la Vue du joueur
+	mvcPlayer.Controller.prototype.moveToRight = function()	// Methode observe par la Vue du joueur
 	{
 		var x = this.obj_model_joueur.getX();
 
@@ -447,7 +449,7 @@ createjs.Text <|-- ViewLife
 		}
 	}
 
-	ControllerPlayer.prototype.moveToLeft = function()	// Methode observe par la Vue du joueur
+	mvcPlayer.Controller.prototype.moveToLeft = function()	// Methode observe par la Vue du joueur
 	{
 		var x = this.obj_model_joueur.getX();
 		if ( x > 0 )
@@ -475,7 +477,7 @@ createjs.Text <|-- ViewLife
 		}
 	}
 
-	ControllerPlayer.prototype.annulerRotation = function()
+	mvcPlayer.Controller.prototype.annulerRotation = function()
 	{
 		var rotation = this.obj_model_joueur.getRotation();
 
@@ -495,7 +497,7 @@ createjs.Text <|-- ViewLife
 		}
 	}
 
-	window.ControllerPlayer = ControllerPlayer;
+	window.mvcPlayer.Controller = mvcPlayer.Controller;
 
 }(window));
 
