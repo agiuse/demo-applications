@@ -1,7 +1,7 @@
 "use strict;"
 
 // ====================================================================
-// objet simulant l'observable observé par l'objet testé ViewScore
+// objet simulant l'observable observé par l'objet testé mvcScore.View
 // Dans le cadre des tests, cet objet est directement un observable et ne possède pas un Model propre.
 // Comme par exemple l'observable vie ou coordonnee dans l'objet ModelPlayer
 function ObjetScore(name)
@@ -64,33 +64,31 @@ Observable <|-- ObjetScore
 class createjs.Text
 class createjs.Stage
 
-package "MVCScore" #DDDDDD {
-
-class ViewScore {
+class mvcScore.View {
 	createjs.Stage obj_stage
 	String name
 	int x
 	int y
 	Boolean visible = true
 	==
-	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
+	void View(createjs.Stage obj_stage, String name, int x, int y)
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 }
 
-class ControllerScore {
+class mvcScore.Controller {
 	createjs.Stage obj_stage
 	String name
 	==
-	void ControllerScore(createjs.Stage obj_stage, String name, int x, int y)
-	ViewScore getObserver()
+	void Controller(createjs.Stage obj_stage, String name, int x, int y)
+	mvcScore.View getObserver()
 }
 
-ObjetScore .. ViewScore : "observer/observable"
-createjs.Text <|-- ViewScore
-createjs.Stage -- ViewScore
-ControllerScore *-- ViewScore
+ObjetScore .. mvcScore.View : "observer/observable"
+createjs.Text <|-- mvcScore.View
+createjs.Stage -- mvcScore.View
+mvcScore.Controller *-- mvcScore.View
 
 @enduml
 */
@@ -122,17 +120,17 @@ function test1()
 	var obj_observable = new ObjetScore('observable'); // creer l'observable Score à 0 sans notification
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
-	var obj_view_score = new ViewScore(obj_stage, 'view_score_1',8, 26); // creer le View HighScore
-	equal(obj_view_score.text, "Score : 0", "Verification of text contain of createjs.Text object");	
+	var obj_view_score = new mvcScore.View(obj_stage, 'view_score_1',8, 26); // creer le View HighScore
+	equal(obj_view_score.text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");	
 	
 	obj_observable.add(obj_view_score ); // ajout le view score à observer l'objet Score
 	console.log("  Test1 environment is ready!");
 
-	obj_observable.run(30); // lance une notification 'prepare' au ViewScore pour afficher la valeur 30
+	obj_observable.run(30); // lance une notification 'prepare' au mvcScore.View pour afficher la valeur 30
 	console.log("  Score Test Modem is ok!");
 	
 	obj_stage.update();
-	equal(obj_view_score.text, "Score : 30", "Verification of text contain of createjs.Text object");	
+	equal(obj_view_score.text, "Score : 30", "Check that createjs.Text attribut text contains the value 30!");	
 }
 
 function test2()
@@ -144,8 +142,8 @@ function test2()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	var obj_controller_score = new ControllerScore(obj_stage, 'controller_score_1', 8, 100);
-	equal(obj_controller_score.obj_view_score.text, "Score : 0", "Verification of text contain of createjs.Text object");
+	var obj_controller_score = new mvcScore.Controller(obj_stage, 'controller_score_1', 8, 100);
+	equal(obj_controller_score.obj_view_score.text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");
 	var obj_observable = new ObjetScore('observable');
 	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
@@ -154,7 +152,7 @@ function test2()
 	
 	obj_observable.run(3000);
 	obj_stage.update();
-	equal(obj_controller_score.obj_view_score.text, "Score : 3000", "Verification of text contain of createjs.Text object");
+	equal(obj_controller_score.getObserver().text, "Score : 3000", "Check that createjs.Text attribut text contains the value 3000!");
 }
 
 
