@@ -124,7 +124,7 @@ function test3()
 		obj_stage = new createjs.Stage();
 		obj = new mvcScore.Controller(obj_stage);
 		equal(obj.obj_stage, obj_stage,"mvcScore.Controller(obj_stage) : test of right Stage value");
-		equal(obj.name, 'mvcScore.Controller_default',"mvcScore.Controller(obj_stage) : test of right name default value");
+		equal(obj.name, 'Controller_default',"mvcScore.Controller(obj_stage) : test of right name default value");
 	}
 
 	{

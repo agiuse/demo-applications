@@ -36,7 +36,7 @@
 		return name;
 	}
 
-	function IsNotNumber(n)
+	common.IsNotNumber = function(n)
 	{
 		if (! ((typeof n==='number')&&(n%1===0))) 
 			return true;
@@ -47,11 +47,11 @@
 	common.HasNumberX = function(x, default_x)
 	{
 		default_x = (default_x === undefined) ? 0 : default_x;
-		if ( IsNotNumber(default_x) ) 
+		if ( common.IsNotNumber(default_x) ) 
 			throw 'Parameter \'X\' by default is not a number literal!';
 	
 		x = (x === undefined) ? default_x : x;
-		if ( IsNotNumber(x) ) 
+		if ( common.IsNotNumber(x) ) 
 			throw 'Parameter \'X\' is not a number literal!';
 		
 		return x;
@@ -60,11 +60,11 @@
 	common.HasNumberY = function(y, default_y)
 	{
 		default_y = (default_y === undefined) ? 0 : default_y;
-		if ( IsNotNumber(default_y)) 
+		if ( common.IsNotNumber(default_y)) 
 			throw 'Parameter \'Y\' by default is not a number literal!';
 
 		y = (y === undefined) ? default_y : y;
-		if ( IsNotNumber(y)) 
+		if ( common.IsNotNumber(y)) 
 			throw 'Parameter \'Y\' is not a number literal!';
 		
 		return y;

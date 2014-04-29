@@ -41,32 +41,19 @@ mvcScore.Controller *-- mvcScore.View
 // ============================================================================================================================
 var mvcScore = {};
 
-;(function(window)
+;(function()
 {
 	'use strict';
 
 	mvcScore.View = function(obj_stage, name, x, y )
 	{
-		createjs.Text.call(this, 'Score : 0', '24px Arial', '#00000' );
-
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? 'View_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'View_default');
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,0);
 
 		console.log(this.name, ' View is being created...');
+		createjs.Text.call(this, 'Score : 0', '24px Arial', '#00000' );
 		this.obj_stage.addChild(this);
 		this.visible=true;
 		console.log(this.name + ' View is created!');
@@ -76,49 +63,30 @@ var mvcScore = {};
 
 	mvcScore.View.prototype.prepare = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		this.text = "Score : " + obj_observable.getScore();
+		if ( common.IsObjectObservable(obj_observable) )
+			this.text = "Score : " + obj_observable.getScore();
 	}
 
 	mvcScore.View.prototype.display = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-	
-		this.text = 'Score : ' + obj_observable.getScore();
+		this.prepare(obj_observable);
 	}
-
-	window.mvcScore.View = mvcScore.View;
 	
-}(window));
+}());
 
 // ============================================================================================================================
 // Class mvcScore.Controller
 // ============================================================================================================================
-;(function(window)
+;(function()
 {
 	'use strict';
 
 	mvcScore.Controller = function(obj_stage, name, x, y)
 	{
-		if (  obj_stage instanceof createjs.Stage )
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? "Controller_default" : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'Controller_default');
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,0);
 
 		console.log(this.name, ' Controller is being created...');
 		this.obj_view_score = new mvcScore.View(this.obj_stage, this.name, x, y);
@@ -130,10 +98,8 @@ var mvcScore = {};
 	{
 		return this.obj_view_score;
 	}
-
-	window.mvcScore.Controller = mvcScore.Controller;
 	
-}(window));
+}());
 
 // ============================================================================================================================
 // MVC HighScore
@@ -213,32 +179,19 @@ var mvcHighScore = {};
 // L'objet mvcScore.View s'occupe de l'affichage du Score
 // Cet objet observe l'observable Score
 // ============================================================================================================================
-;(function(window)
+;(function()
 {
 	'use strict';
 
 	mvcHighScore.View = function(obj_stage, name, x, y )
 	{
-		createjs.Text.call(this, 'High Score : 0', '24px Arial', '#00000' );
-
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? 'View_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'View_default');
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,0);
 
 		console.log(this.name, ' View is being created...');
+		createjs.Text.call(this, 'High Score : 0', '24px Arial', '#00000' );
 		this.obj_stage.addChild(this);
 		this.visible=true;
 		console.log(this.name + ' View is created!');
@@ -248,23 +201,16 @@ var mvcHighScore = {};
 
 	mvcHighScore.View.prototype.prepare = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		this.text = 'High Score : ' + obj_observable.getScore();
+		if ( common.IsObjectObservable(obj_observable) )
+			this.text = 'High Score : ' + obj_observable.getScore();
 	}
 
 	mvcHighScore.View.prototype.display = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-	
-		this.text = 'High Score : ' + obj_observable.getScore();
+		this.prepare(obj_observable);
 	}
 
-	window.mvcHighScore.View = mvcHighScore.View;
-	
-}(window));
+}());
 
 // ============================================================================================================================
 // Classe ModelHighView
@@ -277,9 +223,8 @@ var mvcHighScore = {};
 
 	mvcHighScore.Model = function(name)
 	{
-		this.name = (name === undefined) ? 'Model_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+
+		this.name = common.HasStringName(name, 'Model_default');
 
 		console.log(this.name, ' Model is being created...');
 	
@@ -298,7 +243,7 @@ var mvcHighScore = {};
 	mvcHighScore.Model.prototype.set = function(nb_points)
 	{
 		this.nb_points = (nb_points === undefined) ? 0 : nb_points;
-		if (! ((typeof this.nb_points==='number')&&(this.nb_points%1===0))) 
+		if (common.IsNotNumber(this.nb_points)) 
 			throw 'Parameter \'nb_points\' is not a number literal!';
 
 		this.score_notifier.notify('prepare');
@@ -323,22 +268,10 @@ var mvcHighScore = {};
 
 	mvcHighScore.Controller = function(obj_stage, name, px, py)
 	{
-		if (  obj_stage instanceof createjs.Stage )
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? 'Controller_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		var x = (px === undefined) ? 0 : px ;
-		if (! ((typeof x==='number')&&(x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-
-		var y = (py === undefined) ? 0 : py;
-		if (! ((typeof y==='number')&&(y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'Controller_default');
+		var x = common.HasNumberX(px,0);
+		var y = common.HasNumberY(py,0);
 
 		console.log(this.name, ' Controller is being created...');
 
@@ -359,11 +292,10 @@ var mvcHighScore = {};
 	// Si oui le highscore change (Model) et la vue est notifiée du changement.
 	mvcHighScore.Controller.prototype.display = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		if (obj_observable.getScore() > this.obj_model_highscore.getScore() )
-			this.obj_model_highscore.set( obj_observable.getScore() ); // envoie une notification 'display' au mvcHighScore.View via mvcHighScore.Model 
+		if ( common.IsObjectObservable(obj_observable) ) {
+			if (obj_observable.getScore() > this.obj_model_highscore.getScore() )
+				this.obj_model_highscore.set( obj_observable.getScore() ); // envoie une notification 'display' au mvcHighScore.View via mvcHighScore.Model
+		}
 	}
 
 	// Renvoie la référence de l'observer
