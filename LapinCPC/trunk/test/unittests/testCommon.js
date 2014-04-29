@@ -9,6 +9,7 @@ function startTest()
 	test("Test de la fonction HasStringName", testStringName);
 	test("Test des fonctions HasNumberX and HasNumberY", testNumberValue);
 	test("Test de la fonction IsObjectObservable", testObjectObservable);
+	test("Test de la fonction IsObjectObserver", testObjectObserver);
 }
 
 function testObjectStage()
@@ -106,22 +107,57 @@ function testObjectObservable()
 			var r = common.IsObjectObservable();
 		},
 		'\'Observable\' is not a Object!',
-		"common.IsObjectObserver() : Test without parameter!"
+		"common.IsObjectObservable() : Test without parameter!"
 	);
 	
 	throws( function() {
 			var r = common.IsObjectObservable(100);
 		},
 		'\'Observable\' is not a Object!',
-		"common.IsObjectObserver(100) : Test of parameter with number literal type!"
+		"common.IsObjectObservable(100) : Test of parameter with number literal type!"
 	);
 	
 	throws( function() {
 			var r = common.IsObjectObservable('string');
 		},
 		'\'Observable\' is not a Object!',
+		"common.IsObjectObservable('string') : Test of parameter with string literal type!"
+	);
+	
+	equal(common.IsObjectObservable({}), true, "common.IsObjectObservable({}) : check that result test with object parameter type is true");
+}
+
+function testObjectObserver()
+{
+	throws( function() {
+			var r = common.IsObjectObserver();
+		},
+		'\'Observer\' is not a Object!',
+		"common.IsObjectObserver() : Test without parameter!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectObserver(100);
+		},
+		'\'Observer\' is not a Object!',
+		"common.IsObjectObserver(100) : Test of parameter with number literal type!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectObserver('string');
+		},
+		'\'Observer\' is not a Object!',
+		"common.IsObjectObserver('string') : Test of parameter with string literal type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectObserver({});
+		},
+		'No \'prepare\' and \'display\' methods are defined!',
 		"common.IsObjectObserver('string') : Test of parameter with string literal type!"
 	);
 	
-	equal(common.IsObjectObservable({}), true, "common.IsObjectObserver({}) : check that result test with object parameter type is true");
+	equal(common.IsObjectObserver({prepare: function() {}}), true, "common.IsObjectObserver({prepare: function() {}}) : check that result test with object observer parameter type is true");
+	equal(common.IsObjectObserver({display: function() {}}), true, "common.IsObjectObserver({display: function() {}}) : check that result test with object observer parameter type is true");
+	equal(common.IsObjectObserver({prepare: function() {}, display: function() {}}), true, "common.IsObjectObserver({prepare: function() {}, display: function() {}}) : check that result test with object observer parameter type is true");
 }

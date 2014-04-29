@@ -25,15 +25,13 @@ class Observable {
 
 	function Observable(name, obj_observable)
 	{
-		this.name = (name === undefined) ? 'Observable_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a String literal!';
-
+		this.name = common.HasStringName(name, 'Observable_default');
+	
 		if (obj_observable === undefined )
 			this.obj_observable = this;
 		else
 		{
-			if (typeof obj_observable !== 'object') 
+			if (! common.IsObjectObservable(obj_observable) )
 				throw '\'Observable\' is not a Object!';
 
 			this.obj_observable = obj_observable;
@@ -45,12 +43,8 @@ class Observable {
 
 	Observable.prototype.add = function(obj_observer)
 	{
-		if (typeof obj_observer !== 'object') 
-			throw '\'Observer\' is not a Object!';
-
-		if ( (obj_observer.prepare === undefined) && (obj_observer.display === undefined) )
-			throw 'No \'prepare\' and \'display\' methods are defined!';
-
+		common.IsObjectObserver(obj_observer);
+	
 		console.debug(this.name, 'observable : add(',obj_observer.name, ') Ok');
 
 		if (! ( obj_observer.name in this.obj_observer_lists) )	
