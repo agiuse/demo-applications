@@ -107,32 +107,19 @@ var mvcPlayer = {};
 // Classe mvcPlayer.View
 // Cette classe s'occupe d'afficher le vaisseau
 // ============================================================================================================================
-;( function(window)
+;( function()
 {
 	'use strict';
 
 	mvcPlayer.View = function(obj_stage, obj_queue, name )
 	{
-		createjs.Bitmap.call(this);
-
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		if (  obj_queue instanceof createjs.LoadQueue)
-			this.obj_queue = obj_queue;
-		else
-			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
-
-		this.name = (name === undefined) ? 'View_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		this.name = common.HasStringName(name, 'View_default');
 
 		console.log(this.name, ' View is being created...');
-
+		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
-
 		console.log(this.name, ' View is created!');
 	}
 
@@ -140,46 +127,33 @@ var mvcPlayer = {};
 
 	mvcPlayer.View.prototype.prepare = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		console.log(this.name, ' View is being prepared!');
+		common.IsObjectObservable(obj_observable);	
 		this.visible=true;
 		this.image = this.obj_queue.getResult('player0');
 		this.display(obj_observable);
-
-		console.log(this.name, ' View is ready!');
 	}
 
 	mvcPlayer.View.prototype.display = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		console.log(this.name, ' View is being displayed!');
+		common.IsObjectObservable(obj_observable);	
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
 		this.rotation = obj_observable.getRotation();
-		console.log(this.name, ' View is displayed!');
 	}
 
-	window.mvcPlayer.View = mvcPlayer.View;
-
-}(window));
+}());
 
 // ============================================================================================================================
 // Classe mvcPlayer.Model
 // Cette classe gère les données du joueur.
 // ============================================================================================================================
-;( function(window)
+;( function()
 {
 	'use strict';
 
 	mvcPlayer.Model = function(name)
 	{
-		this.name = (name === undefined) ? 'Model_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.name = common.HasStringName(name, 'Model_default');
 	
 		console.log(this.name, ' Model is being created...');
 
@@ -199,33 +173,21 @@ var mvcPlayer = {};
 
 	mvcPlayer.Model.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
 	{
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y, 224);
+		this.rotation = common.HasNumberRotation(rotation, 0);
+		this.vitesse = common.HasNumberSpeed(vitesse, 6);
 		
-		this.y = (y === undefined) ? 224 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
-
-		this.rotation = (rotation === undefined) ? 0 : rotation;
-		if (! ((typeof this.rotation==='number')&&(this.rotation%1===0))) 
-			throw 'Parameter \'rotation\' is not a number literal!';
-		
-		this.vitesse = (vitesse === undefined) ? 6 : vitesse;
-		if (! ((typeof this.vitesse==='number')&&(this.vitesse%1===0))) 
-			throw 'Parameter \'vitesse\' is not a number literal!';
-
 		this.coordonnee_notifier.notify('prepare');
 	
 		this.nb_vies = (nb_vies_de_depart === undefined) ? 3 : nb_vies_de_depart;
-		if (! ((typeof this.nb_vies==='number')&&(this.nb_vies%1===0))) 
+		if ( common.IsNotNumber(this.nb_vies) ) 
 			throw 'Parameter \'nb_vies\' is not a number literal!';
 
 		this.nb_vies_notifier.notify('prepare');
 	
-		this.nb_points = nb_points_de_depart;
 		this.nb_points = (nb_points_de_depart === undefined) ? 0 : nb_points_de_depart;
-		if (! ((typeof this.nb_points==='number')&&(this.nb_points%1===0))) 
+		if ( common.IsNotNumber(this.nb_points) )
 			throw 'Parameter \'nb_points\' is not a number literal!';
 
 		this.nb_points_notifier.notify('prepare');
@@ -233,17 +195,9 @@ var mvcPlayer = {};
 
 	mvcPlayer.Model.prototype.set = function(x, y, rotation)
 	{
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 224 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
-
-		this.rotation = (rotation === undefined) ? 0 : rotation;
-		if (! ((typeof this.rotation==='number')&&(this.rotation%1===0))) 
-			throw 'Parameter \'rotation\' is not a number literal!';
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y, 224);
+		this.rotation = common.HasNumberRotation(rotation, 0);
 
 		this.coordonnee_notifier.notify('display');
 
@@ -257,18 +211,14 @@ var mvcPlayer = {};
 
 	mvcPlayer.Model.prototype.addLifeNotifier = function(obj_observer)
 	{
-		if (typeof obj_observer !== 'object') 
-			throw '\'Observer\' is not a Object!';
-
-		this.nb_vies_notifier.add(obj_observer);
+		if ( common.IsObjectObserver(obj_observer) )
+			this.nb_vies_notifier.add(obj_observer);
 	}
 
 	mvcPlayer.Model.prototype.addScoreNotifier = function(obj_observer)
 	{
-		if (typeof obj_observer !== 'object') 
-			throw '\'Observer\' is not a Object!';
-
-		this.nb_points_notifier.add(obj_observer);
+		if ( common.IsObjectObserver(obj_observer) )
+			this.nb_points_notifier.add(obj_observer);
 	}
 
 	mvcPlayer.Model.prototype.getX = function()
@@ -301,36 +251,23 @@ var mvcPlayer = {};
 		return this.vitesse;
 	}
 
-	window.mvcPlayer.Model = mvcPlayer.Model;
-
-}(window));
+}());
 
 // ============================================================================================================================
 // Classe mvcPlayer.Controller
 // Cette classe lie l'objet mvcPlayer.View et mvcPlayer.Model via un patron "Observeur/Observer"
 // ============================================================================================================================
-;( function(window)
+;( function()
 {
 	'use strict';
 
 	mvcPlayer.Controller = function(obj_stage, obj_queue, name) 
 	{
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		if (  obj_queue instanceof createjs.LoadQueue)
-			this.obj_queue = obj_queue;
-		else
-			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
-
-		this.name = (name === undefined) ? 'Controller_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		this.name = common.HasStringName(name, 'Controller_default');
 	
 		console.log(this.name, ' Controller is being created...');
-
 		this.obj_view_joueur = new mvcPlayer.View(this.obj_stage, this.obj_queue, this.name+'_view');
 		this.obj_model_joueur = new mvcPlayer.Model(this.name + '_model');
 		this.obj_model_joueur.addCoordonneeNotifier( this.obj_view_joueur );
@@ -497,7 +434,5 @@ var mvcPlayer = {};
 		}
 	}
 
-	window.mvcPlayer.Controller = mvcPlayer.Controller;
-
-}(window));
+}());
 

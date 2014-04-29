@@ -15,6 +15,14 @@
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	}
 
+	common.HasObjectLoadQueue = function(obj_queue)
+	{
+		if (  obj_queue instanceof createjs.LoadQueue)
+			return obj_queue;
+		else
+			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
+	}
+
 	function IsNotString(s)
 	{
 		if ( typeof s !== 'string' )
@@ -69,7 +77,32 @@
 		
 		return y;
 	}
+
+	common.HasNumberRotation = function(rotation, default_rotation)
+	{
+		default_rotation = (default_rotation === undefined) ? 0: default_rotation;
+		if ( common.IsNotNumber(default_rotation)) 
+			throw 'Parameter \'rotation\' by default is not a number literal!';
+
+		rotation = (rotation === undefined) ? default_rotation : rotation;
+		if ( common.IsNotNumber(rotation) ) 
+			throw 'Parameter \'rotation\' is not a number literal!';
+			
+		return rotation;
+	}
 	
+	common.HasNumberSpeed = function(vitesse, default_vitesse)
+	{
+		default_vitesse = (default_vitesse === undefined) ? 6 : default_vitesse;
+		if ( common.IsNotNumber(default_vitesse)) 
+			throw 'Parameter \'vitesse\' by default is not a number literal!';
+
+		vitesse = (vitesse === undefined) ? default_vitesse : vitesse;
+		if ( common.IsNotNumber(vitesse) )
+			throw 'Parameter \'vitesse\' is not a number literal!';
+		
+		return vitesse;
+	}
 	common.IsObjectObservable = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
