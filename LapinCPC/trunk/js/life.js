@@ -44,27 +44,14 @@ var mvcLife = {};
 {
 	'use strict';
 
-
 	mvcLife.View = function(obj_stage, name, x, y )
 	{
 		createjs.Text.call(this, 'Vies : -', '24px Arial', '#00000' );
 
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? 'View_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'View_default');
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,0);
 
 		console.log(this.name, ' View is being created...');
 		this.obj_stage.addChild(this);
@@ -76,20 +63,15 @@ var mvcLife = {};
 
 	mvcLife.View.prototype.display = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		this.text = 'Vies : ' + obj_observable.getLife();
+		if (common.IsObjectObservable(obj_observable))
+			this.text = 'Vies : ' + obj_observable.getLife();
 	}
 
 	mvcLife.View.prototype.prepare = function(obj_observable)
 	{
-		if (typeof obj_observable !== 'object') 
-				throw '\'Observable\' is not a Object!';
-
-		this.text = 'Vies : ' + obj_observable.getLife();
+		if (common.IsObjectObservable(obj_observable))
+			this.text = 'Vies : ' + obj_observable.getLife();
 	}
-
 }());
 
 // ============================================================================================================================
@@ -101,25 +83,12 @@ var mvcLife = {};
 ;( function()
 {
 	'use strict';
-
 	mvcLife.Controller = function(obj_stage, name, x, y)
 	{
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		this.name = (name === undefined) ? 'Controller_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
-
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.name = common.HasStringName(name, 'Controller_default');
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,0);
 	
 		console.log(this.name, ' Controller is being created...');
 
@@ -132,5 +101,6 @@ var mvcLife = {};
 	{
 		return this.obj_view_vie;
 	}
+	
 
 }());

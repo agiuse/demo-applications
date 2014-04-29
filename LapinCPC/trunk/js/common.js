@@ -70,7 +70,7 @@
 		return y;
 	}
 	
-	common.IsObjectObserver = function(obj_observable)
+	common.IsObjectObservable = function(obj_observable)
 	{
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
