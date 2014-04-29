@@ -6,8 +6,9 @@ function startTest()
 {
 	//console.clear();
 	test("Test de la fonction HasObjectStage", testObjectStage);
+	test("Test de la fonction HasObjectLoadQueue", testObjectLoadQueue);
 	test("Test de la fonction HasStringName", testStringName);
-	test("Test des fonctions HasNumberX and HasNumberY", testNumberValue);
+	test("Test des fonctions HasNumber", testNumberValue);
 	test("Test de la fonction IsObjectObservable", testObjectObservable);
 	test("Test de la fonction IsObjectObserver", testObjectObserver);
 }
@@ -37,6 +38,34 @@ function testObjectStage()
 
 	var obj_stage = new createjs.Stage();
 	equal( common.HasObjectStage(obj_stage), obj_stage, "common.HasObjectStage(obj_stage) : 'Test of Object Stage!");
+
+}
+
+function testObjectLoadQueue()
+{
+	throws( function() {
+			var obj_queue = common.HasObjectLoadQueue();
+		},
+		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
+		"common.HasObjectLoadQueue() : Test of parameter without parameter!"
+	);
+
+	throws( function() {
+			var obj_queue = common.HasObjectLoadQueue('a string');
+		},
+		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
+		"common.HasObjectLoadQueue('a string') : Test of parameter with string literal type!"
+	);
+
+	throws( function() {
+			var obj_queue = common.HasObjectLoadQueue(100);
+		},
+		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
+		"common.HasObjectLoadQueue(100) : Test of parameter with number literal type!"
+	);
+
+	var obj_queue = new createjs.LoadQueue();
+	equal( common.HasObjectLoadQueue(obj_queue), obj_queue, "common.HasObjectLoadQueue(obj_queue) : 'Test of Object Stage!");
 
 }
 
@@ -98,6 +127,42 @@ function testNumberValue()
 	equal(common.HasNumberY(), 0,"common.HasNumberY() : check that result test is default value");
 	equal(common.HasNumberY(undefined, 150), 150,"common.HasNumberY(,150) : check that  result test is first parameter");
 	equal(common.HasNumberY(100, 150),100,"common.HasNumberY(100, 150) : check that  result test is second parameter");
+
+	throws( function() {
+			var rotation = common.HasNumberRotation('string');
+		},
+		'Parameter \'rotation\' is not a number literal!',
+		"common.HasNumberRotation('string') : Test of first parameter!"
+	);
+
+	throws( function() {
+			var rotation = common.HasNumberRotation(100, 'string');
+		},
+		'Parameter \'rotation\' by default is not a number literal!',
+		"common.HasNumberRotation(100, 'string') : Test of Second parameter!"
+	);
+
+	equal(common.HasNumberRotation(), 0,"common.HasNumberRotation() : check that result test is default value");
+	equal(common.HasNumberRotation(undefined, 150), 150,"common.HasNumberRotation(,150) : check that  result test is first parameter");
+	equal(common.HasNumberRotation(100, 150),100,"common.HasNumberRotation(100, 150) : check that  result test is second parameter");
+
+	throws( function() {
+			var vitesse = common.HasNumberSpeed('string');
+		},
+		'Parameter \'vitesse\' is not a number literal!',
+		"common.HasNumberSpeed('string') : Test of first parameter!"
+	);
+
+	throws( function() {
+			var vitesse = common.HasNumberSpeed(100, 'string');
+		},
+		'Parameter \'vitesse\' by default is not a number literal!',
+		"common.HasNumberSpeed(100, 'string') : Test of Second parameter!"
+	);
+
+	equal(common.HasNumberSpeed(), 6,"common.HasNumberSpeed() : check that result test is default value");
+	equal(common.HasNumberSpeed(undefined, 150), 150,"common.HasNumberSpeed(,150) : check that  result test is first parameter");
+	equal(common.HasNumberSpeed(100, 150),100,"common.HasNumberSpeed(100, 150) : check that  result test is second parameter");
 
 }
 
