@@ -103,25 +103,25 @@ function testNumberValue()
 function testObjectObservable()
 {
 	throws( function() {
-			var r = common.IsObjectObserver();
+			var r = common.IsObjectObservable();
 		},
 		'\'Observable\' is not a Object!',
 		"common.IsObjectObserver() : Test without parameter!"
 	);
 	
 	throws( function() {
-			var r = common.IsObjectObserver(100);
+			var r = common.IsObjectObservable(100);
 		},
 		'\'Observable\' is not a Object!',
 		"common.IsObjectObserver(100) : Test of parameter with number literal type!"
 	);
 	
 	throws( function() {
-			var r = common.IsObjectObserver('string');
+			var r = common.IsObjectObservable('string');
 		},
 		'\'Observable\' is not a Object!',
 		"common.IsObjectObserver('string') : Test of parameter with string literal type!"
 	);
 	
-	equal(common.IsObjectObserver({}), true, "common.IsObjectObserver({}) : check that result test with object parameter type is true");
+	equal(common.IsObjectObservable({}), true, "common.IsObjectObserver({}) : check that result test with object parameter type is true");
 }
