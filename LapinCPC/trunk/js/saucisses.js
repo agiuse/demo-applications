@@ -103,26 +103,13 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.View = function(obj_stage, obj_queue, name)
 	{
-		createjs.Bitmap.call(this);
-
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		if (  obj_queue instanceof createjs.LoadQueue)
-			this.obj_queue = obj_queue;
-		else
-			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
-
-		this.name = (name === undefined) ? 'View_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		this.name = common.HasStringName(name, 'View_default');
 
 		console.log(this.name, ' View is being created...');
-
+		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
-
 		console.log(this.name, ' View is created!');
 	}
 
@@ -172,9 +159,7 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.Model = function(name)
 	{
-		this.name = (name === undefined) ? 'Model_default' : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.name = common.HasStringName(name, 'Model_default');
 
 		console.log(this.name, ' Model is being created...');
 		this.coordonnee_notifier = new Observable(this.name + "_notifier", this);
@@ -188,21 +173,10 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
 	{
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 		
-			throw 'Parameter \'X\' is not a number literal!';
-		
-		this.y = (y === undefined) ? 0 : y;
-		if (! ((typeof this.y==='number')&&(this.y%1===0))) 
-			throw 'Parameter \'Y\' is not a number literal!';
-
-		this.rotation = (rotation === undefined) ? 0 : rotation;
-		if (! ((typeof this.rotation==='number')&&(this.rotation%1===0))) 
-			throw 'Parameter \'rotation\' is not a number literal!';
-		
-		this.vitesse = (vitesse === undefined) ? 4 : vitesse;
-		if (! ((typeof this.vitesse==='number')&&(this.vitesse%1===0))) 
-			throw 'Parameter \'vitesse\' is not a number literal!';
+		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y, 0);
+		this.rotation = common.HasNumberRotation(rotation, 0);
+		this.vitesse = common.HasNumberSpeed(vitesse, 4);
 
 		this.pourrie = (pourrie===undefined) ? false : pourrie;
 		if (! (typeof this.pourrie==='boolean')) 
@@ -243,9 +217,7 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.Model.prototype.set = function (x)
 	{
-		this.x = (x === undefined) ? 0 : x;
-		if (! ((typeof this.x==='number')&&(this.x%1===0))) 
-			throw 'Parameter \'X\' is not a number literal!';
+		this.x = common.HasNumberX(x,0);
 
 		this.coordonnee_notifier.notify('display');
 	}
@@ -263,19 +235,9 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.Controller = function(obj_stage, obj_queue, obj_generator, name)
 	{
-		if (  obj_stage instanceof createjs.Stage)
-			this.obj_stage = obj_stage;
-		else
-			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
-	
-		if (  obj_queue instanceof createjs.LoadQueue)
-			this.obj_queue = obj_queue;
-		else
-			throw 'Parameter \'obj_queue\' is not createjs.LoadQueue instance!';
-
-		this.name = (name === undefined) ? "Controller_default" : name;
-		if ( typeof this.name !== 'string' )
-			throw 'Parameter \'name\' is not a string literal!';
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		this.name = common.HasStringName(name, 'Controller_default');
 
 		this.obj_generator = obj_generator;
 		if (  obj_generator instanceof Generator)
