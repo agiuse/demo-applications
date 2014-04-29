@@ -15,7 +15,7 @@
 			throw 'Parameter \'obj_stage\' is not createjs.Stage instance!';
 	}
 
-	IsNotString = function(s)
+	function IsNotString(s)
 	{
 		if ( typeof s !== 'string' )
 			return true;
@@ -36,7 +36,7 @@
 		return name;
 	}
 
-	IsNotNumber = function(n)
+	function IsNotNumber(n)
 	{
 		if (! ((typeof n==='number')&&(n%1===0))) 
 			return true;
@@ -75,6 +75,17 @@
 		if (typeof obj_observable !== 'object') 
 				throw '\'Observable\' is not a Object!';
 		
+		return true;
+	}
+
+	common.IsObjectObserver = function(obj_observer)
+	{
+		if (typeof obj_observer !== 'object') 
+			throw '\'Observer\' is not a Object!';
+
+		if ( (obj_observer.prepare === undefined) && (obj_observer.display === undefined) )
+			throw 'No \'prepare\' and \'display\' methods are defined!';
+
 		return true;
 	}
 				
