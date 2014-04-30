@@ -120,7 +120,7 @@ function test1()
 	throws( function() {
 			obj_observable = new Observable(100);
 		},
-		'Parameter \'name\' is not a String literal!',
+		'Parameter \'name\' is not a string literal!',
 		"Observable(100) : Test of first parameter 'name'!"
 	);
 
