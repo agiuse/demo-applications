@@ -33,6 +33,28 @@ class mvcLife.Controller {
 mvcLife.Controller *-- mvcLife.View
 
 @enduml
+
+@startuml
+title <b>MVC Life</b> sequence diagram
+box "mvcLife"
+participant View << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+endbox
+
+== Initialisation ==
+create Controller
+Game -> Controller
+Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+create View
+Controller -> View
+View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+@enduml
 */
 var mvcLife = {};
 
@@ -46,7 +68,6 @@ var mvcLife = {};
 
 	mvcLife.View = function(obj_stage, name, x, y )
 	{
-		createjs.Text.call(this, 'Vies : -', '24px Arial', '#00000' );
 
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.name = common.HasStringName(name, 'View_default');
@@ -54,6 +75,7 @@ var mvcLife = {};
 		this.y = common.HasNumberY(y,0);
 
 		console.log(this.name, ' View is being created...');
+		createjs.Text.call(this, 'Vies : -', '24px Arial', '#00000' );
 		this.obj_stage.addChild(this);
 		this.visible=true;
 		console.log(this.name + ' View is created!');

@@ -6,7 +6,7 @@
 // ============================================================================================================================
 /*
 @startuml
-title Class <b>Observable</b>
+title <b>Observable</b> class diagram
 
 class Observable {
 	String name
@@ -16,6 +16,38 @@ class Observable {
 	void add(Object obj_observer)
 	void notify(String type_notify)
 }
+
+@enduml
+@startuml
+title <b>Observable</b> sequence diagram
+participant Object << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+participant Observer << (C,#ADD1B2) >>
+
+== Initialisation ==
+create Observable
+Object -> Observable
+Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+== Subscription ==
+Observer -> Observable : add()
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+== Notification ==
+loop  notification
+Object -> Observable : notify('prepare')
+Observable -> Observer : prepare(Object)
+Observer --> Observable
+end
+loop  notification
+Object -> Observable : notify('display')
+Observable -> Observer : display(Object)
+Observer --> Observable
+end
+loop  notification
+Object -> Observable : notify()
+Observable -[#red]> Exception : throw("Unknown 'type_notify' value!")
+end
 @enduml
 */
 ;(function(window)

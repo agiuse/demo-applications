@@ -33,6 +33,27 @@ createjs.Stage -- mvcScore.View
 mvcScore.Controller *-- mvcScore.View
 
 @enduml
+@startuml
+title <b>MVC Score</b> sequence diagram
+box "mvcScore"
+participant View << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+endbox
+
+== Initialisation ==
+create Controller
+Game -> Controller
+Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+create View
+Controller -> View
+View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+@enduml
 */
 
 // ============================================================================================================================
@@ -171,6 +192,92 @@ createjs.Text <|-- mvcHighScore.View
 createjs.Stage -- mvcHighScore.View
 
 @enduml
+@startuml
+title <b>MVC High Score</b> sequence diagram
+box "mvcHighScore"
+participant View << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+endbox
+participant mvcPlayer.Model << (C,#ADD1B2) >>
+== Initialisation ==
+create Controller
+activate Game
+Game -> Controller
+activate Controller
+Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+
+create View
+Controller -> View
+activate View
+View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
+View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+View --> Controller
+deactivate View
+
+create Model
+Controller -> Model
+activate Model
+Model -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+create Observable
+Model -> Observable
+activate Observable
+Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+Observable --> Model
+deactivate Observable
+Model --> Controller
+deactivate Model
+== Subscription ==
+Controller -> Model : add(View)
+Model -> Observable : add(View)
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model
+Model --> Controller
+Controller --> Game
+deactivate Controller
+deactivate Game
+@enduml
+@startuml
+title <b>MVC High Score</b> sequence diagram
+box "mvcHighScore"
+participant View << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+endbox
+== Notification ==
+activate Game
+Game -> Controller : preparer(nb_points)
+activate Controller
+Controller -> Model : set(nb_points)
+activate Model
+
+loop  notification
+Model -> Observable : notify('prepare')
+activate Observable
+Observable -> View : prepare(Model)
+activate View
+View -> Model : getScore()
+Model --> View : nb_points
+View --> Observable
+deactivate View
+Observable --> Model
+deactivate Observable
+end
+Model --> Controller
+deactivate Model
+Controller --> Game
+deactivate Controller
+deactivate Game
+@enduml
 */
 
 var mvcHighScore = {};
@@ -217,7 +324,7 @@ var mvcHighScore = {};
 // Cette classe gère la valeur du HighScore.
 // Cette classe gère le high score qui un observable de type Score
 // ============================================================================================================================
-;(function(window)
+;(function()
 {
 	'use strict';
 
@@ -253,16 +360,14 @@ var mvcHighScore = {};
 	{
 		this.score_notifier.add(obj_observer);
 	}
-
-	window.mvcHighScore.Model = mvcHighScore.Model;
 	
-}(window));
+}());
 
 // ============================================================================================================================
 // Classe Controller
 // Cette classe permet de gérer le MVC 
 // ============================================================================================================================
-;(function(window)
+;(function()
 {
 	'use strict';
 
@@ -310,8 +415,6 @@ var mvcHighScore = {};
 	{
 		return this.obj_model_highscore.getScore();
 	}
-
-	window.mvcHighScore.Controller = mvcHighScore.Controller;
 	
-}(window));
+}());
 
