@@ -100,6 +100,154 @@ createjs.Text <|-- ViewScore
 createjs.Text <|-- ViewLife
 
 @enduml
+@startuml
+title <b>MVC Player</b> sequence diagram
+box "mvcPlayer"
+participant View << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+endbox
+participant mvcHighScore.Controller  << (C,#ADD1B2) >>
+participant mvcScore.View  << (C,#ADD1B2) >>
+participant mvcLife.View  << (C,#ADD1B2) >>
+
+== Initialisation ==
+create Controller
+activate Game
+Game -> Controller
+activate Controller
+Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+Controller -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
+Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+
+create View
+Controller -> View
+activate View
+View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
+Controller -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
+View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+View --> Controller
+deactivate View
+
+create Model
+Controller -> Model
+activate Model
+Model -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+create Observable
+Model -> Observable
+activate Observable
+Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+Observable --> Model
+deactivate Observable
+Model --> Controller
+deactivate Model
+
+== Subscription ==
+Controller -> Model : add(View)
+Model -> Observable : add(View)
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model
+Model --> Controller
+Controller --> Game
+deactivate Controller
+
+Game -> Controller : lifeHasObservedBy(mvcLife.View)
+Controller -> Model : addLifeNotifier(mvcLife.View)
+Model -> Observable : add(mvcLife.View)
+Observable --> Model
+Model --> Controller
+Controller --> Game
+
+Game -> Controller : scoreHasObservedBy(mvcScore.View)
+Controller -> Model : addLifeNotifier(mvcScore.View)
+Model -> Observable : add(mvcScore.View)
+Observable --> Model
+Model --> Controller
+Controller --> Game
+
+Game -> Controller : scoreHasObservedBy(mvcHighScore.Controller)
+Controller -> Model : addLifeNotifier(mvcHighScore.Controller)
+Model -> Observable : add(mvcHighScore.Controller)
+Observable --> Model
+Model --> Controller
+Controller --> Game
+deactivate Game
+@enduml
+@startuml
+title <b>MVC Player</b> sequence diagram
+box "mvcPlayer"
+participant View << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+endbox
+participant mvcHighScore.Controller  << (C,#ADD1B2) >>
+participant mvcScore.View  << (C,#ADD1B2) >>
+participant mvcLife.View  << (C,#ADD1B2) >>
+
+== Notification ==
+activate Game
+Game --> Controller : preparer(x, y, rotation, vitesse, nb_vies, nb_points)
+activate Controller
+Controller --> Model : preparer(x, y, rotation, vitesse, nb_vies, nb_points)
+loop  coordonnee notification
+Model -> Observable : notify('prepare')
+Observable -> View : prepare(Model)
+activate View
+View -> Model : getX()
+Model --> View : x
+View -> Model : getY()
+Model --> View : y
+View -> Model : getRotation()
+Model --> View : rotation
+View --> Observable
+deactivate View
+Observable --> Model
+end
+loop  life notification
+Model -> Observable : notify('prepare')
+Observable -> mvcLife.View : prepare(Model)
+activate mvcLife.View
+mvcLife.View -> Model : getLife()
+Model --> mvcLife.View : nb_vies
+mvcLife.View --> Observable
+deactivate mvcLife.View
+Observable --> Model
+end
+loop  score notification
+Model -> Observable : notify('prepare')
+Observable -> mvcScore.View : prepare(Model)
+activate mvcScore.View
+mvcScore.View -> Model : getScore()
+Model --> mvcScore.View : nb_points
+mvcScore.View --> Observable
+deactivate mvcScore.View
+Observable -> mvcHighScore.Controller : prepare(Model)
+activate mvcHighScore.Controller
+mvcHighScore.Controller -> Model: getScore()
+Model --> mvcHighScore.Controller : nb_points
+mvcHighScore.Controller --> Observable
+deactivate mvcHighScore.Controller
+Observable --> Model
+end
+Model --> Controller
+deactivate Controller
+Controller --> Game
+deactivate Game
+@enduml
+
+@startuml
+title <b>MVC Player</b> sequence diagram
+box "mvcPlayer"
+participant View << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Controller << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+endbox
+@enduml
 */
 var mvcPlayer = {};
 
