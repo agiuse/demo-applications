@@ -36,24 +36,34 @@ mvcLife.Controller *-- mvcLife.View
 
 @startuml
 title <b>MVC Life</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcLife"
-participant View << (C,#ADD1B2) >>
 participant Controller << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
 endbox
+participant Exception
 
 == Initialisation ==
 create Controller
-Game -> Controller
+Game -> Controller : new(obj_stage, name, x, y)
+activate Controller
 Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
 create View
-Controller -> View
+Controller -> View : new(obj_stage, name, x, y)
+activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+View --> Controller : << View created >>
+deactivate View
+Controller --> Game : << Controller created >>
+deactivate Controller
 @enduml
 */
 var mvcLife = {};

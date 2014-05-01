@@ -31,28 +31,38 @@ class mvcScore.Controller {
 createjs.Text <|-- mvcScore.View
 createjs.Stage -- mvcScore.View
 mvcScore.Controller *-- mvcScore.View
-
 @enduml
+
 @startuml
 title <b>MVC Score</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcScore"
-participant View << (C,#ADD1B2) >>
 participant Controller << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
 endbox
+participant Exception
 
 == Initialisation ==
 create Controller
-Game -> Controller
+Game -> Controller : new(obj_stage, name, x, y)
+activate Controller
 Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
 create View
-Controller -> View
+Controller -> View : new(obj_stage, name, x, y)
+activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
+View --> Controller : << View created >>
+deactivate View
+Controller --> Game : << Controller created >>
+deactivate Controller
 @enduml
 */
 
@@ -190,21 +200,24 @@ mvcHighScore.Model .. mvcHighScore.View : "observable/observer"
 Observable .. mvcHighScore.View : "observable/observer"
 createjs.Text <|-- mvcHighScore.View
 createjs.Stage -- mvcHighScore.View
-
 @enduml
+
 @startuml
 title <b>MVC High Score</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcHighScore"
+participant Controller << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 participant Model << (C,#ADD1B2) >>
-participant Controller << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 endbox
-participant mvcPlayer.Model << (C,#ADD1B2) >>
+participant Exception
+
 == Initialisation ==
 create Controller
-activate Game
-Game -> Controller
+Game -> Controller : new(obj_stage, name, x, y)
 activate Controller
 Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
@@ -212,71 +225,85 @@ Controller -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 Controller -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
 
 create View
-Controller -> View
+Controller -> View : new(obj_stage, name, x, y)
 activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 View -[#red]> Exception : throw("Parameter 'X' is not a number literal!")
 View -[#red]> Exception : throw("Parameter 'Y' is not a number literal!")
-View --> Controller
+View --> Controller : << View created >>
 deactivate View
 
 create Model
-Controller -> Model
+Controller -> Model : new(name)
 activate Model
 Model -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 create Observable
-Model -> Observable
+Model -> Observable : new(name)
 activate Observable
 Observable -[#red]> Exception : throw("'Observable' is not a Object!")
-Observable --> Model
+Observable --> Model : << Observable created >>
 deactivate Observable
-Model --> Controller
+Model --> Controller : << Model created >>
 deactivate Model
 == Subscription ==
 Controller -> Model : add(View)
+activate Model
 Model -> Observable : add(View)
+activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model
-Model --> Controller
-Controller --> Game
+Observable --> Model : << View entered >>
+deactivate Observable
+Model --> Controller : << View entered >>
+deactivate Model
+Controller --> Game : << Controller created >>
 deactivate Controller
-deactivate Game
 @enduml
+
 @startuml
 title <b>MVC High Score</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcHighScore"
-participant View << (C,#ADD1B2) >>
-participant Model << (C,#ADD1B2) >>
 participant Controller << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
 endbox
+participant Exception
+
 == Notification ==
-activate Game
 Game -> Controller : preparer(nb_points)
 activate Controller
 Controller -> Model : set(nb_points)
 activate Model
+Model -[#red]> Exception : throw("Parameter 'nb_points' is not a number literal!")
 
 loop  notification
-Model -> Observable : notify('prepare')
-activate Observable
-Observable -> View : prepare(Model)
-activate View
-View -> Model : getScore()
-Model --> View : nb_points
-View --> Observable
-deactivate View
-Observable --> Model
-deactivate Observable
+	Model -> Observable : notify('prepare')
+	activate Observable
+	Observable -> View : prepare(Model)
+	activate View
+	group HighScore View
+		View -[#red]> Exception : throw("'Observable' is not a Object!")
+		View -> Model : getScore()
+		activate Model
+		Model --> View : nb_points
+		deactivate Model
+		View --> Observable : << Text displayed >>
+	end
+	deactivate View
+	Observable --> Model : << notification ended >>
+	deactivate Observable
 end
-Model --> Controller
+
+Model --> Controller : << update done >>
 deactivate Model
-Controller --> Game
+Controller --> Game : << preparation ended >>
 deactivate Controller
-deactivate Game
 @enduml
 */
 
@@ -380,8 +407,8 @@ var mvcHighScore = {};
 
 		console.log(this.name, ' Controller is being created...');
 
-		this.obj_model_highscore = new mvcHighScore.Model(this.name);
 		this.obj_view_highscore = new mvcHighScore.View(this.obj_stage, this.name, x, y); // reference en variable nécessaire pour les tests !
+		this.obj_model_highscore = new mvcHighScore.Model(this.name);
 		this.obj_model_highscore.add( this.obj_view_highscore );
 	
 		console.log(this.name, ' Controller is created.');
