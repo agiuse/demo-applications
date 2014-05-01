@@ -16,37 +16,65 @@ class Observable {
 	void add(Object obj_observer)
 	void notify(String type_notify)
 }
-
 @enduml
+
 @startuml
 title <b>Observable</b> sequence diagram
-participant Object << (C,#ADD1B2) >>
+hide footbox
+
+participant ObjectToObserver << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant Observer << (C,#ADD1B2) >>
+participant Exception
 
 == Initialisation ==
 create Observable
-Object -> Observable
+ObjectToObserver -> Observable : new(name, obj_observable)
+activate Observable
 Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+Observable --> ObjectToObserver : << Observable created >>
+deactivate Observable
+
 == Subscription ==
-Observer -> Observable : add()
+Observer -> Observable : add(Observer)
+activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Observer : << Observer entered >>
+
 == Notification ==
 loop  notification
-Object -> Observable : notify('prepare')
-Observable -> Observer : prepare(Object)
-Observer --> Observable
+	ObjectToObserver -> Observable : notify('prepare')
+	activate Observable
+	Observable -> Observer : prepare(obj_observer)
+	activate Observer
+	group Observer 1
+		Observer --> Observable : << processing done >>
+	end
+	deactivate Observer
+	Observable --> ObjectToObserver : << notification ended >>
+	deactivate Observable
 end
+
 loop  notification
-Object -> Observable : notify('display')
-Observable -> Observer : display(Object)
-Observer --> Observable
-end
+	ObjectToObserver -> Observable : notify('display')
+	activate Observable
+	Observable -> Observer : prepare(obj_observer)
+	activate Observer
+	group Observer 1
+		Observer --> Observable : << processing done >>
+	end
+	deactivate Observer
+	Observable --> ObjectToObserver : << notification ended >>
+	deactivate Observable
+
 loop  notification
-Object -> Observable : notify()
-Observable -[#red]> Exception : throw("Unknown 'type_notify' value!")
+	ObjectToObserver -> Observable : notify()
+	activate Observable
+	group bad notify
+		Observable -[#red]> Exception : throw("Unknown 'type_notify' value!")
+	end
 end
 @enduml
 */

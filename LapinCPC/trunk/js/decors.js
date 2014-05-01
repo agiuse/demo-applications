@@ -11,11 +11,34 @@ class ViewCiel {
 	Array image
 	int vitesse
 	==
-	run()
+	void ViewCiel(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void run()
 }
 @enduml
+
+@startuml
+title <b>Class ViewCiel</b> sequence diagram
+hide footbox
+
+participant Game
+participant ViewCiel << (C,#ADD1B2) >>
+
+== initialisation ==
+create ViewCiel
+Game -> ViewCiel
+activate ViewCiel
+ViewCiel --> Game : << ViewCiel created >>
+deactivate ViewCiel
+
+== Sky movement ==
+Game -> ViewCiel : run()
+activate ViewCiel
+ViewCiel --> Game : << movement ended >>
+deactivate ViewCiel
+
+@enduml
 */
-;( function(window)
+;( function()
 {
 	'use strict';
 	function ViewCiel(obj_stage, obj_queue)
@@ -43,7 +66,5 @@ class ViewCiel {
 				this.image[i].x = 0;
 		}
 	}
-
-	window.ViewCiel = ViewCiel;
 	
-}(window));
+}());

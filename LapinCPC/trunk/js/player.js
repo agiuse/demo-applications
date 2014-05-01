@@ -10,9 +10,9 @@ class createjs.Bitmap
 class createjs.Stage
 class createjs.LoadQueue
 
-class ControllerHighScore
-class ViewScore
-class ViewLife 
+class mvcHighScore.Controller
+class mvcScore.View
+class mvcLife.View 
 
 class Observable {
 	String name
@@ -91,162 +91,311 @@ class mvcPlayer.Controller {
 
 mvcPlayer.Controller *-- mvcPlayer.View
 mvcPlayer.Controller *-- mvcPlayer.Model
-mvcPlayer.Model .. ControllerHighScore : "observable/observer"
-mvcPlayer.Model .. ViewScore :  "observable/observer"
-mvcPlayer.Model .. ViewLife : "observable/observer"
+mvcPlayer.Model .. mvcHighScore.Controller : "observable/observer"
+mvcPlayer.Model .. mvcScore.View :  "observable/observer"
+mvcPlayer.Model .. mvcLife.View : "observable/observer"
 mvcPlayer.Model .. mvcPlayer.View : "observable/observer"
 
-createjs.Text <|-- ViewScore
-createjs.Text <|-- ViewLife
-
+createjs.Text <|-- mvcScore.View
+createjs.Text <|-- mvcLife.View
 @enduml
+
 @startuml
 title <b>MVC Player</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcPlayer"
+participant Controller << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 participant Model << (C,#ADD1B2) >>
-participant Controller << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 endbox
-participant mvcHighScore.Controller  << (C,#ADD1B2) >>
-participant mvcScore.View  << (C,#ADD1B2) >>
-participant mvcLife.View  << (C,#ADD1B2) >>
+participant Exception
 
 == Initialisation ==
 create Controller
-activate Game
-Game -> Controller
+Game -> Controller : new(obj_stage, obj_queue, name)
 activate Controller
 Controller -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 Controller -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
 Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 
 create View
-Controller -> View
+Controller -> View : new(obj_stage, obj_queue, name)
 activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
-Controller -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
+View -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
-View --> Controller
+View --> Controller : << view created >>
 deactivate View
 
 create Model
-Controller -> Model
+Controller -> Model : new(name)
 activate Model
 Model -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
 create Observable
-Model -> Observable
-activate Observable
-Observable -[#red]> Exception : throw("'Observable' is not a Object!")
-Observable --> Model
+group create Observables x3
+	Model -> Observable : new(name, Model)
+	activate Observable
+	Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+	Observable --> Model : << observable created >>
+end
 deactivate Observable
-Model --> Controller
+Model --> Controller : << model created >>
 deactivate Model
 
 == Subscription ==
-Controller -> Model : add(View)
+Controller -> Model : addCoordonneeNotifier(View)
+activate Controller
+activate Model
 Model -> Observable : add(View)
+activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model
-Model --> Controller
-Controller --> Game
+Observable --> Model : << observer entered >>
+deactivate Observable
+Model --> Controller : << observer entered >>
+deactivate Model
+Controller --> Game : << controller created >>
+deactivate Controller
 deactivate Controller
 
 Game -> Controller : lifeHasObservedBy(mvcLife.View)
+activate Controller
 Controller -> Model : addLifeNotifier(mvcLife.View)
+activate Model
 Model -> Observable : add(mvcLife.View)
-Observable --> Model
-Model --> Controller
-Controller --> Game
+activate Observable
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model : << observable entered >>
+deactivate Observable
+Model --> Controller : << observable entered >>
+deactivate Model
+Controller --> Game : << observable entered >>
+deactivate Controller
 
 Game -> Controller : scoreHasObservedBy(mvcScore.View)
+activate Controller
 Controller -> Model : addLifeNotifier(mvcScore.View)
+activate Model
 Model -> Observable : add(mvcScore.View)
-Observable --> Model
-Model --> Controller
-Controller --> Game
+activate Observable
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model : << observable entered >>
+deactivate Observable
+Model --> Controller : << observable entered >>
+deactivate Model
+Controller --> Game : << observable entered >>
+deactivate Controller
 
 Game -> Controller : scoreHasObservedBy(mvcHighScore.Controller)
-Controller -> Model : addLifeNotifier(mvcHighScore.Controller)
-Model -> Observable : add(mvcHighScore.Controller)
-Observable --> Model
-Model --> Controller
-Controller --> Game
-deactivate Game
-@enduml
-@startuml
-title <b>MVC Player</b> sequence diagram
-box "mvcPlayer"
-participant View << (C,#ADD1B2) >>
-participant Model << (C,#ADD1B2) >>
-participant Controller << (C,#ADD1B2) >>
-participant Observable << (C,#ADD1B2) >>
-endbox
-participant mvcHighScore.Controller  << (C,#ADD1B2) >>
-participant mvcScore.View  << (C,#ADD1B2) >>
-participant mvcLife.View  << (C,#ADD1B2) >>
-
-== Notification ==
-activate Game
-Game --> Controller : preparer(x, y, rotation, vitesse, nb_vies, nb_points)
 activate Controller
-Controller --> Model : preparer(x, y, rotation, vitesse, nb_vies, nb_points)
-loop  coordonnee notification
-Model -> Observable : notify('prepare')
-Observable -> View : prepare(Model)
-activate View
-View -> Model : getX()
-Model --> View : x
-View -> Model : getY()
-Model --> View : y
-View -> Model : getRotation()
-Model --> View : rotation
-View --> Observable
-deactivate View
-Observable --> Model
-end
-loop  life notification
-Model -> Observable : notify('prepare')
-Observable -> mvcLife.View : prepare(Model)
-activate mvcLife.View
-mvcLife.View -> Model : getLife()
-Model --> mvcLife.View : nb_vies
-mvcLife.View --> Observable
-deactivate mvcLife.View
-Observable --> Model
-end
-loop  score notification
-Model -> Observable : notify('prepare')
-Observable -> mvcScore.View : prepare(Model)
-activate mvcScore.View
-mvcScore.View -> Model : getScore()
-Model --> mvcScore.View : nb_points
-mvcScore.View --> Observable
-deactivate mvcScore.View
-Observable -> mvcHighScore.Controller : prepare(Model)
-activate mvcHighScore.Controller
-mvcHighScore.Controller -> Model: getScore()
-Model --> mvcHighScore.Controller : nb_points
-mvcHighScore.Controller --> Observable
-deactivate mvcHighScore.Controller
-Observable --> Model
-end
-Model --> Controller
+Controller -> Model : addLifeNotifier(mvcHighScore.Controller)
+activate Model
+Model -> Observable : add(mvcHighScore.Controller)
+activate Observable
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model : << observable entered >>
+deactivate Observable
+Model --> Controller : << observable entered >>
+deactivate Model
+Controller --> Game : << observable entered >>
 deactivate Controller
-Controller --> Game
-deactivate Game
 @enduml
 
 @startuml
 title <b>MVC Player</b> sequence diagram
+hide footbox
+
+participant Game
 box "mvcPlayer"
-participant View << (C,#ADD1B2) >>
-participant Model << (C,#ADD1B2) >>
 participant Controller << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
 endbox
+
+== Ship movements ==
+Game -> Controller : run()
+activate Controller
+alt [38] : move to up
+	Controller -> Model : moveToUp()
+	activate Model
+	Model -> Model : set(x,y,rotation)
+	activate Model
+	loop  coordonnee notification
+		Model -> Observable : notify('display')
+		activate Observable
+		Observable -> View : display(Model)
+		activate View
+		group Player View
+			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -> Model : getX()
+			activate Model
+			Model --> View : x
+			deactivate Model
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			View -> Model : getRotation()
+			activate Model
+			Model --> View : rotation
+			deactivate Model
+			View --> Observable : << Bitmap displayed >>
+		end
+		deactivate View
+		Observable --> Model : << notification ended >>
+		deactivate Observable
+	end
+	deactivate Model
+	Model --> Controller : << movement ended >>
+	deactivate Model
+else [40] : move to down
+	Controller -> Model : moveToDown()
+	activate Model
+	Model -> Model : set(x,y,rotation)
+	activate Model
+	loop  coordonnee notification
+		Model -> Observable : notify('display')
+		activate Observable
+		Observable -> View : display(Model)
+		activate View
+		group Player View
+			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -> Model : getX()
+			activate Model
+			Model --> View : x
+			deactivate Model
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			View -> Model : getRotation()
+			activate Model
+			Model --> View : rotation
+			deactivate Model
+			View --> Observable : << Bitmap displayed >>
+		end
+		deactivate View
+		Observable --> Model : << notification ended >>
+		deactivate Observable
+	end
+	deactivate Model
+	Model --> Controller : << movement ended >>
+	deactivate Model
+end
+alt [37] move to left
+	Controller -> Model : moveToLeft()
+	activate Model
+	Model -> Model : set(x,y,rotation)
+	activate Model
+	loop  coordonnee notification
+		Model -> Observable : notify('display')
+		activate Observable
+		Observable -> View : display(Model)
+		activate View
+		group Player View
+			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -> Model : getX()
+			activate Model
+			Model --> View : x
+			deactivate Model
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			View -> Model : getRotation()
+			activate Model
+			Model --> View : rotation
+			deactivate Model
+			View --> Observable : << Bitmap displayed >>
+		end
+		deactivate View
+		Observable --> Model : << notification ended >>
+		deactivate Observable
+	end
+	deactivate Model
+	Model --> Controller : << movement ended >>
+	deactivate Model
+else [39] move to right
+	Controller -> Model : moveToRight()
+	activate Model
+	Model -> Model : set(x,y,rotation)
+	activate Model
+	loop  coordonnee notification
+		Model -> Observable : notify('display')
+		activate Observable
+		Observable -> View : display(Model)
+		activate View
+		group Player View
+			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -> Model : getX()
+			activate Model
+			Model --> View : x
+			deactivate Model
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			View -> Model : getRotation()
+			activate Model
+			Model --> View : rotation
+			deactivate Model
+			View --> Observable : << Bitmap displayed >>
+		end
+		deactivate View
+		Observable --> Model : << notification ended >>
+		deactivate Observable
+	end
+	deactivate Model
+	Model --> Controller : << movement ended >>
+	deactivate Model
+else stop rotation
+	Controller -> Model : annulerRotation()
+	activate Model
+	Model -> Model : set(x,y,rotation)
+	activate Model
+		loop  coordonnee notification
+		Model -> Observable : notify('display')
+		activate Observable
+		Observable -> View : display(Model)
+		activate View
+		group Player View
+			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -> Model : getX()
+			activate Model
+			Model --> View : x
+			deactivate Model
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			View -> Model : getRotation()
+			activate Model
+			Model --> View : rotation
+			deactivate Model
+			View --> Observable : << Bitmap displayed >>
+		end
+		deactivate View
+		Observable --> Model : << notification ended >>
+		deactivate Observable
+	end
+	deactivate Model
+	Model --> Controller : << movement ended >>
+	deactivate Model
+end
+
+deactivate Controller
+Controller --> Game : << movement processing ended >>
 @enduml
 */
 var mvcPlayer = {};
