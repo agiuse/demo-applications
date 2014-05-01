@@ -91,6 +91,8 @@ mvcSaucisse.Controller -- Generator
 
 @startuml
 title <b>MVC Saucisse</b> sequence diagram
+hide footbox
+
 participant Game
 box "mvcPlayer"
 participant Controller << (C,#ADD1B2) >>
@@ -201,6 +203,8 @@ deactivate Controller
 
 @startuml
 title <b>MVC Saucisse</b> sequence diagram
+hide footbox
+
 participant Game
 box "mvcPlayer"
 participant Controller << (C,#ADD1B2) >>
