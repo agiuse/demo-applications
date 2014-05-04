@@ -31,7 +31,8 @@ class mvcPlayer.View {
 	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notified __
 	void prepare(Object obj_observable)
-	void display(OBject obj_observable)
+	void display(Object obj_observable)
+	void isCollision(Object obj_collision)
 }
 
 createjs.Bitmap <|-- mvcPlayer.View
@@ -127,7 +128,7 @@ activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
-View --> Controller : << view created >>
+View --> Controller : <I><< view created >></I>
 deactivate View
 
 create Model
@@ -139,10 +140,10 @@ group create Observables x3
 	Model -> Observable : new(name, Model)
 	activate Observable
 	Observable -[#red]> Exception : throw("'Observable' is not a Object!")
-	Observable --> Model : << observable created >>
+	Observable --> Model : <I><< observable created >></I>
 end
 deactivate Observable
-Model --> Controller : << model created >>
+Model --> Controller : <I><< model created >></I>
 deactivate Model
 
 == Subscription ==
@@ -154,14 +155,15 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : << observer entered >>
+Observable --> Model : <I><< observer entered >></I>
 deactivate Observable
-Model --> Controller : << observer entered >>
+Model --> Controller : <I><< observer entered >></I>
 deactivate Model
-Controller --> Game : << controller created >>
+Controller --> Game : <I><< controller created >></I>
 deactivate Controller
 deactivate Controller
 
+== External Observers entered ==
 Game -> Controller : lifeHasObservedBy(mvcLife.View)
 activate Controller
 Controller -> Model : addLifeNotifier(mvcLife.View)
@@ -171,11 +173,11 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : << observable entered >>
+Observable --> Model : <I><< observable entered >></I>
 deactivate Observable
-Model --> Controller : << observable entered >>
+Model --> Controller : <I><< observable entered >></I>
 deactivate Model
-Controller --> Game : << observable entered >>
+Controller --> Game : <I><< observable entered >></I>
 deactivate Controller
 
 Game -> Controller : scoreHasObservedBy(mvcScore.View)
@@ -187,11 +189,11 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : << observable entered >>
+Observable --> Model : <I><< observable entered >></I>
 deactivate Observable
-Model --> Controller : << observable entered >>
+Model --> Controller : <I><< observable entered >></I>
 deactivate Model
-Controller --> Game : << observable entered >>
+Controller --> Game : <I><< observable entered >></I>
 deactivate Controller
 
 Game -> Controller : scoreHasObservedBy(mvcHighScore.Controller)
@@ -203,11 +205,11 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : << observable entered >>
+Observable --> Model : <I><< observable entered >></I>
 deactivate Observable
-Model --> Controller : << observable entered >>
+Model --> Controller : <I><< observable entered >></I>
 deactivate Model
-Controller --> Game : << observable entered >>
+Controller --> Game : <I><< observable entered >></I>
 deactivate Controller
 @enduml
 
@@ -222,6 +224,8 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
+participant mvcCollision.Controller
+participant Exception
 
 == Ship movements ==
 Game -> Controller : run()
@@ -250,14 +254,21 @@ alt [38] : move to up
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcCollision.Controller
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	deactivate Model
-	Model --> Controller : << movement ended >>
+	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
 else [40] : move to down
 	Controller -> Model : moveToDown()
@@ -283,14 +294,21 @@ else [40] : move to down
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcCollision.Controller
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	deactivate Model
-	Model --> Controller : << movement ended >>
+	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
 end
 alt [37] move to left
@@ -317,14 +335,21 @@ alt [37] move to left
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcCollision.Controller
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	deactivate Model
-	Model --> Controller : << movement ended >>
+	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
 else [39] move to right
 	Controller -> Model : moveToRight()
@@ -350,14 +375,21 @@ else [39] move to right
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcCollision.Controller
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	deactivate Model
-	Model --> Controller : << movement ended >>
+	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
 else stop rotation
 	Controller -> Model : annulerRotation()
@@ -383,19 +415,85 @@ else stop rotation
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	deactivate Model
-	Model --> Controller : << movement ended >>
+	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
 end
 
 deactivate Controller
-Controller --> Game : << movement processing ended >>
+Controller --> Game : <I><< movement processing ended >></I>
+@enduml
+
+@startuml
+title <b>MVC Player</b> sequence diagram
+hide footbox
+
+participant Game
+box "mvcPlayer"
+participant Controller << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
+endbox
+participant mvcSaucisse.Model
+participant mvcSaucisse.View
+
+participant Exception
+
+legend left
+ Player.run() is done ; the player object must already be moved.\n
+ Saucisse.run() is done now and Model Saucisse notifying Controller Player !
+endlegend
+== Collision management ==
+group Model Saucisse
+	mvcSaucisse.Model -> Controller : display(mvcSaucisse.Model)
+	activate Controller
+	Controller -> View : isCollision(mvcSaucisse.View)
+	activate View
+	View -> mvcSaucisse.View : getCollision()
+	activate mvcSaucisse.View
+	mvcSaucisse.View --> View : {x, y , width, height}
+	deactivate mvcSaucisse.View
+	View --> Controller : true/false
+	deactivate View
+	alt Collision is true
+		alt bonne saucisse
+			Controller -> View : sound('boing')
+			activate View
+			View --> Controller : <I><< boing >></I>
+			deactivate View
+			Controller --> Model : addPoints()
+			activate Model
+			Model --> Controller : <I><< Score Updated >></I>
+			deactivate Model
+		else mauvaise saucisse
+			Controller -> View : sound('pouet')
+			activate View
+			View --> Controller : <I><< pouet >></I>
+			deactivate View
+			Controller --> Model : deleteLife()
+			activate Model
+			Model --> Controller : <I><< Life Updated >></I>
+			deactivate Model
+		end
+		Controller -> mvcSaucisse.Controller : preparer()
+		activate mvcSaucisse.Controller
+		mvcSaucisse.Controller --> Controller : <I><< New Saucisse >></I>
+		deactivate mvcSaucisse.Controller
+	else Collision is false
+
+	end
+	Controller --> mvcSaucisse.Model : <I><< notification ended >></I>
+	deactivate Controller	
+
+end
+
 @enduml
 */
 var mvcPlayer = {};
@@ -438,6 +536,17 @@ var mvcPlayer = {};
 		this.rotation = obj_observable.getRotation();
 	}
 
+	mvcPlayer.View.prototype.isCollision = function(obj_collision)
+	{
+		common.IsObjectCollision(obj_collision);
+
+		return  (
+			( obj_collision.x > this.x - 40 ) &&
+			( obj_collision.x < this.x + 96 ) &&
+			( obj_collision.y > this.y - 16 ) &&
+			( obj_collision.y < this.y + 44 )
+		);
+	}
 }());
 
 // ============================================================================================================================

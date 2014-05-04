@@ -11,6 +11,7 @@ function startTest()
 	test("Test des fonctions HasNumber", testNumberValue);
 	test("Test de la fonction IsObjectObservable", testObjectObservable);
 	test("Test de la fonction IsObjectObserver", testObjectObserver);
+	test("Test de la fonction IsObjectCollision", testObjectCollision);
 }
 
 function testObjectStage()
@@ -37,7 +38,7 @@ function testObjectStage()
 	);
 
 	var obj_stage = new createjs.Stage();
-	equal( common.HasObjectStage(obj_stage), obj_stage, "common.HasObjectStage(obj_stage) : 'Test of Object Stage!");
+	strictEqual( common.HasObjectStage(obj_stage), obj_stage, "common.HasObjectStage(obj_stage) : 'Test of Object Stage!");
 
 }
 
@@ -65,7 +66,7 @@ function testObjectLoadQueue()
 	);
 
 	var obj_queue = new createjs.LoadQueue();
-	equal( common.HasObjectLoadQueue(obj_queue), obj_queue, "common.HasObjectLoadQueue(obj_queue) : 'Test of Object Stage!");
+	strictEqual( common.HasObjectLoadQueue(obj_queue), obj_queue, "common.HasObjectLoadQueue(obj_queue) : 'Test of Object Stage!");
 
 }
 
@@ -85,9 +86,9 @@ function testStringName()
 		"common.HasStringName('my name', 100) : Test of Second parameter with literal type!"
 	);
 
-	equal(common.HasStringName(),'name_default',"common.HasStringName() : check that result test is default value");
-	equal(common.HasStringName(undefined, 'my name by default'),'my name by default',"common.HasStringName(undefined, 'my name by default') : check that  result test is first parameter");
-	equal(common.HasStringName('my_name', 'my name by default'),'my_name',"common.HasStringName('my_name', 'my name by default') : check that  result test is second parameter");
+	strictEqual(common.HasStringName(),'name_default',"common.HasStringName() : check that result test is default value");
+	strictEqual(common.HasStringName(undefined, 'my name by default'),'my name by default',"common.HasStringName(undefined, 'my name by default') : check that  result test is first parameter");
+	strictEqual(common.HasStringName('my_name', 'my name by default'),'my_name',"common.HasStringName('my_name', 'my name by default') : check that  result test is second parameter");
 }
 
 function testNumberValue()
@@ -106,9 +107,9 @@ function testNumberValue()
 		"common.HasNumberX(100, 'string') : Test of Second parameter!"
 	);
 
-	equal(common.HasNumberX(), 0,"common.HasNumberX() : check that result test is default value");
-	equal(common.HasNumberX(undefined, 150), 150,"common.HasNumberX(,150) : check that  result test is first parameter");
-	equal(common.HasNumberX(100, 150),100,"common.HasNumberX(100, 150) : check that  result test is second parameter");
+	strictEqual(common.HasNumberX(), 0,"common.HasNumberX() : check that result test is default value");
+	strictEqual(common.HasNumberX(undefined, 150), 150,"common.HasNumberX(,150) : check that  result test is first parameter");
+	strictEqual(common.HasNumberX(100, 150),100,"common.HasNumberX(100, 150) : check that  result test is second parameter");
 
 	throws( function() {
 			var y = common.HasNumberY('string');
@@ -124,9 +125,9 @@ function testNumberValue()
 		"common.HasNumberY(100, 'string') : Test of Second parameter!"
 	);
 
-	equal(common.HasNumberY(), 0,"common.HasNumberY() : check that result test is default value");
-	equal(common.HasNumberY(undefined, 150), 150,"common.HasNumberY(,150) : check that  result test is first parameter");
-	equal(common.HasNumberY(100, 150),100,"common.HasNumberY(100, 150) : check that  result test is second parameter");
+	strictEqual(common.HasNumberY(), 0,"common.HasNumberY() : check that result test is default value");
+	strictEqual(common.HasNumberY(undefined, 150), 150,"common.HasNumberY(,150) : check that  result test is first parameter");
+	strictEqual(common.HasNumberY(100, 150),100,"common.HasNumberY(100, 150) : check that  result test is second parameter");
 
 	throws( function() {
 			var rotation = common.HasNumberRotation('string');
@@ -142,9 +143,9 @@ function testNumberValue()
 		"common.HasNumberRotation(100, 'string') : Test of Second parameter!"
 	);
 
-	equal(common.HasNumberRotation(), 0,"common.HasNumberRotation() : check that result test is default value");
-	equal(common.HasNumberRotation(undefined, 150), 150,"common.HasNumberRotation(,150) : check that  result test is first parameter");
-	equal(common.HasNumberRotation(100, 150),100,"common.HasNumberRotation(100, 150) : check that  result test is second parameter");
+	strictEqual(common.HasNumberRotation(), 0,"common.HasNumberRotation() : check that result test is default value");
+	strictEqual(common.HasNumberRotation(undefined, 150), 150,"common.HasNumberRotation(,150) : check that  result test is first parameter");
+	strictEqual(common.HasNumberRotation(100, 150),100,"common.HasNumberRotation(100, 150) : check that  result test is second parameter");
 
 	throws( function() {
 			var vitesse = common.HasNumberSpeed('string');
@@ -160,9 +161,9 @@ function testNumberValue()
 		"common.HasNumberSpeed(100, 'string') : Test of Second parameter!"
 	);
 
-	equal(common.HasNumberSpeed(), 6,"common.HasNumberSpeed() : check that result test is default value");
-	equal(common.HasNumberSpeed(undefined, 150), 150,"common.HasNumberSpeed(,150) : check that  result test is first parameter");
-	equal(common.HasNumberSpeed(100, 150),100,"common.HasNumberSpeed(100, 150) : check that  result test is second parameter");
+	strictEqual(common.HasNumberSpeed(), 6,"common.HasNumberSpeed() : check that result test is default value");
+	strictEqual(common.HasNumberSpeed(undefined, 150), 150,"common.HasNumberSpeed(,150) : check that  result test is first parameter");
+	strictEqual(common.HasNumberSpeed(100, 150),100,"common.HasNumberSpeed(100, 150) : check that  result test is second parameter");
 
 }
 
@@ -189,7 +190,7 @@ function testObjectObservable()
 		"common.IsObjectObservable('string') : Test of parameter with string literal type!"
 	);
 	
-	equal(common.IsObjectObservable({}), true, "common.IsObjectObservable({}) : check that result test with object parameter type is true");
+	strictEqual(common.IsObjectObservable({}), true, "common.IsObjectObservable({}) : check that result test with object parameter type is true");
 }
 
 function testObjectObserver()
@@ -219,10 +220,61 @@ function testObjectObserver()
 			var r = common.IsObjectObserver({});
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
-		"common.IsObjectObserver('string') : Test of parameter with string literal type!"
+		"common.IsObjectObserver({}) : Test of parameter with empty Object type!"
 	);
 	
-	equal(common.IsObjectObserver({prepare: function() {}}), true, "common.IsObjectObserver({prepare: function() {}}) : check that result test with object observer parameter type is true");
-	equal(common.IsObjectObserver({display: function() {}}), true, "common.IsObjectObserver({display: function() {}}) : check that result test with object observer parameter type is true");
-	equal(common.IsObjectObserver({prepare: function() {}, display: function() {}}), true, "common.IsObjectObserver({prepare: function() {}, display: function() {}}) : check that result test with object observer parameter type is true");
+	strictEqual(common.IsObjectObserver({prepare: function() {}}), true, "common.IsObjectObserver({prepare: function() {}}) : check that result test with object observer parameter type is true");
+	strictEqual(common.IsObjectObserver({display: function() {}}), true, "common.IsObjectObserver({display: function() {}}) : check that result test with object observer parameter type is true");
+	strictEqual(common.IsObjectObserver({prepare: function() {}, display: function() {}}), true, "common.IsObjectObserver({prepare: function() {}, display: function() {}}) : check that result test with object observer parameter type is true");
+}
+
+function testObjectCollision()
+{
+	throws( function() {
+			var r = common.IsObjectCollision();
+		},
+		'\'Collision\' is not a Object!',
+		"common.IsObjectCollision() : Test without parameter!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectCollision(100);
+		},
+		'\'Collision\' is not a Object!',
+		"common.IsObjectCollision(100) : Test of parameter with number literal type!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectCollision('string');
+		},
+		'\'Collision\' is not a Object!',
+		"common.IsObjectCollision('string') : Test of parameter with string literal type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectCollision({});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"common.IsObjectCollision({}) : Test of parameter with empty object type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectCollision({x:10});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"common.IsObjectCollision({x:10}) : Test of parameter with empty object type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectCollision({y:10});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"common.IsObjectCollision({y:10}) : Test of parameter with empty object type!"
+	);
+
+	strictEqual(
+		common.IsObjectCollision({x:10,y:10}),
+		true,
+		"common.IsObjectCollision({x:10,y:10}) : check that result test with object collision parameter type is true"
+	);
 }
