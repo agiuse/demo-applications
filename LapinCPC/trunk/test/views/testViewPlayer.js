@@ -329,37 +329,47 @@ function runTest()
 
 function test_run(event)
 {
-	if ( obj_controller_player.run !== undefined )
-		obj_controller_player.run();
+	if (!createjs.Ticker.getPaused())
+	{
+		if ( obj_controller_player.run !== undefined )
+			obj_controller_player.run();
 
-	obj_stage.update(event);
+		obj_stage.update(event);
 
-	if ( count > 0 ) {
-		count--;
-	} else {
-		if ( simult_touches.length > 0 )
-		{
-			touche = simult_touches.shift();
-			if (touche !== undefined )
+		if ( count > 0 ) {
+			count--;
+		} else {
+			if ( simult_touches.length > 0 )
 			{
-				if ( touche.value ) {
-					count_max=touche.count;
-					count=count_max;
-					obj_stage.touches[touche.key]=true;
-				} else {
-					delete obj_stage.touches[touche.key];
-					if (touche.count !== undefined ) {
+				touche = simult_touches.shift();
+				if (touche !== undefined )
+				{
+					if ( touche.value ) {
 						count_max=touche.count;
 						count=count_max;
+						obj_stage.touches[touche.key]=true;
+					} else {
+						delete obj_stage.touches[touche.key];
+						if (touche.count !== undefined ) {
+							count_max=touche.count;
+							count=count_max;
+						}
 					}
 				}
 			}
-		} else {
-			createjs.Ticker.removeEventListener("tick", test_run);
 		}
 	}
 }
 
+function testPause() {
+	var paused = !createjs.Ticker.getPaused();
+	createjs.Ticker.setPaused(paused);
+	document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
+}
+
+function testEnd() {
+		createjs.Ticker.removeEventListener("tick", test_run);	
+}
 // -----------------------------------------------------------------
 function test1()
 {

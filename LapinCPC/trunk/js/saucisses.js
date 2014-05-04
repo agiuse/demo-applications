@@ -101,7 +101,6 @@ participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
 Participant Generator
-Participant Object
 Participant Exception
 
 == Initialisation ==
@@ -125,9 +124,9 @@ create Observable
 Model -> Observable
 activate Observable
 Observable -[#red]> Exception : throw("'Observable' is not a Object!")
-Observable --> Model : << observable created >>
+Observable --> Model : <I><< observable created >></I>
 deactivate Observable
-Model --> Controller : << model created >>
+Model --> Controller : <I><< model created >></I>
 deactivate Model
 create View
 Controller -> View : new(obj_stage, obj_queue, name)
@@ -135,7 +134,7 @@ activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
-View --> Controller : << view created >>
+View --> Controller : <I><< view created >></I>
 deactivate View
 
 == Subscription ==
@@ -147,9 +146,9 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : << observer entered >>
+Observable --> Model : <I><< observer entered >></I>
 deactivate Observable
-Model --> Controller : << observer entered >>
+Model --> Controller : <I><< observer entered >></I>
 deactivate Model
 deactivate Controller
 == Preparation ==
@@ -157,11 +156,9 @@ Controller -> Controller : preparer()
 activate Controller
 Controller -> Generator : iterator()
 activate Generator
-create Object
-Generator --> Object : new({x,y,rotation, vitesse, pourrie}
-Generator --> Controller : Object
+Generator --> Controller : {x,y,rotation, vitesse, pourrie}
 deactivate Generator
-Controller -> Model : preparer(Object.x, Object.y, Object.rotation, Object.vitesse, Object.pourrie)
+Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
 activate Model
 loop  coordonnee notification
 	Model -> Observable : notify('prepare')
@@ -186,16 +183,14 @@ loop  coordonnee notification
 		activate Model
 		Model --> View : vitesse
 		deactivate Model
-		View --> Observable : << Bitmap displayed >>
+		View --> Observable : <I><< Bitmap displayed >></I>
 	end
 	deactivate View
-	Observable --> Model : << notification ended >>
+	Observable --> Model : <I><< notification ended >></I>
 	deactivate Observable
 end
-Model --> Controller : << preparation ended >>
+Model --> Controller : <I><< preparation ended >></I>
 deactivate Model
-Object -> Controller : << destroy Object >>
-destroy Object
 deactivate Controller
 Controller --> Game
 deactivate Controller
@@ -213,7 +208,7 @@ participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
 Participant Generator
-Participant Object
+Participant mvcCollision.Controller
 Participant Exception
 
 Game -> Controller : run()
@@ -239,23 +234,28 @@ alt [ x > 0 ]
 			activate Model
 			Model --> View : x
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcCollision.Controller
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	Model --> Controller : << update ended >>
+	Model --> Controller : <I><< update ended >></I>
 else [ x < 0 ]
 	Controller -> Controller : preparer()
 	activate Controller
 	Controller -> Generator : iterator()
 	activate Generator
-	create Object
-	Generator --> Object : new({x,y,rotation, vitesse, pourrie}
-	Generator --> Controller : Object
+	Generator --> Controller : {x,y,rotation, vitesse, pourrie}
 	deactivate Generator
-	Controller -> Model : preparer(Object.x, Object.y, Object.rotation, Object.vitesse, Object.pourrie)
+	Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('prepare')
@@ -280,21 +280,18 @@ else [ x < 0 ]
 			activate Model
 			Model --> View : vitesse
 			deactivate Model
-			View --> Observable : << Bitmap displayed >>
+			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable --> Model : << notification ended >>
+		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	Model --> Controller : << preparation ended >>
+	Model --> Controller : <I><< preparation ended >></I>
 	deactivate Model
-	Object -> Controller : << destroy Object >>
-	destroy Object
 	deactivate Controller
 end
 Controller --> Game
 deactivate Controller
-deactivate Game
 
 @enduml
 */

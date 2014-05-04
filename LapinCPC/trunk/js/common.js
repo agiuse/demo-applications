@@ -121,6 +121,17 @@
 
 		return true;
 	}
-				
+
+	common.IsObjectCollision = function(obj_collision)
+	{
+		if (typeof obj_collision !== 'object') 
+			throw '\'Collision\' is not a Object!';
+
+		if ( obj_collision.x === undefined || obj_collision.y === undefined )
+			throw 'No \'createjs coordonnees\' methods are defined!';
+
+		return true;
+	}
+	
 	window.common = common;
 }(window));

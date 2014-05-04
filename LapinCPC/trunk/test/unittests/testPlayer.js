@@ -8,6 +8,7 @@ function startTest()
 	test("Test des parametres du constructeur()", testViewConstructor);
 	test("Test des parametres de la méthode prepare() ", testViewMethodprepare);
 	test("Test des parametres de la méthode display() ", testViewMethoddisplay);
+	test("Test des parametres de la méthode isCollision() ", testViewMethodisCollision);
 
 	module("Model Player tests");
 	test("Test des parametres du constructeur()", testModelConstructor);
@@ -19,8 +20,8 @@ function startTest()
 	module("Controller Player tests");
 	test("Test des parametres du constructeur", testControllerConstructor);
 	test("Test des parametres de la méthode preparer()", testControllerMethodpreparer);
-	test("Test des parametres de la méthode scoreHasObservedBy()", testControllerMethodscoreHasObservedBy);
 	test("Test des parametres de la méthode lifeHasObservedBy()", testControllerMethodlifeHasObservedBy);
+	test("Test des parametres de la méthode scoreHasObservedBy()", testControllerMethodscoreHasObservedBy);
 	test("Test des parametres des moveTo()", testControllerMethodMove);
 	test("Test des parametres de la méthode run()", testControllerMethodRun);
 }
@@ -56,18 +57,18 @@ function testViewConstructor()
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
 		obj = new mvcPlayer.View(obj_stage, obj_queue);
-		equal(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue) : Stage ok");
-		equal(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue) : LoadQueue ok");
-		equal(obj.name, 'View_default',"mvcPlayer.View(obj_stage, obj_queue) : name default value ok");
+		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue) : Stage ok");
+		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue) : LoadQueue ok");
+		strictEqual(obj.name, 'View_default',"mvcPlayer.View(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
 		obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
-		equal(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : Stage ok");
-		equal(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : LoadQueue ok");
-		equal(obj.name, 'view test',"mvcPlayer.View(obj_stage, obj_queue, 'view test') :  new name value ok");
+		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : Stage ok");
+		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : LoadQueue ok");
+		strictEqual(obj.name, 'view test',"mvcPlayer.View(obj_stage, obj_queue, 'view test') :  new name value ok");
 	}
 }
 
@@ -141,6 +142,159 @@ function testViewMethoddisplay()
 		"mvcPlayer.View.display(100) : bad method call of display method with number literal value"
 	);
 }
+// -----------------------------------------------------------------
+function testViewMethodisCollision()
+{
+	console.log('testViewMethodisCollision\n-----------------------------------------');
+
+	throws ( function() {
+			obj_queue = new createjs.LoadQueue();
+			obj_stage = new createjs.Stage();
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			obj.isCollision();
+		},
+		'\'Collision\' is not a Object!',
+		"mvcPlayer.View.isCollsion() : bad method call of isCollision with empty field"
+	);
+
+	throws ( function() {
+			obj_queue = new createjs.LoadQueue();
+			obj_stage = new createjs.Stage();
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			obj.isCollision({});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"mvcPlayer.View.isCollsion() : check that Collision object has x and y attributes!"
+	);
+
+	throws ( function() {
+			obj_queue = new createjs.LoadQueue();
+			obj_stage = new createjs.Stage();
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			obj.isCollision({x:20});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"mvcPlayer.View.isCollsion() : check that Collision object has y attribute!"
+	);
+
+	throws ( function() {
+			obj_queue = new createjs.LoadQueue();
+			obj_stage = new createjs.Stage();
+			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			obj.isCollision({y:10});
+		},
+		'No \'createjs coordonnees\' methods are defined!',
+		"mvcPlayer.View.isCollsion() : check that Collision object has x attribute!"
+	);
+	
+	{
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		strictEqual(
+			obj.isCollision({ x:50, y:100 }),
+			false,
+			"mvcPlayer.View.isCollision({ x:50, y:100 }) : check that return is false value"
+		);
+	}
+	
+	// ne se touche pas 
+	{ // saucisse à gauche		
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:50, y:100 }),
+			false,
+			"mvcPlayer.View.isCollision({ x:50, y:100 }) : check that return value is false when saucisse position is left to the ship!"
+		);
+	}
+
+	{ // saucisse à droite
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:200, y:100 }),
+			false,
+			"mvcPlayer.View.isCollision({ x:200, y:100 }) : check that return value is false when saucisse position is right to the ship!"
+		);
+	}
+
+	{ // saucisse en haut
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:100, y:80 }),
+			false,
+			"mvcPlayer.View.isCollision({ x:100, y:80 }) : check that return value is false when saucisse position is up to the ship!"
+		);
+	}
+
+	{ // saucisse à bas
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:100, y:150 }),
+			false, 
+			"mvcPlayer.View.isCollision({ x:100, y:150 }) : check that return value is false when saucisse position is down to the ship!"
+		);
+	}
+	
+	// La saucisse touche le player 
+	{ // saucisse à gauche
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:80, y:100 }),
+			true,
+			"mvcPlayer.View.isCollision({ x:80, y:100 }) : check that return value is false when saucisse position is left  to collision aera with the ship!"
+		);
+	}
+
+	{ // saucisse à droite
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:190, y:100 }),
+			true,
+			"mvcPlayer.View.isCollision({ x:190, y:100 }) : check that return value is false when saucisse position is right to collision aera with the ship!"
+		);
+	}
+
+	{ // saucisse en haut
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:100, y:100 }),
+			true,
+			"mvcPlayer.View.isCollision({ x:100, y:100 }) : check that return value is false when saucisse position is up to collision aera with the ship!"
+		);
+	}
+
+	{ // saucisse en bas
+		var obj_queue = new createjs.LoadQueue();
+		var obj_stage = new createjs.Stage();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		obj.x = 100; obj.y = 100;
+		strictEqual(
+			obj.isCollision({ x:100, y:140 }),
+			true,
+			"mvcPlayer.View.isCollision({ x:100, y:140 }) : check that return value is true when saucisse position is down to collision aera with the ship!"
+		);
+	}}
 
 // -----------------------------------------------------------------
 function testModelConstructor()
@@ -155,24 +309,24 @@ function testModelConstructor()
 
 	{
 		obj = new mvcPlayer.Model();
-		equal(obj.name, 'Model_default', "mvcPlayer.Model() : Test of right \'name\' default value");
-		equal(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
-		equal(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
+		strictEqual(obj.name, 'Model_default', "mvcPlayer.Model() : Test of right \'name\' default value");
+		strictEqual(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
+		strictEqual(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
+		strictEqual(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
+		strictEqual(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
+		strictEqual(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
 	}
 	
 	{
 		obj = new mvcPlayer.Model('model test');
-		equal(obj.name, 'model test', "mvcPlayer.Model('model test') : Test of right \'name\' value");
-		equal(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
-		equal(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
+		strictEqual(obj.name, 'model test', "mvcPlayer.Model('model test') : Test of right \'name\' value");
+		strictEqual(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
+		strictEqual(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcPlayer.Model() : Test of right \'rotation\' default value");
+		strictEqual(obj.vitesse, 6, "mvcPlayer.Model() : Test of right \'vitesse\' default value");
+		strictEqual(obj.nb_vies, 3, "mvcPlayer.Model() : Test of right \'nb_vies\' default value");
+		strictEqual(obj.nb_points, 0, "mvcPlayer.Model() : Test of right \'nb_points\' default value");
 	}
 }
 
@@ -232,23 +386,23 @@ function testModelMethodpreparer()
 	{
 		obj = new mvcPlayer.Model();
 		obj.preparer();
-		equal(obj.x, 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
-		equal(obj.y, 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
-		equal(obj.vitesse, 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.nb_vies, 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.nb_points, 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
+		strictEqual(obj.x, 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
+		strictEqual(obj.y, 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
+		strictEqual(obj.vitesse, 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
+		strictEqual(obj.nb_vies, 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
+		strictEqual(obj.nb_points, 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
 		obj = new mvcPlayer.Model('model test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.x, 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.y, 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.rotation, -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.vitesse, 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.nb_vies, 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.nb_points, 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		strictEqual(obj.x, 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		strictEqual(obj.y, 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		strictEqual(obj.rotation, -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		strictEqual(obj.vitesse, 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		strictEqual(obj.nb_vies, 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		strictEqual(obj.nb_points, 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 }
 
@@ -283,17 +437,17 @@ function testModelMethodSet()
 	{
 		obj = new mvcPlayer.Model('model test');
 		obj.set();
-		equal(obj.x, 0, "mvcPlayer.Model.set() : Test of right \'X\' default value");
-		equal(obj.y, 224, "mvcPlayer.Model.set() : Test of right \'Y\' default value");
-		equal(obj.rotation, 0, "mvcPlayer.Model.set() : Test of right \'rotation\' default value");
+		strictEqual(obj.x, 0, "mvcPlayer.Model.set() : Test of right \'X\' default value");
+		strictEqual(obj.y, 224, "mvcPlayer.Model.set() : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcPlayer.Model.set() : Test of right \'rotation\' default value");
 	}
 	
 	{
 		obj = new mvcPlayer.Model('model test');
 		obj.set(10, 100, -6);
-		equal(obj.x, 10, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'X\' value");
-		equal(obj.y, 100, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'Y\'  value");
-		equal(obj.rotation, -6, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'rotation\' value");
+		strictEqual(obj.x, 10, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'X\' value");
+		strictEqual(obj.y, 100, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'Y\'  value");
+		strictEqual(obj.rotation, -6, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'rotation\' value");
 	}
 }
 
@@ -539,23 +693,23 @@ function testModelMethodGetters()
 	{
 		obj = new mvcPlayer.Model();
 		obj.preparer();
-		equal(obj.getX(), 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
-		equal(obj.getY(), 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
-		equal(obj.getRotation(), 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
-		equal(obj.getSpeed(), 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.getLife(), 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.getScore(), 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
+		strictEqual(obj.getX(), 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
+		strictEqual(obj.getY(), 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
+		strictEqual(obj.getRotation(), 0, "mvcPlayer.Model.preparer() : Test of right \'rotation\' default value");
+		strictEqual(obj.getSpeed(), 6, "mvcPlayer.Model.preparer() : Test of right \'vitesse\' default value");
+		strictEqual(obj.getLife(), 3, "mvcPlayer.Model.preparer() : Test of right \'nb_vies\' default value");
+		strictEqual(obj.getScore(), 0, "mvcPlayer.Model.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
 		obj = new mvcPlayer.Model('model test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.getX(), 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.getY(), 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.getRotation(), -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.getSpeed(), 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.getLife(), 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.getScore(), 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		strictEqual(obj.getX(), 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		strictEqual(obj.getY(), 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		strictEqual(obj.getRotation(), -6, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		strictEqual(obj.getSpeed(), 8, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		strictEqual(obj.getLife(), 4, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		strictEqual(obj.getScore(), 1000, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 
 }
@@ -589,18 +743,18 @@ function testControllerConstructor()
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
 		obj = new mvcPlayer.Controller(obj_stage, obj_queue);
-		equal(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue) : Stage ok");
-		equal(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue) : LoadQueue ok");
-		equal(obj.name, 'Controller_default',"mvcPlayer.Controller(obj_stage, obj_queue) : name default value ok");
+		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue) : Stage ok");
+		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue) : LoadQueue ok");
+		strictEqual(obj.name, 'Controller_default',"mvcPlayer.Controller(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
 		obj_queue = new createjs.LoadQueue();
 		obj_stage = new createjs.Stage();
 		obj = new mvcPlayer.Controller(obj_stage, obj_queue, 'controller test');
-		equal(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : Stage ok");
-		equal(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : LoadQueue ok");
-		equal(obj.name, 'controller test',"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') :  new name value ok");
+		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : Stage ok");
+		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : LoadQueue ok");
+		strictEqual(obj.name, 'controller test',"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') :  new name value ok");
 	}
 }
 
@@ -659,23 +813,23 @@ function testControllerMethodpreparer()
 	{
 		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer();
-		equal(obj.obj_model_joueur.getX(), 0, "mvcPlayer.Controller.preparer() : Test of right \'X\' default value");
-		equal(obj.obj_model_joueur.getY(), 224, "mvcPlayer.Controller.preparer() : Test of right \'Y\' default value");
-		equal(obj.obj_model_joueur.getRotation(), 0, "mvcPlayer.Controller.preparer() : Test of right \'rotation\' default value");
-		equal(obj.obj_model_joueur.getSpeed(), 6, "mvcPlayer.Controller.preparer() : Test of right \'vitesse\' default value");
-		equal(obj.obj_model_joueur.getLife(), 3, "mvcPlayer.Controller.preparer() : Test of right \'nb_vies\' default value");
-		equal(obj.obj_model_joueur.getScore(), 0, "mvcPlayer.Controller.preparer() : Test of right \'nb_points\' default value");
+		strictEqual(obj.obj_model_joueur.getX(), 0, "mvcPlayer.Controller.preparer() : Test of right \'X\' default value");
+		strictEqual(obj.obj_model_joueur.getY(), 224, "mvcPlayer.Controller.preparer() : Test of right \'Y\' default value");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "mvcPlayer.Controller.preparer() : Test of right \'rotation\' default value");
+		strictEqual(obj.obj_model_joueur.getSpeed(), 6, "mvcPlayer.Controller.preparer() : Test of right \'vitesse\' default value");
+		strictEqual(obj.obj_model_joueur.getLife(), 3, "mvcPlayer.Controller.preparer() : Test of right \'nb_vies\' default value");
+		strictEqual(obj.obj_model_joueur.getScore(), 0, "mvcPlayer.Controller.preparer() : Test of right \'nb_points\' default value");
 	}
 	
 	{
 		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
-		equal(obj.obj_model_joueur.getX(), 10, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		equal(obj.obj_model_joueur.getY(), 100, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		equal(obj.obj_model_joueur.getRotation(), -6, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		equal(obj.obj_model_joueur.getSpeed(), 8, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		equal(obj.obj_model_joueur.getLife(), 4, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
-		equal(obj.obj_model_joueur.getScore(), 1000, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
+		strictEqual(obj.obj_model_joueur.getX(), 10, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		strictEqual(obj.obj_model_joueur.getY(), 100, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
+		strictEqual(obj.obj_model_joueur.getRotation(), -6, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
+		strictEqual(obj.obj_model_joueur.getSpeed(), 8, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
+		strictEqual(obj.obj_model_joueur.getLife(), 4, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_vies\' value");
+		strictEqual(obj.obj_model_joueur.getScore(), 1000, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'nb_points\' value");
 	}
 }
 
@@ -850,14 +1004,14 @@ function testControllerMethodMove()
 		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 10, 0, 8);
 		obj.moveToUp();
-		equal(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 		obj.moveToUp();
-		equal(obj.obj_model_joueur.getY(), 0, "right move to up from 2 to 0");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 0, "right move to up from 2 to 0");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 		obj.moveToUp();
-		equal(obj.obj_model_joueur.getY(), 0, "no move to up");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 0, "no move to up");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 	}
 	
 	{	// Test of moveToDown() methode
@@ -865,14 +1019,14 @@ function testControllerMethodMove()
 		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 404, 0, 8);
 		obj.moveToDown();
-		equal(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 		obj.moveToDown();
-		equal(obj.obj_model_joueur.getY(), 416, "right move to down from 412 to 416");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 416, "right move to down from 412 to 416");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 		obj.moveToDown();
-		equal(obj.obj_model_joueur.getY(), 416, "no move to down");
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
+		strictEqual(obj.obj_model_joueur.getY(), 416, "no move to down");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change of rotation value");
 	}
 
 	{	// Test of moveToLeft() methode
@@ -880,14 +1034,14 @@ function testControllerMethodMove()
 		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, 0, 8);
 		obj.moveToLeft();
-		equal(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
-		equal(obj.obj_model_joueur.getRotation(), -2, "increase of rotation value from 0 to -2");
+		strictEqual(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
+		strictEqual(obj.obj_model_joueur.getRotation(), -2, "increase of rotation value from 0 to -2");
 		obj.moveToLeft();
-		equal(obj.obj_model_joueur.getX(), 0, "right move to left from 2 to 0");
-		equal(obj.obj_model_joueur.getRotation(), -4 , "increase of rotation value from -2 to -4");
+		strictEqual(obj.obj_model_joueur.getX(), 0, "right move to left from 2 to 0");
+		strictEqual(obj.obj_model_joueur.getRotation(), -4 , "increase of rotation value from -2 to -4");
 		obj.moveToLeft();
-		equal(obj.obj_model_joueur.getX(), 0, "no move to left");
-		equal(obj.obj_model_joueur.getRotation(), -4, "no change of rotation value from -4 to -4");
+		strictEqual(obj.obj_model_joueur.getX(), 0, "no move to left");
+		strictEqual(obj.obj_model_joueur.getRotation(), -4, "no change of rotation value from -4 to -4");
 	}
 
 	{	// Test of moveToRight() methode
@@ -895,14 +1049,14 @@ function testControllerMethodMove()
 		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, 0, 8);
 		obj.moveToRight();
-		equal(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
-		equal(obj.obj_model_joueur.getRotation(), 2, "increase of rotation value from 0 to 2");
+		strictEqual(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
+		strictEqual(obj.obj_model_joueur.getRotation(), 2, "increase of rotation value from 0 to 2");
 		obj.moveToRight();
-		equal(obj.obj_model_joueur.getX(), 512, "right move to right from 508 to 512");
-		equal(obj.obj_model_joueur.getRotation(), 4, "increase of rotation value from 2 to 4");
+		strictEqual(obj.obj_model_joueur.getX(), 512, "right move to right from 508 to 512");
+		strictEqual(obj.obj_model_joueur.getRotation(), 4, "increase of rotation value from 2 to 4");
 		obj.moveToRight();
-		equal(obj.obj_model_joueur.getX(), 512, "no move to right ");
-		equal(obj.obj_model_joueur.getRotation(), 6, "increase of rotation value from 4 to 6");
+		strictEqual(obj.obj_model_joueur.getX(), 512, "no move to right ");
+		strictEqual(obj.obj_model_joueur.getRotation(), 6, "increase of rotation value from 4 to 6");
 	}
 
 	// Test of AnnulerRotation() method
@@ -911,13 +1065,13 @@ function testControllerMethodMove()
 		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, -6);
 		obj.annulerRotation();
-		equal(obj.obj_model_joueur.getRotation(), -5, "decrease of rotation value from -6 to -5");
+		strictEqual(obj.obj_model_joueur.getRotation(), -5, "decrease of rotation value from -6 to -5");
 		obj.preparer(500, 100, 6);
 		obj.annulerRotation();
-		equal(obj.obj_model_joueur.getRotation(), 5, "decrease of  rotation value from 6 to 5");
+		strictEqual(obj.obj_model_joueur.getRotation(), 5, "decrease of  rotation value from 6 to 5");
 		obj.preparer(500, 100, 0);
 		obj.annulerRotation();
-		equal(obj.obj_model_joueur.getRotation(), 0, "no change rotation value");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "no change rotation value");
 	}
 }
 
@@ -931,20 +1085,20 @@ function testControllerMethodRun()
 		obj.preparer(10, 10, 0, 8);
 		obj_stage.touches[38] = true;
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 1 first run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 0, "right move to up from 2 to 0");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 2 second run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 0, "right move to up from 2 to 0");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 2 second run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 0, "no move to up");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 3 third run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 0, "no move to up");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 3 third run cycle");
 		delete obj_stage.touches[38];
 		obj.run();
 		obj.run();
 		obj.run();
 		obj.run();
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
 	}
 
 	{	// move to down
@@ -953,20 +1107,20 @@ function testControllerMethodRun()
 		obj.preparer(10, 404, 0, 8);
 		obj_stage.touches[40] = true;
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 1 first run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 416, "right move to down from 412 to 416");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 2 second run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 416, "right move to down from 412 to 416");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 2 second run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getY(), 416, "no move to down");
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 3 third run cycle");
+		strictEqual(obj.obj_model_joueur.getY(), 416, "no move to down");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 3 third run cycle");
 		delete obj_stage.touches[40];
 		obj.run();
 		obj.run();
 		obj.run();
 		obj.run();
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
 	}
 
 	{	// move to left
@@ -975,20 +1129,20 @@ function testControllerMethodRun()
 		obj.preparer(10, 100, 0, 8);
 		obj_stage.touches[37] = true;
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
-		equal(obj.obj_model_joueur.getRotation(), -2, "new rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
+		strictEqual(obj.obj_model_joueur.getRotation(), -2, "new rotation value after 1 first run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 0, "right move to left from 2 to 0");
-		equal(obj.obj_model_joueur.getRotation(), -4 , "new rotation value after 2 second run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 0, "right move to left from 2 to 0");
+		strictEqual(obj.obj_model_joueur.getRotation(), -4 , "new rotation value after 2 second run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 0, "no move to left");
-		equal(obj.obj_model_joueur.getRotation(), -4, "new rotation value after 3 third run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 0, "no move to left");
+		strictEqual(obj.obj_model_joueur.getRotation(), -4, "new rotation value after 3 third run cycle");
 		delete obj_stage.touches[37];
 		obj.run();
 		obj.run();
 		obj.run();
 		obj.run();
-		equal(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
+		strictEqual(obj.obj_model_joueur.getRotation(), 0, "new rotation value after 7th run cycle");
 
 	}
 
@@ -998,20 +1152,20 @@ function testControllerMethodRun()
 		obj.preparer(500, 100, 0, 8);
 		obj_stage.touches[39] = true;
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
-		equal(obj.obj_model_joueur.getRotation(), 2, "new rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
+		strictEqual(obj.obj_model_joueur.getRotation(), 2, "new rotation value after 1 first run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 512, "right move to right from 508 to 512");
-		equal(obj.obj_model_joueur.getRotation(), 4, "new rotation value after 2 second run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 512, "right move to right from 508 to 512");
+		strictEqual(obj.obj_model_joueur.getRotation(), 4, "new rotation value after 2 second run cycle");
 		obj.run();
-		equal(obj.obj_model_joueur.getX(), 512, "no move to right ");
-		equal(obj.obj_model_joueur.getRotation(), 6, "new rotation value after 3 third run cycle");
+		strictEqual(obj.obj_model_joueur.getX(), 512, "no move to right ");
+		strictEqual(obj.obj_model_joueur.getRotation(), 6, "new rotation value after 3 third run cycle");
 		delete obj_stage.touches[39];
 		obj.run();
 		obj.run();
 		obj.run();
 		obj.run();
-		equal(obj.obj_model_joueur.getRotation(), 2, "new rotation value after 7th run cycle");
+		strictEqual(obj.obj_model_joueur.getRotation(), 2, "new rotation value after 7th run cycle");
 	}
 }
 

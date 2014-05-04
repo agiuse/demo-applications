@@ -13,7 +13,16 @@
   <script type="text/javascript" src="./testViewPlayer.js"></script>
 </head>
  <body onload="startTest();">
- <div id="qunit"></div>
+ <input type="button" value="pause" id="pauseBtn" onclick="testPause();">
+ <input type="button" value="stop" id="stopBtn" onclick="testEnd();">
+ <select onchange="createjs.Ticker.setFPS(Number(this.value));">
+	<option value="10">10 fps</option>
+	<option value="20">20 fps</option>
+	<option value="30" selected>30 fps</option>
+	<option value="40">40 fps</option>
+	<option value="50">50 fps</option>
+	<option value="60">60 fps</option>
+ </select> <div id="qunit"></div>
  <div id="qunit-fixture"></div>
  <canvas height="480" width="640" id="gameCanvas" style="display: block; margin: auto;"></canvas>
 </body>
