@@ -171,124 +171,57 @@ Observable.prototype.notify = function(type_notify)
 }
 
 // ====================================================================
-/*
-@startuml
-title Class diagram of MVC Player in testing
+var mvcSaucisse = {};
+mvcSaucisse.Model = function(obj_stage, obj_queue, pourrie,x,y) {
+	this.pourrie = pourrie;
+	this.x = x; this.y = y;
+	this.rotation=0 ;
+	this.obj_stage = obj_stage;
+	this.obj_queue = obj_queue;
+	this.obj_stage = obj_stage;
+	this.coordonnee_notifier = new Observable("mvcSaucisse.Model", this);
+	createjs.Bitmap.call(this);
+    this.obj_stage.addChild(this);
+};
+mvcSaucisse.Model.prototype = new createjs.Bitmap();		
+mvcSaucisse.Model.prototype.isPourrie = function() {  return this.pourrie; };
+mvcSaucisse.Model.prototype.getX = function() { return this.x; };
+mvcSaucisse.Model.prototype.getY = function() { return this.y; };
+mvcSaucisse.Model.prototype.getRotation = function() { return this.rotation; };
+mvcSaucisse.Model.prototype.getView = function() { return this; };
+mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
+mvcSaucisse.Model.prototype.run = function() {
+	this.x = this.x - 4;
+	if ( this.x < -64 )
+		this.x = 700;
+	
+	this.coordonnee_notifier.notify('display');
+};
 
-class Observable {
-	String name
-	ArrayHashage<Object> obj_observer_lists
-	==
-	void Observable(String name, Object obj_observable)
-	void add(Object obj_observer)
-	void notify(String type_notify)
+mvcSaucisse.Model.prototype.prepare = function (obj_observable)
+{ 
+	this.x = obj_observable.getX();
+	this.y = obj_observable.getY();
+	if (obj_observable.isPourrie()) {
+		this.image = this.obj_queue.getResult('mauvaise_saucisse');
+	} else {
+		this.image =  this.obj_queue.getResult('bonne_saucisse');
+	}
+
+	this.rotation = obj_observable.getRotation() ;
+	this.visible=true;
+};
+
+mvcSaucisse.Model.prototype.collisionWithPlayer = function (obj_collision)
+{
+	this.x = 700;
 }
 
-class createjs.Text
-class createjs.Bitmap
-
-class ViewScore {
-	createjs.Stage obj_stage
-	String name
-	int x
-	int y
-	--
-	Boolean visible=true
-	==
-	void ViewScore(createjs.Stage obj_stage, String name, int x, int y)
-	__ notified __
-	void prepare(Object obj_observable)
-	void display(Object obj_observable)
-}
-
-class ViewLife {
-	createjs.Stage obj_stage
-	String name
-	int x
-	int y
-	Boolean visible = true
-	==
-	void ViewLife(createjs.Stage obj_stage, String name, int x, int y)
-	__ notified __
-	void display(Object obj_observable)
-	void prepare(Object obj_observable)
-}
-
-class mvcPlayer.View {
-	createjs.Stage obj_stage
-	createjs.LoadQueue obj_queue
-	String name = "View_default"
-	==
-	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
-	__ notified __
-	void prepare(Object obj_observable)
-	void display(OBject obj_observable)
-}
-
-class mvcPlayer.Model {
-	String name = "Model_default"
-	--
-	int x = 0
-	int y = 224
-	int rotation = 0
-	int vitesse = 6
-	Observable coordonnee_notifier
-	Observable nb_vies_notifier
-	Observable nb_points_notifier
-	==
-	void Model(String name)
-	void addLifeNotifier(Object obj_observer)
-	void addScoreNotifier(Object obj_observer)
-	vodi addCoordonneeNotifier(Object obj_observer)
-	int getX()
-	int getY()
-	int getRotation()
-	int getSpeed()
-	int getLife()
-	int getScore()
-	__ notify __
-	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
-	set(int x, int y , int rotation)
-}
-
-class mvcPlayer.Controller {
-	createjs.Stage obj_stage
-	createjs.LoadQueue obj_queue
-	String Name = "Controller_default"
-	ArrayHashage<Boolean> touches
-	==
-	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
-	__ notifier __
-	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
-	__ subscription by some external observers__
-	void scoreHasObservedBy(Object obj_observable)
-	void lifeHasObservedBy(Object obj_observable)
-	__ execution __
-	void run()
-	void annulerRotation()
-	void moveToDown()
-	void moveToRight()
-	void moveToLeft()
-	void moveToUp()
-}
-
-createjs.Text <|-- ViewLife
-createjs.Text <|-- ViewScore
-createjs.Bitmap <|-- mvcPlayer.View
-mvcPlayer.Controller *-- mvcPlayer.View
-mvcPlayer.Controller *-- mvcPlayer.Model
-mvcPlayer.Model *-- Observable : coordonnee_notifier
-mvcPlayer.Model *-- Observable : nb_vies_notifier
-mvcPlayer.Model *-- Observable : nb_points_notifier
-mvcPlayer.Model .. ViewScore :  "observable/observer"
-mvcPlayer.Model .. ViewLife : "observable/observer"
-mvcPlayer.Model .. mvcPlayer.View : "observable/observer"
-@enduml
-*/
-
+// ====================================================================
 var obj_queue;
 var obj_stage;
-var obj_controller_player;
+var obj_controller_players = new Array(3);
+var obj_model_saucisses = new Array(4);
 var simult_touches = new Array();
 var count=0;
 var count_max=0;
@@ -303,6 +236,8 @@ function startTest()
 	obj_queue.loadManifest([
             {src:"./images/joueur.png", id:"player0"},
             {src:"./images/joueur_hit.png", id:"player1"},
+			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
+			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -322,6 +257,9 @@ function runTest()
 	test("Affichage d'un vaisseau avec le Controller Player", test3);
 	test("Déplacement d'un vaisseau", test4);
 
+	test5();
+	test6();
+	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
 
@@ -331,32 +269,47 @@ function test_run(event)
 {
 	if (!createjs.Ticker.getPaused())
 	{
-		if ( obj_controller_player.run !== undefined )
-			obj_controller_player.run();
-
-		obj_stage.update(event);
-
-		if ( count > 0 ) {
-			count--;
-		} else {
-			if ( simult_touches.length > 0 )
+		try{
+			for (var i = 0; i < obj_controller_players.length; i++)
 			{
-				touche = simult_touches.shift();
-				if (touche !== undefined )
+				if ( obj_controller_players[i].run !== undefined )
+					obj_controller_players[i].run();
+			}
+
+			for (var j = 0; j < obj_model_saucisses.length; j++)
+			{		
+				if (obj_model_saucisses[j].run() !== undefined )
+					obj_model_saucisses[j].run();
+			}
+			
+			obj_stage.update(event);
+
+			if ( count > 0 ) {
+				count--;
+			} else {
+				if ( simult_touches.length > 0 )
 				{
-					if ( touche.value ) {
-						count_max=touche.count;
-						count=count_max;
-						obj_stage.touches[touche.key]=true;
-					} else {
-						delete obj_stage.touches[touche.key];
-						if (touche.count !== undefined ) {
+					touche = simult_touches.shift();
+					if (touche !== undefined )
+					{
+						if ( touche.value ) {
 							count_max=touche.count;
 							count=count_max;
+							obj_stage.touches[touche.key]=true;
+						} else {
+							delete obj_stage.touches[touche.key];
+							if (touche.count !== undefined ) {
+								count_max=touche.count;
+								count=count_max;
+							}
 						}
 					}
 				}
 			}
+		}
+		catch(e) {
+			createjs.Ticker.removeEventListener("tick", test_run);
+			console.error(e);
 		}
 	}
 }
@@ -455,14 +408,14 @@ function test3()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
+	var obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
 	console.log(" Controller Player creation is done.\nView-Score creation is in progress.");
 	
-	obj_view_score = new ViewScore(obj_stage, "View Score", 208,240);
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,240);
 	obj_controller_player.scoreHasObservedBy(obj_view_score);
 	console.log(" View Score creation is done.\nView-Life creation is in progress.");
 
-	obj_view_vies = new ViewLife(obj_stage, "View Life", 408,240);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 408,240);
 	obj_controller_player.lifeHasObservedBy(obj_view_vies);
 	console.log(" View Life creation is done.\nGo");
 
@@ -491,17 +444,13 @@ function test4()
 	obj_text.x = 0 ; obj_text.y = 300;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
-
-	var vitesse = 4;
-	var x = 0;
-	var y = 330;
 	
-	obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player");
+	obj_controller_players[0] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_0");
 	console.log(" Controller Player creation done.");
-	obj_controller_player.preparer(x,y,0,vitesse);
-	equal(obj_controller_player.obj_model_joueur.getX(), 0, "Check that Model X value is equal at 0!"); 
-	equal(obj_controller_player.obj_model_joueur.getY(), 330, "Check that Modem Y value is equal at 330!"); 
-	equal(obj_controller_player.obj_model_joueur.getSpeed(), 4, "Check that Model Speed value is equal at 4!"); 
+	obj_controller_players[0].preparer(0,330,0,4);
+	equal(obj_controller_players[0].obj_model_joueur.getX(), 0, "Check that Model X value is equal at 0!"); 
+	equal(obj_controller_players[0].obj_model_joueur.getY(), 330, "Check that Modem Y value is equal at 330!"); 
+	equal(obj_controller_players[0].obj_model_joueur.getSpeed(), 4, "Check that Model Speed value is equal at 4!"); 
 
 	obj_stage.touches = {};
 	
@@ -520,6 +469,77 @@ function test4()
 		{key:40,value:true,count:1},
 		{key:37,value:true,count:20},
 		{key:37,value:false},
-		{key:40,value:false,count:30}
+		{key:40,value:false,count:30},
+		{key:38,value:true,count:20},
+		{key:39,value:true,count:20},
+		{key:38,value:false},
+		{key:39,value:true,count:50},
+		{key:39,value:false}
 	];
+}
+
+// -----------------------------------------------------------------
+function test5()
+{
+	console.log("**** Test 5 :\n --------------------------------------------");
+	var obj_text =  new createjs.Text("Test MVC Player 5 : Controller Player with Mauvaise Saucisse", "24px Arial", "#00000");
+	obj_text.x = 0 ; obj_text.y = 360;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
+	
+	obj_model_saucisses[0] = new mvcSaucisse.Model(obj_stage, obj_queue, true, 700, 420);
+	obj_model_saucisses[0].prepare(obj_model_saucisses[0]);
+	obj_model_saucisses[1] = new mvcSaucisse.Model(obj_stage, obj_queue, false, 900, 420);
+	obj_model_saucisses[1].prepare(obj_model_saucisses[1]);
+	
+	obj_controller_players[1] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_1");
+	obj_controller_players[1].run = function() {
+		if ( this.obj_model_joueur.getX() > 500)
+			this.obj_model_joueur.set(0,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+		else
+			this.obj_model_joueur.set(this.obj_model_joueur.getX() + this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+	}
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,460);
+	obj_controller_players[1].scoreHasObservedBy(obj_view_score);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 408,460);
+	obj_controller_players[1].lifeHasObservedBy(obj_view_vies);
+
+	obj_model_saucisses[0].coordonnee_notifier.add(obj_controller_players[1]);
+	obj_model_saucisses[1].coordonnee_notifier.add(obj_controller_players[1]);
+	obj_controller_players[1].collision_matrix['Saucisse'] = { collisionWithObject : obj_controller_players[1].collisionWithSaucisse};
+	obj_controller_players[1].preparer(0,390,0,4,3,100);
+
+}
+
+// -----------------------------------------------------------------
+function test6()
+{
+	console.log("**** Test 6 :\n --------------------------------------------");
+	var obj_text =  new createjs.Text("Test MVC Player 6 : Controller Player with Bonne Saucisse", "24px Arial", "#00000");
+	obj_text.x = 0 ; obj_text.y = 500;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
+	
+	obj_model_saucisses[2] = new mvcSaucisse.Model(obj_stage, obj_queue, false, 500, 550);
+	obj_model_saucisses[2].prepare(obj_model_saucisses[2]);
+	obj_model_saucisses[3] = new mvcSaucisse.Model(obj_stage, obj_queue, true, 900, 550);
+	obj_model_saucisses[3].prepare(obj_model_saucisses[3]);
+	
+	obj_controller_players[2] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_1");
+	obj_controller_players[2].run = function() {
+		if ( this.obj_model_joueur.getX() < 0 )
+			this.obj_model_joueur.set(700,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+		else
+			this.obj_model_joueur.set(this.obj_model_joueur.getX() - this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+	}
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,600);
+	obj_controller_players[2].scoreHasObservedBy(obj_view_score);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 408,600);
+	obj_controller_players[2].lifeHasObservedBy(obj_view_vies);
+
+	obj_model_saucisses[2].coordonnee_notifier.add(obj_controller_players[2]);
+	obj_model_saucisses[3].coordonnee_notifier.add(obj_controller_players[2]);
+	obj_controller_players[2].collision_matrix['Saucisse'] = { collisionWithObject : obj_controller_players[2].collisionWithSaucisse};
+	obj_controller_players[2].preparer(0,530,0,6,3,100);
+
 }
