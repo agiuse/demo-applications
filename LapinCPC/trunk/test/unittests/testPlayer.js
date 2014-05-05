@@ -46,41 +46,44 @@ function testViewConstructor()
 {	
 	console.log('testViewConstructor\n-----------------------------------------');
 
+	{
+		ok(mvcPlayer.View !== undefined, "mvcPlayer.View() : Check that this method is defined!");
+	}
+
 	throws( function() {
-		obj = new mvcPlayer.View();
+		var obj = new mvcPlayer.View();
 		},
 		'Parameter \'obj_stage\' is not createjs.Stage instance!',
 		"mvcPlayer.View() : 'Test of first parameter \'obj_stage\'!'"
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.View(new createjs.Stage(),100);
+			var obj = new mvcPlayer.View(new createjs.Stage(),100);
 		},
 		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
 		"mvcPlayer.View(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.View(new createjs.Stage(),new createjs.LoadQueue(), 100);
+			var obj = new mvcPlayer.View(new createjs.Stage(),new createjs.LoadQueue(), 100);
 		},
 		'Parameter \'name\' is not a string literal!',
 		"mvcPlayer.View(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
-
 	{
-		obj_queue = new createjs.LoadQueue();
-		obj_stage = new createjs.Stage();
-		obj = new mvcPlayer.View(obj_stage, obj_queue);
+		var obj_stage = new createjs.Stage();
+		var obj_queue = new createjs.LoadQueue();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue);
 		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue) : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue) : LoadQueue ok");
 		strictEqual(obj.name, 'View_default',"mvcPlayer.View(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
-		obj_queue = new createjs.LoadQueue();
-		obj_stage = new createjs.Stage();
-		obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj_stage = new createjs.Stage();
+		var obj_queue = new createjs.LoadQueue();
+		var obj = new mvcPlayer.View(obj_stage, obj_queue,'view test');
 		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.View(obj_stage, obj_queue, 'view test') : LoadQueue ok");
 		strictEqual(obj.name, 'view test',"mvcPlayer.View(obj_stage, obj_queue, 'view test') :  new name value ok");
@@ -91,10 +94,14 @@ function testViewConstructor()
 function testViewMethodprepare()
 {	
 	console.log('testViewMethodprepare\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
+		ok(obj.prepare !== undefined, "mvcPlayer.View.prepare() : Check that this method is defined!");
+	}
+
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare();
 		},
 		'\'Observable\' is not a Object!',
@@ -102,9 +109,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare('toto');
 		},
 		'\'Observable\' is not a Object!',
@@ -112,9 +117,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare(100);
 		},
 		'\'Observable\' is not a Object!',
@@ -122,9 +125,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare({});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -132,9 +133,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare({getX: true, getY: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -142,9 +141,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare({getX: true, getRotation: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -152,9 +149,7 @@ function testViewMethodprepare()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.prepare({getRotation: true, getY: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -162,9 +157,7 @@ function testViewMethodprepare()
 	);
 	
 	{
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		var obj_observable = { getX: function() { return 10; }, getY: function() { return 20; }, getRotation: function() { return -20; } }
 		obj.prepare(obj_observable);
 		strictEqual(obj.x, 10, "mvcPlayer.View.prepare(Observable) : Check that x value is equal to 10:");
@@ -178,10 +171,13 @@ function testViewMethoddisplay()
 {
 	console.log('testViewMethoddisplay\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
+		ok(obj.display !== undefined, "mvcPlayer.View.display() : Check that this method is defined!");
+	}
+
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display();
 		},
 		'\'Observable\' is not a Object!',
@@ -189,9 +185,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display('toto');
 		},
 		'\'Observable\' is not a Object!',
@@ -199,9 +193,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display(100);
 		},
 		'\'Observable\' is not a Object!',
@@ -209,9 +201,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display({});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -219,9 +209,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display({getX: true, getY: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -229,9 +217,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display({getX: true, getRotation: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -239,9 +225,7 @@ function testViewMethoddisplay()
 	);
 
 	throws ( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.display({getRotation: true, getY: true});
 		},
 		'No getX, getY() or getRotation() method is defined in \'Observable\'!',
@@ -249,9 +233,7 @@ function testViewMethoddisplay()
 	);
 	
 	{
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		var obj_observable = { getX: function() { return 10; }, getY: function() { return 20; }, getRotation: function() { return -20; } }
 		obj.display(obj_observable);
 		strictEqual(obj.x, 10, "mvcPlayer.View.display(Observable) : Check that x value is equal to 10:");
@@ -264,10 +246,13 @@ function testViewMethodisCollision()
 {
 	console.log('testViewMethodisCollision\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
+		ok(obj.isCollision !== undefined, "mvcPlayer.View.isCollision() : Check that this method is defined!");
+	}
+
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.isCollision();
 		},
 		'\'View Collision\' is not a Object!',
@@ -275,9 +260,7 @@ function testViewMethodisCollision()
 	);
 
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.isCollision({});
 		},
 		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
@@ -285,9 +268,7 @@ function testViewMethodisCollision()
 	);
 
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.isCollision({x:20});
 		},
 		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
@@ -295,9 +276,7 @@ function testViewMethodisCollision()
 	);
 
 	throws ( function() {
-			obj_queue = new createjs.LoadQueue();
-			obj_stage = new createjs.Stage();
-			obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.isCollision({y:10});
 		},
 		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
@@ -305,9 +284,7 @@ function testViewMethodisCollision()
 	);
 	
 	{
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		strictEqual(
 			obj.isCollision({ x:50, y:100 }),
 			false,
@@ -317,9 +294,7 @@ function testViewMethodisCollision()
 	
 	// ne se touche pas 
 	{ // saucisse à gauche		
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:50, y:100 }),
@@ -329,9 +304,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse à droite
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:200, y:100 }),
@@ -341,9 +314,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse en haut
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:100, y:80 }),
@@ -353,9 +324,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse à bas
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:100, y:150 }),
@@ -366,9 +335,7 @@ function testViewMethodisCollision()
 	
 	// La saucisse touche le player 
 	{ // saucisse à gauche
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:80, y:100 }),
@@ -378,9 +345,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse à droite
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:190, y:100 }),
@@ -390,9 +355,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse en haut
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:100, y:100 }),
@@ -402,9 +365,7 @@ function testViewMethodisCollision()
 	}
 
 	{ // saucisse en bas
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.x = 100; obj.y = 100;
 		strictEqual(
 			obj.isCollision({ x:100, y:140 }),
@@ -418,10 +379,14 @@ function testViewMethodisCollision()
 function testViewMethodplaySound()
 {
 	console.log('testViewMethodplaySound\n-----------------------------------------');
+	
+	{
+		var obj = new mvcPlayer.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
+		ok(obj.playSound !== undefined, "mvcPlayer.View.playSound() : Check that this method is defined!");
+	}
+
 	throws( function() {
-			var obj_queue = new createjs.LoadQueue();
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+			var obj = new mvcPlayer.View( new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 			obj.playSound();
 		},
 		'\'sound_id\' parameter is mandatoty!',
@@ -429,9 +394,7 @@ function testViewMethodplaySound()
 	);
 	
 	{
-		var obj_queue = new createjs.LoadQueue();
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.View(obj_stage, obj_queue, 'view test');
+		var obj = new mvcPlayer.View( new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.playSound('');
 		obj.playSound('toto');
 	}
@@ -441,15 +404,20 @@ function testViewMethodplaySound()
 function testModelConstructor()
 {
 	console.log('testModelConstructor\n-----------------------------------------');
+
+	{
+		ok(mvcPlayer.Model !== undefined, "mvcPlayer.Model() : Check that this method is defined!");
+	}
+
 	throws ( function() {
-			obj = new mvcPlayer.Model(100);
+			var obj = new mvcPlayer.Model(100);
 		},
 		'Parameter \'name\' is not a string literal!',
 		"mvcPlayer.Model(100) : Test of parameter validate"
 	);
 
 	{
-		obj = new mvcPlayer.Model();
+		var obj = new mvcPlayer.Model();
 		strictEqual(obj.name, 'Model_default', "mvcPlayer.Model() : Test of right \'name\' default value");
 		strictEqual(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
 		strictEqual(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
@@ -460,7 +428,7 @@ function testModelConstructor()
 	}
 	
 	{
-		obj = new mvcPlayer.Model('model test');
+		var obj = new mvcPlayer.Model('model test');
 		strictEqual(obj.name, 'model test', "mvcPlayer.Model('model test') : Test of right \'name\' value");
 		strictEqual(obj.x, 0, "mvcPlayer.Model() : Test of right \'X\' default value");
 		strictEqual(obj.y, 224, "mvcPlayer.Model() : Test of right \'Y\' default value");
@@ -476,8 +444,13 @@ function testModelMethodpreparer()
 {
 	console.log('testModelMethodpreparer\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.preparer !== undefined, "mvcPlayer.Model.preparer() : Check that this method is defined!");
+	}
+
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
@@ -485,7 +458,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
@@ -493,7 +466,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
@@ -501,7 +474,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 'toto');
 		},
 		'Parameter \'vitesse\' is not a number literal!',
@@ -509,7 +482,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 6, 'toto');
 		},
 		'Parameter \'nb_vies\' is not a number literal!',
@@ -517,7 +490,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.preparer(10, 10, -6, 6, 3, 'toto');
 		},
 		'Parameter \'nb_points\' is not a number literal!',
@@ -568,8 +541,13 @@ function testModelMethodSet()
 {
 	console.log('testModelMethodSet\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.set !== undefined, "mvcPlayer.Model.set() : Check that this method is defined!");
+	}
+
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.set('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
@@ -577,7 +555,7 @@ function testModelMethodSet()
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.set(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
@@ -585,7 +563,7 @@ function testModelMethodSet()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Model('model test' );
+			var obj = new mvcPlayer.Model('model test' );
 			obj.set(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
@@ -593,7 +571,7 @@ function testModelMethodSet()
 	);
 
 	{
-		obj = new mvcPlayer.Model('model test');
+		var obj = new mvcPlayer.Model('model test');
 		obj.set();
 		strictEqual(obj.x, 0, "mvcPlayer.Model.set() : Test of right \'X\' default value");
 		strictEqual(obj.y, 224, "mvcPlayer.Model.set() : Test of right \'Y\' default value");
@@ -601,7 +579,7 @@ function testModelMethodSet()
 	}
 	
 	{
-		obj = new mvcPlayer.Model('model test');
+		var obj = new mvcPlayer.Model('model test');
 		obj.set(10, 100, -6);
 		strictEqual(obj.x, 10, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'X\' value");
 		strictEqual(obj.y, 100, "mvcPlayer.Model.set(10, 10, -6) : Test of right new \'Y\'  value");
@@ -610,7 +588,7 @@ function testModelMethodSet()
 
 	{
 		var obj = new mvcPlayer.Model('model test');
-		var obj_observer_coordonnee =  {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); this.rotation = obj_observable.getRotation(); } };
+		var obj_observer_coordonnee = {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); this.rotation = obj_observable.getRotation(); } };
 		obj.coordonnee_notifier.add(obj_observer_coordonnee);
 		obj.set(10, 100, -6);
 		strictEqual(obj_observer_coordonnee.x, 10, "mvcPlayer.Model.set(10, 100, -6) : Check that x value is 10 after a 'display' notification!");
@@ -622,6 +600,12 @@ function testModelMethodSet()
 function testModelMethodAddScore()
 {
 	console.log('testModelMethodAddScore\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.addScore !== undefined, "mvcPlayer.Model.addScore() : Check that this method is defined!");
+	}
+
 	throws( function () {
 			var obj = new mvcPlayer.Model('model test');
 			obj.addScore();
@@ -665,6 +649,11 @@ function testModelMethodRemoveLife()
 	console.log('testModelMethodRemoveLife\n-----------------------------------------');
 	
 	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.removeLife !== undefined, "mvcPlayer.Model.removeLife() : Check that this method is defined!");
+	}
+
+	{
 		var obj = new mvcPlayer.Model();
 		obj.removeLife();
 		strictEqual(obj.nb_vies,2,"mvcPlayer.Model.removeLife() : Check that new life number value is equal to 2!"); 
@@ -689,6 +678,11 @@ function testModelMethodRemoveLife()
 function testModelMethodAdds()
 {
 	console.log('testModelMethodAdds\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.addCoordonneeNotifier !== undefined, "mvcPlayer.Model.addCoordonneeNotifier() : Check that this method is defined!");
+	}
 
 	// test of addCoordonneeNotifier	
 	throws( function() {
@@ -768,6 +762,11 @@ function testModelMethodAdds()
 	);
 
 	// test of addCoordonneeNotifier	
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.addLifeNotifier !== undefined, "mvcPlayer.Model.addLifeNotifier() : Check that this method is defined!");
+	}
+
 	throws( function() {
 			var obj = new mvcPlayer.Model();
 			obj.addLifeNotifier();
@@ -845,6 +844,11 @@ function testModelMethodAdds()
 	);
 
 	// test of addScoreNotifier	
+	{
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.addScoreNotifier !== undefined, "mvcPlayer.Model.addScoreNotifier() : Check that this method is defined!");
+	}
+
 	throws( function() {
 			var obj = new mvcPlayer.Model();
 			obj.addScoreNotifier();
@@ -925,8 +929,19 @@ function testModelMethodAdds()
 function testModelMethodGetters()
 {
 	console.log('testModelMethodGetters\n-----------------------------------------');
+
 	{
-		obj = new mvcPlayer.Model();
+		var obj = new mvcPlayer.Model('model test');
+		ok(obj.getX !== undefined, "mvcPlayer.Model.getX() : Check that this method is defined!");
+		ok(obj.getY !== undefined, "mvcPlayer.Model.getY() : Check that this method is defined!");
+		ok(obj.getRotation !== undefined, "mvcPlayer.Model.getRotation() : Check that this method is defined!");
+		ok(obj.getSpeed !== undefined, "mvcPlayer.Model.getSpeed() : Check that this method is defined!");
+		ok(obj.getLife !== undefined, "mvcPlayer.Model.getLife() : Check that this method is defined!");
+		ok(obj.getScore !== undefined, "mvcPlayer.Model.getScore() : Check that this method is defined!");
+	}
+
+	{
+		var obj = new mvcPlayer.Model();
 		obj.preparer();
 		strictEqual(obj.getX(), 0, "mvcPlayer.Model.preparer() : Test of right \'X\' default value");
 		strictEqual(obj.getY(), 224, "mvcPlayer.Model.preparer() : Test of right \'Y\' default value");
@@ -937,7 +952,7 @@ function testModelMethodGetters()
 	}
 	
 	{
-		obj = new mvcPlayer.Model('model test');
+		var obj = new mvcPlayer.Model('model test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
 		strictEqual(obj.getX(), 10, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
 		strictEqual(obj.getY(), 100, "mvcPlayer.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
@@ -953,40 +968,45 @@ function testModelMethodGetters()
 function testControllerConstructor()
 {
 	console.log('testControllerConstructor\n-----------------------------------------');
+
+	{
+		ok(mvcPlayer.Controller !== undefined, "mvcPlayer.Controller() : Check that this method is defined!");
+	}
+
 	throws( function() {
-		obj = new mvcPlayer.Controller();
+		var obj = new mvcPlayer.Controller();
 		},
 		'Parameter \'obj_stage\' is not createjs.Stage instance!',
 		"mvcPlayer.Controller() : 'Test of first parameter \'obj_stage\'!'"
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.Controller(new createjs.Stage(),100);
+			var obj = new mvcPlayer.Controller(new createjs.Stage(),100);
 		},
 		'Parameter \'obj_queue\' is not createjs.LoadQueue instance!',
 		"mvcPlayer.Controller(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 100);
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 100);
 		},
 		'Parameter \'name\' is not a string literal!',
 		"mvcPlayer.Controller(new createjs.Stage(),100) : 'Test of second parameter \'name\'!'"
 	);
 
 	{
-		obj_queue = new createjs.LoadQueue();
-		obj_stage = new createjs.Stage();
-		obj = new mvcPlayer.Controller(obj_stage, obj_queue);
+		var obj_stage = new createjs.Stage();
+		var obj_queue = new createjs.LoadQueue();
+		var obj = new mvcPlayer.Controller(obj_stage, obj_queue);
 		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue) : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue) : LoadQueue ok");
 		strictEqual(obj.name, 'Controller_default',"mvcPlayer.Controller(obj_stage, obj_queue) : name default value ok");
 	}
 
 	{
-		obj_queue = new createjs.LoadQueue();
-		obj_stage = new createjs.Stage();
-		obj = new mvcPlayer.Controller(obj_stage, obj_queue, 'controller test');
+		var obj_stage = new createjs.Stage();
+		var obj_queue = new createjs.LoadQueue();
+		var obj = new mvcPlayer.Controller(obj_stage, obj_queue , 'controller test');
 		strictEqual(obj.obj_stage, obj_stage,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') : LoadQueue ok");
 		strictEqual(obj.name, 'controller test',"mvcPlayer.Controller(obj_stage, obj_queue, 'view test') :  new name value ok");
@@ -997,8 +1017,13 @@ function testControllerMethodpreparer()
 {
 	console.log('testControllerMethodpreparer\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.preparer !== undefined, "mvcPlayer.Model.getX() : Check that this method is defined!");
+	}
+
 	throws( function () {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
@@ -1006,7 +1031,7 @@ function testControllerMethodpreparer()
 	);
 
 	throws( function() {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
@@ -1014,7 +1039,7 @@ function testControllerMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
@@ -1022,7 +1047,7 @@ function testControllerMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer(10, 10, -6, 'toto');
 		},
 		'Parameter \'vitesse\' is not a number literal!',
@@ -1030,7 +1055,7 @@ function testControllerMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer(10, 10, -6, 6, 'toto');
 		},
 		'Parameter \'nb_vies\' is not a number literal!',
@@ -1038,7 +1063,7 @@ function testControllerMethodpreparer()
 	);
 
 	throws( function () {
-			obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test' );
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 			obj.preparer(10, 10, -6, 6, 3, 'toto');
 		},
 		'Parameter \'nb_points\' is not a number literal!',
@@ -1046,7 +1071,7 @@ function testControllerMethodpreparer()
 	);
 
 	{
-		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 		obj.preparer();
 		strictEqual(obj.obj_model_joueur.getX(), 0, "mvcPlayer.Controller.preparer() : Test of right \'X\' default value");
 		strictEqual(obj.obj_model_joueur.getY(), 224, "mvcPlayer.Controller.preparer() : Test of right \'Y\' default value");
@@ -1057,7 +1082,7 @@ function testControllerMethodpreparer()
 	}
 	
 	{
-		obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
 		obj.preparer(10, 100, -6, 8, 4, 1000);
 		strictEqual(obj.obj_model_joueur.getX(), 10, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
 		strictEqual(obj.obj_model_joueur.getY(), 100, "mvcPlayer.Controller.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
@@ -1071,6 +1096,12 @@ function testControllerMethodpreparer()
 function testControllerMethodscoreHasObservedBy()
 { 
 	console.log('testControllerMethodscoreHasObservedBy\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.preparer !== undefined, "mvcPlayer.Model.getX() : Check that this method is defined!");
+	}
+
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.scoreHasObservedBy();
@@ -1153,6 +1184,11 @@ function testControllerMethodlifeHasObservedBy()
 {
 	console.log('testControllerMethodlifeHasObservedBy\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.lifeHasObservedBy !== undefined, "mvcPlayer.Controller.lifeHasObservedBy() : Check that this method is defined!");
+	}
+
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.lifeHasObservedBy();
@@ -1234,9 +1270,17 @@ function testControllerMethodMove()
 {
 	console.log('testControllerMethodMove\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.moveToUp !== undefined, "mvcPlayer.Controller.moveToUp() : Check that this method is defined!");
+		ok(obj.moveToDown !== undefined, "mvcPlayer.Controller.moveToDown() : Check that this method is defined!");
+		ok(obj.moveToLeft !== undefined, "mvcPlayer.Controller.moveToLefdt() : Check that this method is defined!");
+		ok(obj.moveToRight !== undefined, "mvcPlayer.Controller.moveToRight() : Check that this method is defined!");
+		ok(obj.annulerRotation !== undefined, "mvcPlayer.Controller.annulerRotation() : Check that this method is defined!");
+	}
+
 	{	// Test of moveToUp() methode
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 10, 0, 8);
 		obj.moveToUp();
 		strictEqual(obj.obj_model_joueur.getY(), 2, "right move to up from 10 to 2");
@@ -1250,8 +1294,7 @@ function testControllerMethodMove()
 	}
 	
 	{	// Test of moveToDown() methode
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 404, 0, 8);
 		obj.moveToDown();
 		strictEqual(obj.obj_model_joueur.getY(), 412, "right move to down from 404 to 412");
@@ -1265,8 +1308,7 @@ function testControllerMethodMove()
 	}
 
 	{	// Test of moveToLeft() methode
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(10, 100, 0, 8);
 		obj.moveToLeft();
 		strictEqual(obj.obj_model_joueur.getX(), 2, "right move to left from 10 to 2");
@@ -1280,8 +1322,7 @@ function testControllerMethodMove()
 	}
 
 	{	// Test of moveToRight() methode
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, 0, 8);
 		obj.moveToRight();
 		strictEqual(obj.obj_model_joueur.getX(), 508, "right move to right from 500 to 508");
@@ -1296,8 +1337,7 @@ function testControllerMethodMove()
 
 	// Test of AnnulerRotation() method
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.preparer(500, 100, -6);
 		obj.annulerRotation();
 		strictEqual(obj.obj_model_joueur.getRotation(), -5, "decrease of rotation value from -6 to -5");
@@ -1313,6 +1353,11 @@ function testControllerMethodMove()
 function testControllerMethodRun()
 {
 	console.log('testControllerMethodRun\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.run !== undefined, "mvcPlayer.Controller.run() : Check that this method is defined!");
+	}
 
 	{	// move to up
 		var obj_stage = new createjs.Stage();
@@ -1408,9 +1453,13 @@ function testControllerMethodCollisionWithSaucisse()
 {
 	console.log('testControllerMethodCollisionWithSaucisse\n-----------------------------------------');
 	
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.collisionWithSaucisse !== undefined, "mvcPlayer.Controller.collisionWithSaucisse() : Check that this method is defined!");
+	}
+
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.collisionWithSaucisse()
 		},
 		'\'obj_saucisse\' is not mvcSaucisse.Model object!',
@@ -1418,8 +1467,7 @@ function testControllerMethodCollisionWithSaucisse()
 	);
 	
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.collisionWithSaucisse({})
 		},
 		'\'obj_saucisse\' is not mvcSaucisse.Model object!',
@@ -1427,8 +1475,7 @@ function testControllerMethodCollisionWithSaucisse()
 	);
 	
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		var obj_saucisse = new mvcSaucisse.Model(true);
 		obj.collisionWithSaucisse(obj_saucisse);
 		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse): Check that player lose a life with 'Pourrie' Saucisse collision!");
@@ -1436,8 +1483,7 @@ function testControllerMethodCollisionWithSaucisse()
 	}
 
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		var obj_saucisse = new mvcSaucisse.Model(false);
 		obj.collisionWithSaucisse(obj_saucisse);
 		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
@@ -1449,9 +1495,13 @@ function testControllerMethodDisplay()
 {
 	console.log('testControllerMethodDisplay\n-----------------------------------------');
 
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.display !== undefined, "mvcPlayer.Controller.display() : Check that this method is defined!");
+	}
+
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.display()
 		},
 		'\'Collision\' is not a Object!',
@@ -1459,8 +1509,7 @@ function testControllerMethodDisplay()
 	);
 	
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.display({x:10,y:10})
 		},
 		'No defined getView() method in \'Collision\' object!',
@@ -1468,8 +1517,7 @@ function testControllerMethodDisplay()
 	);
 
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.display({x:10,y:10, getView : 100});
 		},
 		'No defined getCollisionId() method in \'Collision\' object!',
@@ -1477,8 +1525,7 @@ function testControllerMethodDisplay()
 	);
 
 	throws( function() {
-			var obj_stage = new createjs.Stage();
-			var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.obj_view_joueur.x = 200; obj.obj_view_joueur.y = 200;
 			var obj_saucisse = new mvcSaucisse.Model(false, 200, 200);
 			obj.display(obj_saucisse);
@@ -1488,8 +1535,7 @@ function testControllerMethodDisplay()
 	);
 
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.obj_view_joueur.x = 100; obj.obj_view_joueur.y = 100; 
 		obj.collision_matrix['Saucisse'] = { collisionWithObject: obj.collisionWithSaucisse};
 		var obj_saucisse = new mvcSaucisse.Model(false, 200, 200);
@@ -1499,8 +1545,7 @@ function testControllerMethodDisplay()
 	}
 	
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.obj_view_joueur.x = 100; obj.obj_view_joueur.y = 100; 
 		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
 		var obj_saucisse = new mvcSaucisse.Model(false, 120, 100);
@@ -1510,8 +1555,7 @@ function testControllerMethodDisplay()
 	}
 	
 	{
-		var obj_stage = new createjs.Stage();
-		var obj = new mvcPlayer.Controller(obj_stage, new createjs.LoadQueue,'controller test');
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.obj_view_joueur.x = 100; obj.obj_view_joueur.y = 100; 
 		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
 		var obj_saucisse = new mvcSaucisse.Model(true, 120, 100);
