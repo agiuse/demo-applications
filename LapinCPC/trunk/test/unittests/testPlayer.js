@@ -1019,7 +1019,7 @@ function testControllerMethodpreparer()
 
 	{
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
-		ok(obj.preparer !== undefined, "mvcPlayer.Model.getX() : Check that this method is defined!");
+		ok(obj.preparer !== undefined, "mvcPlayer.Cobtroller.preparer() : Check that this method is defined!");
 	}
 
 	throws( function () {
@@ -1099,7 +1099,7 @@ function testControllerMethodscoreHasObservedBy()
 
 	{
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
-		ok(obj.preparer !== undefined, "mvcPlayer.Model.getX() : Check that this method is defined!");
+		ok(obj.scoreHasObservedBy !== undefined, "mvcPlayer.Controller.scoreHasObservedBy() : Check that this method is defined!");
 	}
 
 	throws( function() {

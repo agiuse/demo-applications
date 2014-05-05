@@ -323,6 +323,12 @@ var mvcSaucisse = {};
 	mvcSaucisse.View.prototype.prepare = function (obj_observable)
 	{ 
 		common.IsObjectObservable(obj_observable);
+		if ( obj_observable.getX == undefined ||
+			obj_observable.getY === undefined || 
+			obj_observable.getRotation === undefined ||
+			obj_observable.isPourrie === undefined
+			)
+			throw 'No getX, getY(), getRotation() or isPourrie() method is defined in \'Observable\'!';
 
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
@@ -332,19 +338,17 @@ var mvcSaucisse = {};
 			this.image =  this.obj_queue.getResult('bonne_saucisse');
 		}
 
-		console.log(this.name, ' View is being prepared!');
 		this.rotation = obj_observable.getRotation() ;
 		this.visible=true;
-		console.log(this.name, ' View is ready!');
 	}
 
 	mvcSaucisse.View.prototype.display = function (obj_observable)
 	{ 
 		common.IsObjectObservable(obj_observable);
-	
-		console.log(this.name, ' View is being displayed!');
+		if ( obj_observable.getX === undefined)
+			throw 'No getX() method is defined in \'Observable\'!';
+
 		this.x = obj_observable.getX();
-		console.log(this.name, ' View is displayed!');
 	}
 
 }());
@@ -473,4 +477,22 @@ var mvcSaucisse = {};
 		);
 	}
 
+	mvcSaucisse.Controller.prototype.getView = function()
+	{
+		return this.obj_view_saucisse;
+	};
+
+	mvcSaucisse.Controller.prototype.getCollisionId = function(){
+		return 'Saucisse';
+	};
+
+	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer)
+	{
+		this.obj_model_saucisse.add(obj_observer);
+	}
+
+	mvcSaucisse.Controller.prototype.collisionWithPlayer = function(obj_collision)
+	{
+		this.preparer();
+	}
 }());
