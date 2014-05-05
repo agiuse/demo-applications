@@ -11,6 +11,7 @@ function startTest()
 	test("Test des fonctions HasNumber", testNumberValue);
 	test("Test de la fonction IsObjectObservable", testObjectObservable);
 	test("Test de la fonction IsObjectObserver", testObjectObserver);
+	test("Test de la fonction IsObjectCollision", testObjectViewCollision);
 	test("Test de la fonction IsObjectCollision", testObjectCollision);
 }
 
@@ -228,6 +229,59 @@ function testObjectObserver()
 	strictEqual(common.IsObjectObserver({prepare: function() {}, display: function() {}}), true, "common.IsObjectObserver({prepare: function() {}, display: function() {}}) : check that result test with object observer parameter type is true");
 }
 
+function testObjectViewCollision()
+{
+	throws( function() {
+			var r = common.IsObjectViewCollision();
+		},
+		'\'View Collision\' is not a Object!',
+		"common.IsObjectViewCollision() : Test without parameter!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectViewCollision(100);
+		},
+		'\'View Collision\' is not a Object!',
+		"common.IsObjectViewCollision(100) : Test of parameter with number literal type!"
+	);
+	
+	throws( function() {
+			var r = common.IsObjectViewCollision('string');
+		},
+		'\'View Collision\' is not a Object!',
+		"common.IsObjectViewCollision('string') : Test of parameter with string literal type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectViewCollision({});
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"common.IsObjectViewCollision({}) : Test of parameter with empty object type!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectViewCollision({x:10});
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"common.IsObjectView Collision({x:10}) : Test of parameter with object without y attribute!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectViewCollision({y:10});
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"common.IsObjectViewCollision({y:10}) : Test of parameter with object without x attribute!"
+	);
+
+	strictEqual(
+		common.IsObjectViewCollision({x:10,y:10}),
+		true,
+		"common.IsObjectViewCollision({x:10,y:10}) : check that result test with object view collision parameter type is true"
+	);
+	
+
+}
+
 function testObjectCollision()
 {
 	throws( function() {
@@ -254,27 +308,21 @@ function testObjectCollision()
 	throws( function() {
 			var r = common.IsObjectCollision({});
 		},
-		'No \'createjs coordonnees\' methods are defined!',
+		'No defined getView() method in \'Collision\' object!',
 		"common.IsObjectCollision({}) : Test of parameter with empty object type!"
 	);
 
 	throws( function() {
-			var r = common.IsObjectCollision({x:10});
+			var r = common.IsObjectCollision({getView: function() {} });
 		},
-		'No \'createjs coordonnees\' methods are defined!',
-		"common.IsObjectCollision({x:10}) : Test of parameter with empty object type!"
-	);
-
-	throws( function() {
-			var r = common.IsObjectCollision({y:10});
-		},
-		'No \'createjs coordonnees\' methods are defined!',
-		"common.IsObjectCollision({y:10}) : Test of parameter with empty object type!"
+		'No defined getCollisionId() method in \'Collision\' object!',
+		"common.IsObjectCollision(getView: function() {} }) : Test of parameter with object without getCollisionId() method!"
 	);
 
 	strictEqual(
-		common.IsObjectCollision({x:10,y:10}),
+		common.IsObjectCollision({getView: function() {}, getCollisionId: function() {}}),
 		true,
-		"common.IsObjectCollision({x:10,y:10}) : check that result test with object collision parameter type is true"
+		"common.IsObjectCollision({getView: function() {}, getCollisionId: function() {}}) : check that result test with object collision parameter type is true"
 	);
+	
 }

@@ -122,16 +122,30 @@
 		return true;
 	}
 
+	common.IsObjectViewCollision = function(obj_collision)
+	{
+		if (typeof obj_collision !== 'object') 
+			throw '\'View Collision\' is not a Object!';
+
+		if ( obj_collision.x === undefined || obj_collision.y === undefined )
+			throw 'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!';
+
+		return true;
+	}
+
 	common.IsObjectCollision = function(obj_collision)
 	{
 		if (typeof obj_collision !== 'object') 
 			throw '\'Collision\' is not a Object!';
 
-		if ( obj_collision.x === undefined || obj_collision.y === undefined )
-			throw 'No \'createjs coordonnees\' methods are defined!';
+		if ( obj_collision.getView === undefined )
+			throw 'No defined getView() method in \'Collision\' object!';
+			
+		if ( obj_collision.getCollisionId === undefined )
+			throw 'No defined getCollisionId() method in \'Collision\' object!';
 
 		return true;
 	}
-	
+		
 	window.common = common;
 }(window));

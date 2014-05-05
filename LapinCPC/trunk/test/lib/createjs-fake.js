@@ -46,9 +46,19 @@ var createjs={};
 		}
 		return elt;
 	}
+	
+	createjs.Sound = function Sound()
+	{
+	}
+	
+	createjs.Sound.play = function()
+	{
+	}
+	
+	createjs.Sound.INTERRUPT_NONE = true;
+	
 
 }());
-
 
 
  
