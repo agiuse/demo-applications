@@ -33,6 +33,7 @@ class mvcPlayer.View {
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
 	void isCollision(Object obj_collision)
+	void playSound(String sound_id, Number sound_bruitage)
 }
 
 createjs.Bitmap <|-- mvcPlayer.View
@@ -58,7 +59,9 @@ class mvcPlayer.Model {
 	int getY()
 	int getRotation()
 	int getSpeed()
+	void removeLife()
 	int getLife()
+	void addScore(int points)
 	int getScore()
 	__ notify __
 	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
@@ -522,7 +525,7 @@ var mvcPlayer = {};
 
 	mvcPlayer.View.prototype.prepare = function(obj_observable)
 	{
-		common.IsObjectObservable(obj_observable);	
+		common.IsObjectObservable(obj_observable);
 		this.visible=true;
 		this.image = this.obj_queue.getResult('player0');
 		this.display(obj_observable);
@@ -530,7 +533,10 @@ var mvcPlayer = {};
 
 	mvcPlayer.View.prototype.display = function(obj_observable)
 	{
-		common.IsObjectObservable(obj_observable);	
+		common.IsObjectObservable(obj_observable);
+		if ( obj_observable.getX == undefined || obj_observable.getY === undefined ||  obj_observable.getRotation === undefined )
+			throw 'No getX, getY() or getRotation() method is defined in \'Observable\'!';
+
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
 		this.rotation = obj_observable.getRotation();
@@ -538,7 +544,7 @@ var mvcPlayer = {};
 
 	mvcPlayer.View.prototype.isCollision = function(obj_collision)
 	{
-		common.IsObjectCollision(obj_collision);
+		common.IsObjectViewCollision(obj_collision);
 
 		return  (
 			( obj_collision.x > this.x - 40 ) &&
@@ -546,6 +552,15 @@ var mvcPlayer = {};
 			( obj_collision.y > this.y - 16 ) &&
 			( obj_collision.y < this.y + 44 )
 		);
+	}
+	
+	mvcPlayer.View.prototype.playSound = function(sound_id, sound_bruitage)
+	{
+		if (sound_id === undefined)
+			throw('\'sound_id\' parameter is mandatoty!');
+		
+		sound_bruitage = ( sound_bruitage === undefined ) ? 0.4 : sound_bruitage;
+		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
 	}
 }());
 
@@ -642,9 +657,24 @@ var mvcPlayer = {};
 		return this.rotation;
 	}
 
+	mvcPlayer.Model.prototype.removeLife = function()
+	{
+		this.nb_vies--;
+		this.nb_vies_notifier.notify('display');
+	}
+
 	mvcPlayer.Model.prototype.getLife = function()
 	{
 		return this.nb_vies;
+	}
+
+	mvcPlayer.Model.prototype.addScore = function(points)
+	{
+		if ( common.IsNotNumber(points) )
+			throw 'Parameter \'points\' is not a number literal!';
+		
+		this.nb_points += points;
+		this.nb_points_notifier.notify('display');
 	}
 
 	mvcPlayer.Model.prototype.getScore = function()
@@ -677,6 +707,8 @@ var mvcPlayer = {};
 		this.obj_view_joueur = new mvcPlayer.View(this.obj_stage, this.obj_queue, this.name+'_view');
 		this.obj_model_joueur = new mvcPlayer.Model(this.name + '_model');
 		this.obj_model_joueur.addCoordonneeNotifier( this.obj_view_joueur );
+		
+		this.collision_matrix = {};
 	 	console.log(this.name, ' Controller is created!');
 	}
 
@@ -840,5 +872,40 @@ var mvcPlayer = {};
 		}
 	}
 
+	mvcPlayer.Controller.prototype.display = function(obj_collision)
+	{
+		common.IsObjectCollision(obj_collision);
+
+		var my_collision_id = obj_collision.getCollisionId();
+		
+		if (my_collision_id in this.collision_matrix) {
+			if (this.obj_view_joueur.isCollision(obj_collision.getView()))
+			{
+				if  ( obj_collision.collisionWithPlayer !== undefined )
+					obj_collision.collisionWithPlayer(this);
+					
+				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision);
+			}
+		} else
+			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
+	}
+	
+	mvcPlayer.Controller.prototype.collisionWithSaucisse = function(obj_saucisse)
+	{
+		if (obj_saucisse instanceof mvcSaucisse.Model)
+		{
+			if (obj_saucisse.isPourrie ())
+			{
+				// Mauvaise Saucisse
+				this.obj_model_joueur.removeLife();
+				this.obj_view_joueur.playSound('pouet');
+			} else {
+				// Bonne saucisse
+				this.obj_model_joueur.addScore(2);
+				this.obj_view_joueur.playSound('boing');
+			}
+		} else
+			throw '\'obj_saucisse\' is not mvcSaucisse.Model object!';
+	}
 }());
 
