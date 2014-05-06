@@ -191,6 +191,7 @@ loop  coordonnee notification
 	activate View
 	group Saucisse View
 		View -[#red]> Exception : throw("'Observable' is not a Object!")
+		View -[#red]> Exception : throw("No getX() method is defined in 'Observable'!")
 		View -> Model : getX()
 		activate Model
 		Model --> View : x
