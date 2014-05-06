@@ -133,19 +133,30 @@
 		return true;
 	}
 
-	common.IsObjectCollision = function(obj_collision)
+	common.IsObjectModelCollision = function(obj_model_collision)
 	{
-		if (typeof obj_collision !== 'object') 
-			throw '\'Collision\' is not a Object!';
+		if (typeof obj_model_collision !== 'object') 
+			throw '\'Model Collision\' is not a Object!';
 
-		if ( obj_collision.getView === undefined )
-			throw 'No defined getView() method in \'Collision\' object!';
-			
-		if ( obj_collision.getCollisionId === undefined )
-			throw 'No defined getCollisionId() method in \'Collision\' object!';
+		if ( obj_model_collision.getParent === undefined )
+			throw 'No defined getParent() method in \'Model Collision\' object!';
 
 		return true;
 	}
-		
+
+	common.IsObjectControllerCollision = function(obj_controller_collision)
+	{
+		if (typeof obj_controller_collision !== 'object') 
+			throw '\'Controller Collision\' is not a Object!';
+
+		if ( obj_controller_collision.getView === undefined )
+			throw 'No defined getView() method in \'Controller Collision\' object!';
+						
+		if ( obj_controller_collision.getCollisionId === undefined )
+			throw 'No defined getCollisionId() method in \'Controller Collision\' object!';
+
+		return true;
+	}
+	
 	window.common = common;
 }(window));

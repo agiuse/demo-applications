@@ -189,6 +189,7 @@ mvcSaucisse.Model.prototype.getX = function() { return this.x; };
 mvcSaucisse.Model.prototype.getY = function() { return this.y; };
 mvcSaucisse.Model.prototype.getRotation = function() { return this.rotation; };
 mvcSaucisse.Model.prototype.getView = function() { return this; };
+mvcSaucisse.Model.prototype.getParent = function() { return this; };
 mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
 mvcSaucisse.Model.prototype.run = function() {
 	this.x = this.x - 4;
@@ -231,13 +232,16 @@ function startTest()
 {
 	console.log("Programme start!\npreLoadAssets in being...");
 	obj_queue = new createjs.LoadQueue(false);	
+	obj_queue.installPlugin(createjs.Sound);
 	obj_queue.on("complete", runTest, this);
 
 	obj_queue.loadManifest([
             {src:"./images/joueur.png", id:"player0"},
             {src:"./images/joueur_hit.png", id:"player1"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
-			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"}
+			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
+			{src:"./images/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
+			{src:"./images/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }

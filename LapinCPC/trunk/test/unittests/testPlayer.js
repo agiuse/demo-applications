@@ -1,4 +1,4 @@
-"use strict;"
+"use strict";
 
 var mvcSaucisse = {};
 mvcSaucisse.Model = function(pourrie,x,y) { this.pourrie = pourrie; this.x = x; this.y = y; };
@@ -7,6 +7,8 @@ mvcSaucisse.Model.prototype.getX = function() { return this.x; };
 mvcSaucisse.Model.prototype.getY = function() { return this.y; };
 mvcSaucisse.Model.prototype.getView = function() { return this; };
 mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
+mvcSaucisse.Model.prototype.getParent = function() { return this; };
+
 
 // ===========================================================================================
 function startTest()
@@ -1462,7 +1464,7 @@ function testControllerMethodCollisionWithSaucisse()
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.collisionWithSaucisse()
 		},
-		'\'obj_saucisse\' is not mvcSaucisse.Model object!',
+		'\'obj_model_saucisse\' is not mvcSaucisse.Model object!',
 		"mvcPlayer.Controller.collisionWithSaucisse() : Check that exception is created with no parameter!"
 	);
 	
@@ -1470,24 +1472,24 @@ function testControllerMethodCollisionWithSaucisse()
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.collisionWithSaucisse({})
 		},
-		'\'obj_saucisse\' is not mvcSaucisse.Model object!',
-		"mvcPlayer.Controller.collisionWithSaucisse() : Check that exception is created with no saucisse object in parameter!"
+		'\'obj_model_saucisse\' is not mvcSaucisse.Model object!',
+		"mvcPlayer.Controller.collisionWithSaucisse() : Check that exception is created with no saucisse model object in parameter!"
 	);
 	
 	{
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-		var obj_saucisse = new mvcSaucisse.Model(true);
-		obj.collisionWithSaucisse(obj_saucisse);
-		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse): Check that player lose a life with 'Pourrie' Saucisse collision!");
-		strictEqual(obj.obj_model_joueur.getScore(),0,"mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse): Check that player score didn't change with 'Pourrie' Saucisse collision!!"); 
+		var obj_model_saucisse = new mvcSaucisse.Model(true);
+		obj.collisionWithSaucisse(obj_model_saucisse);
+		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse): Check that player lose a life with 'Pourrie' Saucisse collision!");
+		strictEqual(obj.obj_model_joueur.getScore(),0,"mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse): Check that player score didn't change with 'Pourrie' Saucisse collision!!"); 
 	}
 
 	{
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-		var obj_saucisse = new mvcSaucisse.Model(false);
-		obj.collisionWithSaucisse(obj_saucisse);
-		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
-		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.collisionWithSaucisse(obj_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+		var obj_model_saucisse = new mvcSaucisse.Model(false);
+		obj.collisionWithSaucisse(obj_model_saucisse);
+		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
+		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
 	}
 }
 
@@ -1504,7 +1506,7 @@ function testControllerMethodDisplay()
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.display()
 		},
-		'\'Collision\' is not a Object!',
+		'\'Model Collision\' is not a Object!',
 		"mvcPlayer.Controller.display() : Check that exception is up with no parameter!"
 	);
 	
@@ -1512,26 +1514,34 @@ function testControllerMethodDisplay()
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.display({x:10,y:10})
 		},
-		'No defined getView() method in \'Collision\' object!',
+		'No defined getParent() method in \'Model Collision\' object!',
 		"mvcPlayer.Controller.display({x:10,y:10}) : Check that exception is up when it is not an Observable object!"
 	);
 
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getView : 100});
+			obj.display({x:10,y:10, getParent : function() { return this;} });
 		},
-		'No defined getCollisionId() method in \'Collision\' object!',
-		"mvcPlayer.Controller.display({x:10,y:10,getView : 100}) : Check that exception is up with it is not an Collision Object!"
+		'No defined getView() method in \'Controller Collision\' object!',
+		"mvcPlayer.Controller.display({x:10,y:10,getParent : function() { return this;}}) : Check that exception is up with it is not an Collision Object!"
+	);
+
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.display({x:10,y:10, getParent : function() { return this;}, getView : 100});
+		},
+		'No defined getCollisionId() method in \'Controller Collision\' object!',
+		"mvcPlayer.Controller.display({x:10,y:10, getParent : function() { return this;},getView : 100}) : Check that exception is up with it is not an Collision Object!"
 	);
 
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 			obj.obj_view_joueur.x = 200; obj.obj_view_joueur.y = 200;
-			var obj_saucisse = new mvcSaucisse.Model(false, 200, 200);
-			obj.display(obj_saucisse);
+			var obj_model_saucisse = new mvcSaucisse.Model(false, 200, 200);
+			obj.display(obj_model_saucisse);
 		},
 		'\'Saucisse\' is unknow in the collision matrix!',
-		"mvcPlayer.Controller.display(obj_saucisse) : Check that exception is up with collision Player/Saucisse is not specified!"
+		"mvcPlayer.Controller.display(obj_model_saucisse) : Check that exception is up with collision Player/Saucisse is not specified!"
 	);
 
 	{
@@ -1548,19 +1558,19 @@ function testControllerMethodDisplay()
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.obj_view_joueur.x = 100; obj.obj_view_joueur.y = 100; 
 		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
-		var obj_saucisse = new mvcSaucisse.Model(false, 120, 100);
-		obj.display(obj_saucisse)
-		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.display(obj_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
-		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.display(obj_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+		var obj_model_saucisse = new mvcSaucisse.Model(false, 120, 100);
+		obj.display(obj_model_saucisse)
+		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.display(obj_model_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
+		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.display(obj_model_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
 	}
 	
 	{
 		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
 		obj.obj_view_joueur.x = 100; obj.obj_view_joueur.y = 100; 
 		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
-		var obj_saucisse = new mvcSaucisse.Model(true, 120, 100);
-		obj.display(obj_saucisse)
-		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.display(obj_saucisse) : Check that player lose a life with with 'Mauvaise' Saucisse collision!!");
-		strictEqual(obj.obj_model_joueur.getScore(),0,"mvcPlayer.Controller.display(obj_saucisse) : Check that player score didn't change with 'Mauvaise' Saucisse collision!!"); 
+		var obj_model_saucisse = new mvcSaucisse.Model(true, 120, 100);
+		obj.display(obj_model_saucisse)
+		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.display(obj_model_saucisse) : Check that player lose a life with with 'Mauvaise' Saucisse collision!!");
+		strictEqual(obj.obj_model_joueur.getScore(),0,"mvcPlayer.Controller.display(obj_model_saucisse) : Check that player score didn't change with 'Mauvaise' Saucisse collision!!"); 
 	}
 }

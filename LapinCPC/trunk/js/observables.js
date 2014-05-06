@@ -24,8 +24,9 @@ hide footbox
 
 participant ObjectToObserver << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
-participant Observer << (C,#ADD1B2) >>
 participant Exception
+participant Observer << (C,#ADD1B2) >>
+
 
 == Initialisation ==
 create Observable
@@ -37,6 +38,10 @@ deactivate Observable
 
 == Subscription ==
 Observer -> Observable : add(Observer)
+note left
+Observer attribute "name" is used to uniquely identify
+the observer in the observer list.
+end note
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
