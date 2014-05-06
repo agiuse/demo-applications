@@ -99,7 +99,7 @@ Generator -- Object
 	'use strict';
 
 	// Variables globales
-	var obj_lists = new Array();  // JE VIENS DE CASSER LE TABLEAU ET REVOIR LA NOTION GLOBALE 
+	var obj_lists = new Array(16);  // JE VIENS DE CASSER LE TABLEAU ET REVOIR LA NOTION GLOBALE 
 	var obj_queue = new createjs.LoadQueue(false);
 
 	var index_stage = 0;
@@ -146,11 +146,14 @@ Generator -- Object
 				{src:"./images/ciel0.png", id:"ciel0"},
 				{src:"./images/ciel1.png", id:"ciel1"},
 				{src:"./images/ciel2.png", id:"ciel2"},
-		    {src:"./images/joueur.png", id:"player0"},
-		    {src:"./images/joueur_hit.png", id:"player1"},
+				{src:"./images/joueur.png", id:"player0"},
+				{src:"./images/joueur_hit.png", id:"player1"},
 				{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND},
 				{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 				{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
+				{src:"./sounds/boing.mp3|./sounds/boing.ogg", id:"boing", type:createjs.LoadQueue.SOUND},
+				{src:"./sounds/pouet.mp3|./sounds/pouet.ogg", id:"pouet", type:createjs.LoadQueue.SOUND},
+				{src:"./sounds/prout_3.mp3", id:"prout", type:createjs.LoadQueue.SOUND}
 		]);
 		console.log("preLoadAssets is ended.\nProgramme is ended!");
 	}
@@ -160,12 +163,13 @@ Generator -- Object
 	{
 		console.log("Load is ended!\nController creations are being done...");
 
-		obj_lists.push( new ViewStage() );
-		obj_lists.push( new ViewCiel(obj_lists[index_stage], obj_queue) );
-		obj_lists.push( new ControllerLife(obj_lists[index_stage], "Vie_Text", 8, 420) );
-		obj_lists.push( new ControllerScore(obj_lists[index_stage],"Score_Text", 8, 450) );
-		obj_lists.push( new ControllerHighScore(obj_lists[index_stage],"HighScore_Text", 300, 450) );
-		obj_lists.push( new ControllerPlayer(obj_lists[index_stage], obj_queue, 'Joueur') );
+		obj_lists[index_stage] = new ViewStage();
+		obj_lists[index_ciel] = new ViewCiel(obj_lists[index_stage], obj_queue);
+		obj_lists[index_life] = new mvcLife.Controller(obj_lists[index_stage], "Vie_Text", 8, 420);
+		obj_lists[index_score] = new mvcScore.Controller(obj_lists[index_stage],"Score_Text", 8, 450);
+		obj_lists[index_highscore] = new mvcHighScore.Controller(obj_lists[index_stage],"HighScore_Text", 300, 450);
+		obj_lists[index_player] = new mvcPlayer.Controller(obj_lists[index_stage], obj_queue, 'Joueur');
+		obj_lists[index_player].collision_matrix['Saucisse'] = { collisionWithObject : obj_lists[index_player].collisionWithSaucisse};
 		obj_lists[index_player].lifeHasObservedBy(obj_lists[index_life].getObserver());
 		obj_lists[index_player].scoreHasObservedBy(obj_lists[index_score].getObserver());
 		obj_lists[index_player].scoreHasObservedBy(obj_lists[index_highscore].getObserver());
@@ -176,29 +180,66 @@ Generator -- Object
 
 		for (var i =0; i < 10 ; i++)
 		{
-			obj_lists.push( new ControllerSaucisse(obj_lists[index_stage], obj_queue, obj_generator, name) );
-			obj_lists[index_saucisse + i].preparer();
+			obj_lists[index_saucisse + i] = new mvcSaucisse.Controller(obj_lists[index_stage], obj_queue, obj_generator, 'saucisse'+i);
+			obj_lists[index_saucisse + i].coordonneeHasObservedBy(obj_lists[index_player]);
 		}
 
 		// mettre l'objet viewstage dans la liste et ajouter la function run().
 		obj_lists[index_stage].go();
 	}
 
+	function pauseGame()
+	{
+		var paused = !createjs.Ticker.getPaused();
+		createjs.Ticker.setPaused(paused);
+		window.document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
+		createjs.Sound.setMute(paused);
+	}
 
+	function endGame()
+	{
+		createjs.Ticker.removeEventListener("tick", mainTick);
+		createjs.Sound.setMute(true);
+	}
+	
 	// ---------------------------------------------------------------------------------------------------------------------
 	function mainTick(event)
 	{
-		obj_lists[index_stage].update(event);
-		for ( var i=1; i <obj_lists.length ; i++ )
+		if (!createjs.Ticker.getPaused())
 		{
-			if ( obj_lists[i].run !== undefined ) {
-				obj_lists[i].run();
+			try
+			{
+				obj_lists[index_stage].update(event);
+
+				// regarde au tour précédent si il reste de la vie au joueur
+				if (! obj_lists[5].isBeAlive() )
+				{
+					createjs.Ticker.removeEventListener("tick", mainTick);
+					createjs.Sound.play("prout", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, obj_lists[0].sound_bruitage );
+				} else {
+					// anime l'ensemble des objets graphiques
+					for ( var i=1; i <obj_lists.length ; i++ )
+					{
+						if ( obj_lists[i].run !== undefined )
+						{
+							obj_lists[i].run();
+						}
+					}
+				}	
 			}
+			catch(e) {
+					createjs.Ticker.removeEventListener("tick", mainTick);
+					createjs.Sound.setMute(true);
+					console.error(e);
+			}
+			
 		}
 	}
-
+	
 	window.startGame = startGame;
 	window.mainTick = mainTick;
-	//window.obj_stage = obj_stage;
+	window.endGame = endGame;
+	window.pauseGame = pauseGame;
+
 }(window));
 
