@@ -42,6 +42,7 @@ class mvcSaucisse.View {
 
 class mvcSaucisse.Model {
 	String name = "Model_default"
+	Controller parent
 	--
 	int x
 	int y
@@ -50,9 +51,9 @@ class mvcSaucisse.Model {
 	int vitesse
 	Boolean pourrie
 	==
-	void Model(String name)
+	void Model(String name, Controller parent)
+	Controller getParent()
 	int getX()
-
 	int getY()
 	int getRotation()
 	int getSpeed()
@@ -73,9 +74,9 @@ class mvcSaucisse.Controller {
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
 	mvcSaucisse.View getView()
-	String getCollisionId()
 	void coordonneeHasOBservedBy(Object obj_observer)
 	__ Collision __
+	String getCollisionId()
 	void collisionWithPlayer(Object obj_collision)
 	__ execution __	
 	void run()
@@ -123,9 +124,13 @@ Controller -[#red]> Exception : throw("Parameter 'name' is not a string literal!
 Controller -[#red]> Exception : throw("Parameter 'obj_generator' is not Generator instance!")
 
 create Model
-Controller -> Model : new(name)
+Controller -> Model : new(name, Controller)
 activate Model
 Model -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+Model -[#red]> Exception : throw("'Controller Collision' is not a Object!")
+Model -[#red]> Exception : throw("No defined getView() method in 'Controller Collision' object!")
+Model -[#red]> Exception : throw("No defined getCollisionId() method in 'Controller Collision' object!")
+
 create Observable
 Model -> Observable
 activate Observable
@@ -159,11 +164,11 @@ deactivate Model
 deactivate Controller
 
 == External Observers entered ==
-Game -> Controller : coordonneeHasObservedBy(mvcPlayer.View)
+Game -> Controller : coordonneeHasObservedBy(mvcPlayer.Controller)
 activate Controller
-Controller -> Model : add(mvcPlayer.View)
+Controller -> Model : add(mvcPlayer.Controller)
 activate Model
-Model -> Observable : add(mvcPlayer.View)
+Model -> Observable : add(mvcPlayer.Controller)
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
@@ -390,9 +395,11 @@ var mvcSaucisse = {};
 {
 	'use strict';
 
-	mvcSaucisse.Model = function(name)
+	mvcSaucisse.Model = function(name, parent)
 	{
 		this.name = common.HasStringName(name, 'Model_default');
+		common.IsObjectControllerCollision(parent);
+		this.parent = parent;
 
 		console.log(this.name, ' Model is being created...');
 		this.coordonnee_notifier = new Observable(this.name + "_notifier", this);
@@ -455,6 +462,11 @@ var mvcSaucisse = {};
 		this.coordonnee_notifier.notify('display');
 	}
 
+	mvcSaucisse.Model.prototype.getParent = function()
+	{
+		return this.parent;
+	};
+	
 }());
 // ============================================================================================================================
 // Classe mvcSaucisse.Controller
@@ -477,7 +489,7 @@ var mvcSaucisse = {};
 			throw 'Parameter \'obj_generator\' is not Generator instance!';
 	
 		console.log(this.name, ' Controller is being created!');
-		this.obj_model_saucisse	= new mvcSaucisse.Model( this.name );
+		this.obj_model_saucisse	= new mvcSaucisse.Model( this.name, this );
 		this.obj_view_saucisse = new mvcSaucisse.View(this.obj_stage, this.obj_queue, this.name);
 		this.obj_model_saucisse.add ( this.obj_view_saucisse  );
 		this.preparer();
@@ -511,10 +523,6 @@ var mvcSaucisse = {};
 		return this.obj_view_saucisse;
 	};
 
-	mvcSaucisse.Controller.prototype.getCollisionId = function(){
-		return 'Saucisse';
-	};
-
 	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer)
 	{
 		this.obj_model_saucisse.add(obj_observer);
@@ -524,4 +532,10 @@ var mvcSaucisse = {};
 	{
 		this.preparer();
 	}
+
+	mvcSaucisse.Controller.prototype.getCollisionId = function()
+	{
+		return 'Saucisse';
+	};
+
 }());

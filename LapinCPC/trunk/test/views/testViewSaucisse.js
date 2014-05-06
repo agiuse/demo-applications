@@ -23,12 +23,13 @@ Generator.prototype.iterator = function()
 	switch (this.type) {
 	case 'static':
 		this.inc++
+		if ( this.inc == this.elt_lists.length )
+			this.inc = 0;
+			
 		elt = this.elt_lists[this.inc];
 		if (elt === undefined)
 			throw 'Generator List is empty!';
 
-		if ( this.inc == this.elt_lists.length )
-			this.init();
 		break;
 	case 'random_test3':
 		elt =  {
@@ -59,13 +60,16 @@ function startTest()
 	console.clear();
 	console.log("Programme start!\npreLoadAssets in being...");
 	obj_queue = new createjs.LoadQueue(false);
-	
+	obj_queue.installPlugin(createjs.Sound);
 	obj_queue.on("complete", runTest, this);
 
 	obj_queue.loadManifest(
 		[
+			{src:"./images/joueur.png", id:"player0"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
+			{src:"./images/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
+			{src:"./images/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 		]
 	);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
@@ -84,22 +88,41 @@ function runTest()
 	test("Affichage d'une bonne et mauvaise saucisse", test2);
 	test3();
 	test4();
-
+	test5();
+	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
 }
 
 function test_run(event)
 {
-	for ( var object in obj_lists )
+	if (!createjs.Ticker.getPaused())
 	{
-		if ( obj_lists[object].run !== undefined )
-			obj_lists[object].run();
-	}
+		try{
+			for ( var object in obj_lists )
+			{
+				if ( obj_lists[object].run !== undefined )
+					obj_lists[object].run();
+			}
 
-	obj_stage.update(event);
+			obj_stage.update(event);
+		}
+		catch(e) {
+				createjs.Ticker.removeEventListener("tick", test_run);
+				console.error(e);
+		}
+	}
 }
 
+function testPause() {
+	var paused = !createjs.Ticker.getPaused();
+	createjs.Ticker.setPaused(paused);
+	document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
+}
+
+function testEnd() {
+		createjs.Ticker.removeEventListener("tick", test_run);	
+}
 
 // -----------------------------------------------------------------
 function test1()
@@ -110,13 +133,13 @@ function test1()
 	obj_text.x = 0 ; obj_text.y = 0;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
-	
-	obj_observable_1 = new mvcSaucisse.Model("saucisse mauvaise");
-	obj_observable_2 = new mvcSaucisse.Model("saucisse bonne");
+
+	var obj_observable_1 = new mvcSaucisse.Model("saucisse mauvaise", {getView: function() {}, getCollisionId: function() {} });
+	var obj_observable_2 = new mvcSaucisse.Model("saucisse bonne", {getView: function() {}, getCollisionId: function() {} });
 
 	console.log(" Fin de la création des objets Saucisses de test\nView-Saucisses creation starting");
-	obj_view_saucisse_1 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_1");
-	obj_view_saucisse_2 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_2");
+	var obj_view_saucisse_1 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_1");
+	var obj_view_saucisse_2 = new mvcSaucisse.View(obj_stage, obj_queue, "View_Saucisse_2");
 	console.log(" View Saucisse creation done.\nAdd View-Saucisse to observable object test");
 	obj_observable_1.add(obj_view_saucisse_1);
 	obj_observable_2.add(obj_view_saucisse_2);
@@ -159,8 +182,8 @@ function test2()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_1 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse mauvaise");
-	obj_controller_2 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse bonne");
+	var obj_controller_1 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse mauvaise");
+	var obj_controller_2 = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse bonne");
 	console.log("Saucisse creation done.");
 	
 	console.log("Display saucisse bitmaps");
@@ -215,5 +238,38 @@ function test4()
 	{
 		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator);
 	}
+}
+
+function test5()
+{
+	console.log("**** Test 5 : Collision entre les saucisses et le vaisseau\n --------------------------------------------");
+
+	var obj_text =  new createjs.Text("Test MVC Saucisse 5 : MVC Controller Saucisses + random", "24px Arial", "#00000");
+	obj_text.x = 0 ; obj_text.y = 400;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
 	
+	var obj_generator = new Generator('static');
+	obj_generator.elt_lists = [
+		{ x:700, y:450, rotation:0, vitesse:4, pourrie:true},
+		{ x:700, y:460, rotation:0, vitesse:4, pourrie:false},
+		{ x:700, y:440, rotation:0, vitesse:6, pourrie:false},
+	];
+	
+	obj_lists['player'] = new mvcPlayer.Controller(obj_stage, obj_queue, "Player controller");
+
+	for (var i =10; i < 12 ; i++)
+	{
+		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "Saucisse"+i);
+		obj_lists['saucisse'+i].coordonneeHasObservedBy(obj_lists['player']);
+	}
+	
+	obj_lists['player'].run = function() {
+		if ( this.obj_model_joueur.getX() > 500 )
+			this.obj_model_joueur.set(50,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+		else
+			this.obj_model_joueur.set(this.obj_model_joueur.getX() + this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
+	}
+	obj_lists['player'].collision_matrix['Saucisse'] = { collisionWithObject : obj_lists['player'].collisionWithSaucisse};
+	obj_lists['player'].preparer(50,440,0,6);
 }
