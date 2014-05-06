@@ -72,7 +72,12 @@ class mvcSaucisse.Controller {
 	--
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
-
+	mvcSaucisse.View getView()
+	String getCollisionId()
+	void coordonneeHasOBservedBy(Object obj_observer)
+	__ Collision __
+	void collisionWithPlayer(Object obj_collision)
+	__ execution __	
 	void run()
 	__ notify __
 	void preparer()
@@ -100,8 +105,9 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
-Participant Generator
-Participant Exception
+participant Generator << (C,#ADD1B2) >>
+participant mvcPlayer.Controller << (C,#ADD1B2) >>
+participant Exception
 
 == Initialisation ==
 create Generator
@@ -151,6 +157,24 @@ deactivate Observable
 Model --> Controller : <I><< observer entered >></I>
 deactivate Model
 deactivate Controller
+
+== External Observers entered ==
+Game -> Controller : coordonneeHasObservedBy(mvcPlayer.View)
+activate Controller
+Controller -> Model : add(mvcPlayer.View)
+activate Model
+Model -> Observable : add(mvcPlayer.View)
+activate Observable
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model : <I><< observable entered >></I>
+deactivate Observable
+Model --> Controller : <I><< observable entered >></I>
+deactivate Model
+Controller --> Game : <I><< observable entered >></I>
+deactivate Controller
+
 == Preparation ==
 Controller -> Controller : preparer()
 activate Controller
@@ -207,10 +231,11 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
-Participant Generator
-Participant mvcCollision.Controller
+Participant Generator << (C,#ADD1B2) >>
+Participant mvcPlayer.Controller << (C,#ADD1B2) >>
 Participant Exception
 
+== Saucisse movements & Collision Management ==
 Game -> Controller : run()
 activate Controller
 Controller -> Model : getX()
@@ -230,6 +255,7 @@ alt [ x > 0 ]
 		activate View
 		group Saucisse View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -237,13 +263,14 @@ alt [ x > 0 ]
 			View --> Observable : <I><< Bitmap displayed >>
 		end
 		deactivate View
-		Observable -> mvcCollision.Controller: display(Model)
-		activate mvcCollision.Controller
-		group Collision Controller
-			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
+		Observable -> mvcPlayer.Controller: display(Model)
+		activate mvcPlayer.Controller
+		group Player Controller
+			mvcPlayer.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcPlayer.Controller -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
+			mvcPlayer.Controller --> Observable: <I><< Collision processing done >></I>
 		end
-		deactivate mvcCollision.Controller
+		deactivate mvcPlayer.Controller
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
@@ -264,6 +291,7 @@ else [ x < 0 ]
 		activate View
 		group Saucisse View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY(), getRotation() or isPourrie() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -276,12 +304,12 @@ else [ x < 0 ]
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View -> Model : getSpeed()
+			View -> Model : isPourrie()
 			activate Model
-			Model --> View : vitesse
+			Model --> View : pourrie (true/false)
 			deactivate Model
 			View --> Observable : <I><< Bitmap displayed >></I>
-		end
+		end	
 		deactivate View
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
