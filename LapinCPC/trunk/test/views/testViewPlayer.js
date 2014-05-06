@@ -1,10 +1,11 @@
 "use strict;"
 
 // ====================================================================
-// Copied at 14/04 ; Modified at 20/04
+// Copied at 14/04 ; Modified at 06/05
 function ViewStage() {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.touches = {};
+	this.sound_bruitage = 0.4;
 }
 
 ViewStage.prototype = new createjs.Stage();
@@ -240,8 +241,8 @@ function startTest()
             {src:"./images/joueur_hit.png", id:"player1"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
-			{src:"./images/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
-			{src:"./images/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
+			{src:"./sounds/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
+			{src:"./sounds/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }

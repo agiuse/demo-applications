@@ -575,7 +575,7 @@ var mvcPlayer = {};
 			throw('\'sound_id\' parameter is mandatoty!');
 		
 		sound_bruitage = ( sound_bruitage === undefined ) ? 0.4 : sound_bruitage;
-		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, sound_bruitage );
+		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, this.obj_stage.sound_bruitage );
 	}
 }());
 
@@ -898,11 +898,14 @@ var mvcPlayer = {};
 		
 		if (my_collision_id in this.collision_matrix) {
 			if (this.obj_view_joueur.isCollision(obj_collision_controller.getView()))
-			{
+			{		
+				// remarque : l'ordre d'exécution est important :
+				// 1 : le player  
+				// 2 : la saucisse
+				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
+
 				if  ( obj_collision_controller.collisionWithPlayer !== undefined )
 					obj_collision_controller.collisionWithPlayer(this);
-					
-				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
 			}
 		} else
 			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
@@ -925,5 +928,11 @@ var mvcPlayer = {};
 		} else
 			throw '\'obj_model_saucisse\' is not mvcSaucisse.Model object!';
 	}
+	
+	mvcPlayer.Controller.prototype.isBeAlive = function()
+	{
+		return (this.obj_model_joueur.getLife() > 0 )
+	}
+
 }());
 

@@ -37,6 +37,7 @@ function startTest()
 	test("Test des parametres de la méthode scoreHasObservedBy()", testControllerMethodscoreHasObservedBy);
 	test("Test des parametres des moveTo()", testControllerMethodMove);
 	test("Test des parametres de la méthode run()", testControllerMethodRun);
+	test("Test des parametres de la méthode isBeAlive()", testControllerMethodIsBeAlive);
 	
 	module("Controller Player tests and Saucisse collisions");
 	test("Test des parametres de la méthode collisionWithSaucisse()", testControllerMethodCollisionWithSaucisse);
@@ -1449,6 +1450,35 @@ function testControllerMethodRun()
 		obj.run();
 		strictEqual(obj.obj_model_joueur.getRotation(), 2, "new rotation value after 7th run cycle");
 	}
+}
+
+function testControllerMethodIsBeAlive()
+{
+	console.log('testControllerMethodIsBeAlive\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.isBeAlive !== undefined, "mvcPlayer.Controller.isBeAlive() : Check that this method is defined!");
+	}
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		obj.obj_model_joueur.nb_vies = 3;
+		ok(obj.isBeAlive(), "mvcPlayer.Controller.isBeAlive() : check that this method returns true while player have a life!");
+	}
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		obj.obj_model_joueur.nb_vies = 0;
+		ok(!obj.isBeAlive(), "mvcPlayer.Controller.isBeAlive() : check that this method returns false while player have a life!");
+	}
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		obj.obj_model_joueur.nb_vies = -1;
+		ok(!obj.isBeAlive(), "mvcPlayer.Controller.isBeAlive() : check that this method returns false while player have a life!");
+	}
+
 }
 
 function testControllerMethodCollisionWithSaucisse()

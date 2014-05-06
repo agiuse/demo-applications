@@ -38,7 +38,7 @@ deactivate ViewCiel
 
 @enduml
 */
-;( function()
+;( function(window)
 {
 	'use strict';
 	function ViewCiel(obj_stage, obj_queue)
@@ -66,5 +66,5 @@ deactivate ViewCiel
 				this.image[i].x = 0;
 		}
 	}
-	
-}());
+	window.ViewCiel = ViewCiel;	
+}(window));

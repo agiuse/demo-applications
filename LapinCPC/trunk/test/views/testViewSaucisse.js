@@ -54,6 +54,16 @@ Generator.prototype.iterator = function()
 	return  elt;
 }
 
+// ====================================================================
+// Copied at 14/04 ; Modified at 06/05
+function ViewStage() {
+	createjs.Stage.call(this, document.getElementById("gameCanvas"));
+	this.touches = {};
+	this.sound_bruitage = 0.4;
+}
+
+ViewStage.prototype = new createjs.Stage();
+
 // ============================================================================================================================
 function startTest()
 {
@@ -68,8 +78,8 @@ function startTest()
 			{src:"./images/joueur.png", id:"player0"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
-			{src:"./images/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
-			{src:"./images/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
+			{src:"./sounds/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
+			{src:"./sounds/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 		]
 	);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
@@ -79,7 +89,7 @@ function startTest()
 function runTest()
 {
 	console.log("Lancement des tests...");
-	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
+	obj_stage = new ViewStage();
 	obj_lists={};
 
 	module("View and Model Saucisse");
