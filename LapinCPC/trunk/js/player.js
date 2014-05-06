@@ -59,13 +59,13 @@ class mvcPlayer.Model {
 	int getY()
 	int getRotation()
 	int getSpeed()
-	void removeLife()
 	int getLife()
-	void addScore(int points)
 	int getScore()
 	__ notify __
 	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
 	set(int x, int y , int rotation)
+	void addScore(int points)
+	void removeLife()
 }
 
 mvcPlayer.Model *-- Observable : coordonnee_notifier
@@ -76,7 +76,7 @@ class mvcPlayer.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String Name = "Controller_default"
-	ArrayHashage<Boolean> touches
+	ArrayHashage<Object> collision_matrix
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	__ notifier __
@@ -91,6 +91,9 @@ class mvcPlayer.Controller {
 	void moveToRight()
 	void moveToLeft()
 	void moveToUp()
+	__ Collision __
+	void display(Object obj_collision)
+	void collisionWithSaucisse(obj_collision)
 }
 
 mvcPlayer.Controller *-- mvcPlayer.View
@@ -437,37 +440,47 @@ Controller --> Game : <I><< movement processing ended >></I>
 title <b>MVC Player</b> sequence diagram
 hide footbox
 
-participant Game
+participant mvcSaucisse.Model << (C,#ADD1B2) >>
 box "mvcPlayer"
 participant Controller << (C,#ADD1B2) >>
 participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
-participant mvcSaucisse.Model
-participant mvcSaucisse.View
-
+participant mvcSaucisse.View << (C,#ADD1B2) >>
+participant mvcSaucisse.Controller << (C,#ADD1B2) >>
 participant Exception
 
 legend left
- Player.run() is done ; the player object must already be moved.\n
+ Player.run() is done ; the player object must already be moved.
  Saucisse.run() is done now and Model Saucisse notifying Controller Player !
 endlegend
 == Collision management ==
 group Model Saucisse
 	mvcSaucisse.Model -> Controller : display(mvcSaucisse.Model)
 	activate Controller
+	Controller -[#red]> Exception : throw("'Collision' is not a Object!")
+	Controller -[#red]> Exception : throw("No defined getView() method in 'Collision' object!")
+	Controller -[#red]> Exception : throw("No defined getCollisionId() method in 'Collision' object!")
+	Controller -[#red]> Exception : throw("'Saucisse' is unknow in the collision matrix!")
 	Controller -> View : isCollision(mvcSaucisse.View)
 	activate View
-	View -> mvcSaucisse.View : getCollision()
+	View --> mvcSaucisse.View : getX()
 	activate mvcSaucisse.View
-	mvcSaucisse.View --> View : {x, y , width, height}
-	deactivate mvcSaucisse.View
+	mvcSaucisse.View --> View : x
+	deactivate  mvcSaucisse.View
+	View --> mvcSaucisse.View : getY()
+	activate mvcSaucisse.View
+	mvcSaucisse.View --> View : y
+	deactivate  mvcSaucisse.View
 	View --> Controller : true/false
 	deactivate View
+	Controller -> Controller : collisionWithSaucisse(obj_saucisse)
+	activate Controller
+	Controller -[#red]> Exception : throw("'obj_saucisse' is not mvcSaucisse.Model object")
 	alt Collision is true
 		alt bonne saucisse
-			Controller -> View : sound('boing')
+			Controller -> View : playSound('boing')
 			activate View
 			View --> Controller : <I><< boing >></I>
 			deactivate View
@@ -476,27 +489,25 @@ group Model Saucisse
 			Model --> Controller : <I><< Score Updated >></I>
 			deactivate Model
 		else mauvaise saucisse
-			Controller -> View : sound('pouet')
+			Controller -> View : playSound('pouet')
 			activate View
 			View --> Controller : <I><< pouet >></I>
 			deactivate View
-			Controller --> Model : deleteLife()
+			Controller --> Model : removeLife()
 			activate Model
 			Model --> Controller : <I><< Life Updated >></I>
 			deactivate Model
 		end
-		Controller -> mvcSaucisse.Controller : preparer()
+		Controller -> mvcSaucisse.Controller : collisionWithPlayer()
 		activate mvcSaucisse.Controller
 		mvcSaucisse.Controller --> Controller : <I><< New Saucisse >></I>
 		deactivate mvcSaucisse.Controller
 	else Collision is false
-
 	end
+	deactivate Controller
 	Controller --> mvcSaucisse.Model : <I><< notification ended >></I>
 	deactivate Controller	
-
 end
-
 @enduml
 */
 var mvcPlayer = {};
