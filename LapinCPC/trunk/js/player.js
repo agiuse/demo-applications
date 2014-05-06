@@ -92,8 +92,8 @@ class mvcPlayer.Controller {
 	void moveToLeft()
 	void moveToUp()
 	__ Collision __
-	void display(Object obj_collision)
-	void collisionWithSaucisse(obj_collision)
+	void display(Object obj_collision_model)
+	void collisionWithSaucisse(Object obj_collision_controller)
 }
 
 mvcPlayer.Controller *-- mvcPlayer.View
@@ -157,6 +157,10 @@ Controller -> Model : addCoordonneeNotifier(View)
 activate Controller
 activate Model
 Model -> Observable : add(View)
+note left
+	mvcPlayer.View attribute "name" is used to uniquely identify
+	the View Player in the observer list.
+end note
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
@@ -175,6 +179,10 @@ activate Controller
 Controller -> Model : addLifeNotifier(mvcLife.View)
 activate Model
 Model -> Observable : add(mvcLife.View)
+note left
+	mvcLife.View attribute "name" is used to uniquely identify
+	the View Life in the observer list.
+end note
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
@@ -189,8 +197,13 @@ deactivate Controller
 Game -> Controller : scoreHasObservedBy(mvcScore.View)
 activate Controller
 Controller -> Model : addLifeNotifier(mvcScore.View)
+
 activate Model
 Model -> Observable : add(mvcScore.View)
+note left
+	mvcScore.View attribute "name" is used to uniquely identify
+	the View Score in the observer list.
+end note
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
@@ -207,6 +220,10 @@ activate Controller
 Controller -> Model : addLifeNotifier(mvcHighScore.Controller)
 activate Model
 Model -> Observable : add(mvcHighScore.Controller)
+note left
+	mvcHighScore.View attribute "name" is used to uniquely identify
+	the View HighScore in the observer list.
+end note
 activate Observable
 Observable -[#red]> Exception : throw("'Observer' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
@@ -230,7 +247,6 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
-participant mvcCollision.Controller
 participant Exception
 
 == Ship movements ==
@@ -263,13 +279,6 @@ alt [38] : move to up
 			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable -> mvcCollision.Controller: display(Model)
-		activate mvcCollision.Controller
-		group Collision Controller
-			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
-		end
-		deactivate mvcCollision.Controller
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
@@ -303,13 +312,6 @@ else [40] : move to down
 			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable -> mvcCollision.Controller: display(Model)
-		activate mvcCollision.Controller
-		group Collision Controller
-			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
-		end
-		deactivate mvcCollision.Controller
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
@@ -344,13 +346,6 @@ alt [37] move to left
 			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable -> mvcCollision.Controller: display(Model)
-		activate mvcCollision.Controller
-		group Collision Controller
-			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
-		end
-		deactivate mvcCollision.Controller
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
@@ -384,13 +379,6 @@ else [39] move to right
 			View --> Observable : <I><< Bitmap displayed >></I>
 		end
 		deactivate View
-		Observable -> mvcCollision.Controller: display(Model)
-		activate mvcCollision.Controller
-		group Collision Controller
-			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
-		end
-		deactivate mvcCollision.Controller
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
@@ -456,13 +444,22 @@ legend left
  Saucisse.run() is done now and Model Saucisse notifying Controller Player !
 endlegend
 == Collision management ==
+activate mvcSaucisse.Model
 group Model Saucisse
 	mvcSaucisse.Model -> Controller : display(mvcSaucisse.Model)
 	activate Controller
 	Controller -[#red]> Exception : throw("'Collision' is not a Object!")
-	Controller -[#red]> Exception : throw("No defined getView() method in 'Collision' object!")
+	Controller -[#red]> Exception : throw("No defined getParent() method in 'Collision' object!")
 	Controller -[#red]> Exception : throw("No defined getCollisionId() method in 'Collision' object!")
 	Controller -[#red]> Exception : throw("'Saucisse' is unknow in the collision matrix!")
+	Controller -> mvcSaucisse.Model : getParent()
+	activate mvcSaucisse.Model
+	mvcSaucisse.Model -> Controller : mvcSaucisse.Controller reference object
+	deactivate mvcSaucisse.Model
+	Controller -> mvcSaucisse.Controller : getView()
+	activate mvcSaucisse.Controller
+	mvcSaucisse.Controller --> Controller : mvcSaucisse.View reference object
+	deactivate mvcSaucisse.Controller
 	Controller -> View : isCollision(mvcSaucisse.View)
 	activate View
 	View --> mvcSaucisse.View : getX()
@@ -475,9 +472,13 @@ group Model Saucisse
 	deactivate  mvcSaucisse.View
 	View --> Controller : true/false
 	deactivate View
-	Controller -> Controller : collisionWithSaucisse(obj_saucisse)
+	Controller -> Controller : collisionWithSaucisse(mvcSaucisse.Model)
 	activate Controller
 	Controller -[#red]> Exception : throw("'obj_saucisse' is not mvcSaucisse.Model object")
+	Controller -> mvcSaucisse.Model : isPourrie()
+	activate mvcSaucisse.Model
+	mvcSaucisse.Model --> Controller : (true/false)
+	deactivate mvcSaucisse.Model
 	alt Collision is true
 		alt bonne saucisse
 			Controller -> View : playSound('boing')
@@ -508,6 +509,7 @@ group Model Saucisse
 	Controller --> mvcSaucisse.Model : <I><< notification ended >></I>
 	deactivate Controller	
 end
+deactivate mvcSaucisse.Model
 @enduml
 */
 var mvcPlayer = {};
@@ -883,29 +885,32 @@ var mvcPlayer = {};
 		}
 	}
 
-	mvcPlayer.Controller.prototype.display = function(obj_collision)
+	mvcPlayer.Controller.prototype.display = function(obj_collision_model)
 	{
-		common.IsObjectCollision(obj_collision);
+		common.IsObjectModelCollision(obj_collision_model);
 
-		var my_collision_id = obj_collision.getCollisionId();
+		var obj_collision_controller = obj_collision_model.getParent();
+		common.IsObjectControllerCollision(obj_collision_controller);
+		
+		var my_collision_id = obj_collision_model.getCollisionId();
 		
 		if (my_collision_id in this.collision_matrix) {
-			if (this.obj_view_joueur.isCollision(obj_collision.getView()))
+			if (this.obj_view_joueur.isCollision(obj_collision_controller.getView()))
 			{
-				if  ( obj_collision.collisionWithPlayer !== undefined )
-					obj_collision.collisionWithPlayer(this);
+				if  ( obj_collision_controller.collisionWithPlayer !== undefined )
+					obj_collision_controller.collisionWithPlayer(this);
 					
-				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision);
+				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
 			}
 		} else
 			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
 	}
 	
-	mvcPlayer.Controller.prototype.collisionWithSaucisse = function(obj_saucisse)
+	mvcPlayer.Controller.prototype.collisionWithSaucisse = function(obj_model_saucisse)
 	{
-		if (obj_saucisse instanceof mvcSaucisse.Model)
+		if (obj_model_saucisse instanceof mvcSaucisse.Model)
 		{
-			if (obj_saucisse.isPourrie ())
+			if (obj_model_saucisse.isPourrie())
 			{
 				// Mauvaise Saucisse
 				this.obj_model_joueur.removeLife();
@@ -916,7 +921,7 @@ var mvcPlayer = {};
 				this.obj_view_joueur.playSound('boing');
 			}
 		} else
-			throw '\'obj_saucisse\' is not mvcSaucisse.Model object!';
+			throw '\'obj_model_saucisse\' is not mvcSaucisse.Model object!';
 	}
 }());
 
