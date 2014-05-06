@@ -273,24 +273,49 @@ function testModelConstructor()
 		"mvcSaucisse.Model(100) : Test of parameter validate"
 	);
 
+	throws ( function() {
+			var obj = new mvcSaucisse.Model('Player model', 'toto');
+		},
+		'\'Controller Collision\' is not a Object!',
+		"mvcSaucisse.Model('Player model', 'toto') : Test of parameter validate"
+	);
+
+	throws ( function() {
+			var obj = new mvcSaucisse.Model('Player model', {});
+		},
+		'No defined getView() method in \'Controller Collision\' object!',
+		"mvcSaucisse.Model('Player model', {}) : Test of parameter validate"
+	);
+
+	throws ( function() {
+			var obj = new mvcSaucisse.Model('Player model', {getView: function() {} });
+		},
+		'No defined getCollisionId() method in \'Controller Collision\' object!',
+		"mvcSaucisse.Model('Player model', {getView: function() {} }) : Test of parameter validate"
+	);
+	
 	{
-		var obj = new mvcSaucisse.Model();
-		strictEqual(obj.name, 'Model_default', "mvcSaucisse.Model() : Test of right \'name\' default value");
-		strictEqual(obj.x, 0, "mvcSaucisse.Model() : Test of right \'X\' default value");
-		strictEqual(obj.y, 0, "mvcSaucisse.Model() : Test of right \'Y\' default value");
-		strictEqual(obj.rotation, 0, "mvcSaucisse.Model() : Test of right \'rotation\' default value");
-		strictEqual(obj.vitesse, 4, "mvcSaucisse.Model() : Test of right \'vitesse\' default value");
-		strictEqual(obj.pourrie, false, "mvcSaucisse.Model() : Test of right \'pourrie\' default value");
+		var obj_controller = {getView: function() {}, getCollisionId: function() {} };
+		var obj = new mvcSaucisse.Model(undefined, obj_controller);
+		strictEqual(obj.name, 'Model_default', "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'name\' default value");
+		deepEqual(obj.parent, obj_controller, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'parent\'object");
+		strictEqual(obj.x, 0, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'X\' default value");
+		strictEqual(obj.y, 0, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'rotation\' default value");
+		strictEqual(obj.vitesse, 4, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'vitesse\' default value");
+		strictEqual(obj.pourrie, false, "mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} }) : Test of right \'pourrie\' default value");
 	}
 	
 	{
-		var obj = new mvcSaucisse.Model('model test');
-		strictEqual(obj.name, 'model test', "mvcSaucisse.Model('model test') : Test of right \'name\' value");
-		strictEqual(obj.x, 0, "mvcSaucisse.Model() : Test of right \'X\' default value");
-		strictEqual(obj.y, 0, "mvcSaucisse.Model() : Test of right \'Y\' default value");
-		strictEqual(obj.rotation, 0, "mvcSaucisse.Model() : Test of right \'rotation\' default value");
-		strictEqual(obj.vitesse, 4, "mvcSaucisse.Model() : Test of right \'vitesse\' default value");
-		strictEqual(obj.pourrie, false, "mvcSaucisse.Model() : Test of right \'pourrie\' default value");
+		var obj_controller = {getView: function() {}, getCollisionId: function() {} };
+		var obj = new mvcSaucisse.Model('model test',obj_controller);
+		strictEqual(obj.name, 'model test', "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'name\' value");
+		deepEqual(obj.parent, obj_controller, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'parent\'object");
+		strictEqual(obj.x, 0, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'X\' default value");
+		strictEqual(obj.y, 0, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'Y\' default value");
+		strictEqual(obj.rotation, 0, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'rotation\' default value");
+		strictEqual(obj.vitesse, 4, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'vitesse\' default value");
+		strictEqual(obj.pourrie, false, "mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} }) : Test of right \'pourrie\' default value");
 	}
 }
 
@@ -300,20 +325,20 @@ function testModelMethodpreparer()
 	console.log('testModelMethodpreparer\n-----------------------------------------');
 
 	{
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} });
 		ok(obj.preparer !== undefined, "mvcSaucisse.Model.preparer() : Check that this method is defined!");
 	}
 
 	throws( function () {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.preparer('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
-		"ModelSaucissepreparer('toto') : 'Test of parameter \'X\'!'"
+		"mvcSaucisse.Model.preparer('toto') : 'Test of parameter \'X\'!'"
 	);
 
 	throws( function() {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.preparer(10, 'toto');
 		},
 		'Parameter \'Y\' is not a number literal!',
@@ -321,7 +346,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.preparer(10, 10, 'toto');
 		},
 		'Parameter \'rotation\' is not a number literal!',
@@ -329,7 +354,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.preparer(10, 10, -6, 'toto');
 		},
 		'Parameter \'vitesse\' is not a number literal!',
@@ -337,7 +362,7 @@ function testModelMethodpreparer()
 	);
 
 	throws( function () {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.preparer(10, 10, -6, 6, 'toto');
 		},
 		'Parameter \'pourrie\' is not a boolean literal!',
@@ -345,7 +370,7 @@ function testModelMethodpreparer()
 	);
 
 	{
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer();
 		strictEqual(obj.x, 0, "mvcSaucisse.Model.preparer() : Test of right \'X\' default value");
 		strictEqual(obj.y, 0, "mvcSaucisse.Model.preparer() : Test of right \'Y\' default value");
@@ -355,7 +380,7 @@ function testModelMethodpreparer()
 	}
 	
 	{
-		var obj = new mvcSaucisse.Model('model test');
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer(10, 100, -6, 8, true);
 		strictEqual(obj.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
 		strictEqual(obj.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
@@ -370,12 +395,12 @@ function testModelMethodSet()
 	console.log('testModelMethodSet\n-----------------------------------------');
 
 	{
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		ok(obj.set !== undefined, "mvcSaucisse.Controller.set() : Check that this method is defined!");
 	}
 
 	throws( function () {
-			var obj = new mvcSaucisse.Model('model test' );
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.set('toto');
 		},
 		'Parameter \'X\' is not a number literal!',
@@ -383,13 +408,13 @@ function testModelMethodSet()
 	);
 
 	{
-		var obj = new mvcSaucisse.Model('model test');
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.set();
 		strictEqual(obj.x, 0, "mvcSaucisse.Model.set() : Test of right \'X\' default value");
 	}
 	
 	{
-		var obj = new mvcSaucisse.Model('model test');
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.set(10);
 		strictEqual(obj.x, 10, "mvcSaucisse.Model.set(10) : Test of right new \'X\' value");
 	}
@@ -400,12 +425,12 @@ function testModelMethodAdd()
 	console.log('testModelMethodAdd\n-----------------------------------------');
 
 	{
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		ok(obj.add !== undefined, "mvcSaucisse.Controller.add() : Check that this method is defined!");
 	}
 	
 	throws( function() {
-			var obj = new mvcSaucisse.Model();
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.add();
 		},
 		'\'Observer\' is not a Object!',
@@ -413,7 +438,7 @@ function testModelMethodAdd()
 	);
 
 	throws( function() {
-			var obj = new mvcSaucisse.Model();
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.add('toto');
 		},
 		'\'Observer\' is not a Object!',
@@ -421,7 +446,7 @@ function testModelMethodAdd()
 	);
 
 	throws( function() {
-			var obj = new mvcSaucisse.Model();
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.add(120);
 		},
 		'\'Observer\' is not a Object!',
@@ -430,7 +455,7 @@ function testModelMethodAdd()
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1'}
-			var obj = new mvcSaucisse.Model();
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.add(obj_observer);
 		},
 		'No \'prepare\' and \'display\' methods are defined!',
@@ -439,7 +464,7 @@ function testModelMethodAdd()
 
 	{
 		var obj_observer = {name: 'observer_1', prepare: function(){} }
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.add(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
@@ -450,7 +475,7 @@ function testModelMethodAdd()
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){} }
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.add(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
@@ -461,7 +486,7 @@ function testModelMethodAdd()
 
 	{
 		var obj_observer = {name: 'observer_1', display: function(){}, prepare: function(){} }
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.add(obj_observer);
 		deepEqual(
 			obj.coordonnee_notifier.obj_observer_lists,
@@ -472,7 +497,7 @@ function testModelMethodAdd()
 
 	throws( function() {
 			var obj_observer = {name: 'observer_1', prepare: function(){} }
-			var obj = new mvcSaucisse.Model();
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 			obj.add(obj_observer);
 			obj.add(obj_observer);
 		},
@@ -486,7 +511,7 @@ function testModelMethodGetters()
 	console.log('testModelMethodGetters\n-----------------------------------------');
 
 	{
-		var obj = new mvcSaucisse.Model('model test');
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		ok(obj.getX !== undefined, "mvcSaucisse.Model.getX() : Check that this method is defined!");
 		ok(obj.getY !== undefined, "mvcSaucisse.Model.getY() : Check that this method is defined!");
 		ok(obj.getRotation !== undefined, "mvcSaucisse.Model.getRotation() : Check that this method is defined!");
@@ -495,7 +520,7 @@ function testModelMethodGetters()
 	}
 
 	{
-		var obj = new mvcSaucisse.Model();
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer();
 		strictEqual(obj.getX(), 0, "mvcSaucisse.Model.preparer() : Test of right \'X\' default value");
 		strictEqual(obj.getY(), 0, "mvcSaucisse.Model.preparer() : Test of right \'Y\' default value");
@@ -505,7 +530,7 @@ function testModelMethodGetters()
 	}
 	
 	{
-		var obj = new mvcSaucisse.Model('model test');
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer(10, 100, -6, 8, true);
 		strictEqual(obj.getX(), 10, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'X\' value");
 		strictEqual(obj.getY(), 100, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'Y\' value");

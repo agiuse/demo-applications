@@ -448,9 +448,11 @@ activate mvcSaucisse.Model
 group Model Saucisse
 	mvcSaucisse.Model -> Controller : display(mvcSaucisse.Model)
 	activate Controller
-	Controller -[#red]> Exception : throw("'Collision' is not a Object!")
-	Controller -[#red]> Exception : throw("No defined getParent() method in 'Collision' object!")
-	Controller -[#red]> Exception : throw("No defined getCollisionId() method in 'Collision' object!")
+	Controller -[#red]> Exception : throw("'Model Collision' is not a Object!")
+	Controller -[#red]> Exception : throw("No defined getParent() method in 'Model Collision' object!")
+	Controller -[#red]> Exception : throw("'Controller Collision' is not a Object!")
+	Controller -[#red]> Exception : throw("No defined getView() method in 'Controller Collision' object!")
+	Controller -[#red]> Exception : throw("No defined getCollisionId() method in 'Controller Collision' object!")
 	Controller -[#red]> Exception : throw("'Saucisse' is unknow in the collision matrix!")
 	Controller -> mvcSaucisse.Model : getParent()
 	activate mvcSaucisse.Model
@@ -474,7 +476,7 @@ group Model Saucisse
 	deactivate View
 	Controller -> Controller : collisionWithSaucisse(mvcSaucisse.Model)
 	activate Controller
-	Controller -[#red]> Exception : throw("'obj_saucisse' is not mvcSaucisse.Model object")
+	Controller -[#red]> Exception : throw("'obj_model_saucisse' is not mvcSaucisse.Model object")
 	Controller -> mvcSaucisse.Model : isPourrie()
 	activate mvcSaucisse.Model
 	mvcSaucisse.Model --> Controller : (true/false)
@@ -892,7 +894,7 @@ var mvcPlayer = {};
 		var obj_collision_controller = obj_collision_model.getParent();
 		common.IsObjectControllerCollision(obj_collision_controller);
 		
-		var my_collision_id = obj_collision_model.getCollisionId();
+		var my_collision_id = obj_collision_controller.getCollisionId();
 		
 		if (my_collision_id in this.collision_matrix) {
 			if (this.obj_view_joueur.isCollision(obj_collision_controller.getView()))
