@@ -47,9 +47,9 @@ class mvcSaucisse.Model {
 	int x
 	int y
 	int rotation
-
 	int vitesse
-	Boolean pourrie
+	boolean pourrie
+	boolean collision_state = mvcSaucisse.NO_COLLISION
 	==
 	void Model(String name, Controller parent)
 	Controller getParent()
@@ -59,7 +59,8 @@ class mvcSaucisse.Model {
 	int getSpeed()
 	Boolean isPourrie()
 	void add(Object obj_observable)
-
+	void setCollideWith(boolean collision_state)
+	boolean isCollideWith()
 	__ notify __
 	void preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
 	void set(int x)
@@ -137,6 +138,7 @@ activate Observable
 Observable -[#red]> Exception : throw("'Observable' is not a Object!")
 Observable --> Model : <I><< observable created >></I>
 deactivate Observable
+note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 Model --> Controller : <I><< model created >></I>
 deactivate Model
 create View
@@ -189,6 +191,7 @@ Generator --> Controller : {x,y,rotation, vitesse, pourrie}
 deactivate Generator
 Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
 activate Model
+note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 loop  coordonnee notification
 	Model -> Observable : notify('prepare')
 	activate Observable
@@ -269,6 +272,7 @@ alt [ x > 0 ]
 			View --> Observable : <I><< Bitmap displayed >>
 		end
 		deactivate View
+
 		Observable -> mvcPlayer.Controller: display(Model)
 		activate mvcPlayer.Controller
 		group Player Controller
@@ -277,10 +281,70 @@ alt [ x > 0 ]
 			mvcPlayer.Controller --> Observable: <I><< Collision processing done >></I>
 		end
 		deactivate mvcPlayer.Controller
+
+		Observable -> mvcFire.Controller: display(Model)
+		activate mvcFire.Controller
+		group Fire Controller
+			mvcFire.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcFire.Controller -[#red]> Exception : throw("No getX or getY() method is defined in 'Observable'!")
+			mvcFire.Controller --> Observable: <I><< Collision processing done >></I>
+		end
+		deactivate mvcFire.Controller
+
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
 	Model --> Controller : <I><< update ended >></I>
+	deactivate Model
+	Controller -> Model : isCollideWith()
+	activate Model
+	Model --> Controller : mvcSaucisse.NO_COLLISION/mvcSaucisse.COLLISION_WITH_PLAYER
+	deactivate Model
+	alt Collide with Player
+		Controller -> Controller : preparer()
+		activate Controller
+		Controller -> Generator : iterator()
+		activate Generator
+		Generator --> Controller : {x,y,rotation, vitesse, pourrie}
+		deactivate Generator
+		Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
+		activate Model
+		note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
+		loop  coordonnee notification
+			Model -> Observable : notify('prepare')
+			activate Observable
+			Observable -> View : prepare(Model)
+			activate View
+			group Saucisse View
+				View -[#red]> Exception : throw("'Observable' is not a Object!")
+				View -[#red]> Exception : throw("No getX, getY(), getRotation() or isPourrie() method is defined in 'Observable'!")
+				View -> Model : getX()
+				activate Model
+				Model --> View : x
+				deactivate Model
+				View -> Model : getY()
+				activate Model
+				Model --> View : y
+				deactivate Model
+				View -> Model : getRotation()
+				activate Model
+				Model --> View : rotation
+				deactivate Model
+				View -> Model : isPourrie()
+				activate Model
+				Model --> View : pourrie (true/false)
+				deactivate Model
+				View --> Observable : <I><< Bitmap displayed >></I>
+			end	
+			deactivate View
+			Observable --> Model : <I><< notification ended >></I>
+			deactivate Observable
+		end
+		Model --> Controller : <I><< preparation ended >></I>
+		deactivate Model
+		deactivate Controller	
+	else no Collision 
+	end
 else [ x < 0 ]
 	Controller -> Controller : preparer()
 	activate Controller
@@ -290,6 +354,7 @@ else [ x < 0 ]
 	deactivate Generator
 	Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
 	activate Model
+	note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 	loop  coordonnee notification
 		Model -> Observable : notify('prepare')
 		activate Observable
@@ -331,6 +396,8 @@ deactivate Controller
 */
 
 var mvcSaucisse = {};
+mvcSaucisse.COLLISION_WITH_PLAYER=true;
+mvcSaucisse.NO_COLLISION=false;
 
 // ============================================================================================================================
 // Classe mvcSaucisse.View
@@ -408,6 +475,7 @@ var mvcSaucisse = {};
 		this.rotation = 0;	// default value
 		this.vitesse = 4;	// default value
 		this.pourrie = false;	// default value
+		this.collision_state = mvcSaucisse.NO_COLLISION;
 		console.log(this.name, ' Model is created!');
 	}
 
@@ -417,6 +485,7 @@ var mvcSaucisse = {};
 		this.y = common.HasNumberY(y, 0);
 		this.rotation = common.HasNumberRotation(rotation, 0);
 		this.vitesse = common.HasNumberSpeed(vitesse, 4);
+		this.collision_state = mvcSaucisse.NO_COLLISION;
 
 		this.pourrie = (pourrie===undefined) ? false : pourrie;
 		if (! (typeof this.pourrie==='boolean')) 
@@ -466,6 +535,19 @@ var mvcSaucisse = {};
 	{
 		return this.parent;
 	};
+
+	mvcSaucisse.Model.prototype.setCollideWith = function(collision_state)
+	{
+		if (typeof collision_state !== 'boolean')
+			throw 'Parameter \'collision state\' is not a boolean literal!';
+
+		this.collision_state = ( this.collision_state === mvcSaucisse.NO_COLLISION) ? collision_state : mvcSaucisse.COLLISION_WITH_PLAYER;
+	};
+
+	mvcSaucisse.Model.prototype.isCollideWith = function()
+	{
+		return this.collision_state;
+	};
 	
 }());
 // ============================================================================================================================
@@ -499,10 +581,16 @@ var mvcSaucisse = {};
 	mvcSaucisse.Controller.prototype.run = function()
 	{
 		var x = this.obj_model_saucisse.getX();
-		if ( x <= -this.obj_view_saucisse.image.width ) {
+		if ( x <= -this.obj_view_saucisse.image.width )
+		{	// la saucisse à travers l'ensemble de canvas
 			this.preparer();
 		} else {
+			// déplace la saucisse
 			this.obj_model_saucisse.set(x - this.obj_model_saucisse.getSpeed());
+			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLISION_WITH_PLAYER )
+			{ // la saucisse est entré en collision après le déplacement
+				this.preparer();
+			}
 		}
 	}
 
@@ -530,7 +618,7 @@ var mvcSaucisse = {};
 
 	mvcSaucisse.Controller.prototype.collisionWithPlayer = function(obj_collision)
 	{
-		this.preparer();
+		this.obj_model_saucisse.setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER);
 	}
 
 	mvcSaucisse.Controller.prototype.getCollisionId = function()

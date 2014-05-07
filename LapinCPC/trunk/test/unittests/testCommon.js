@@ -312,11 +312,25 @@ function testObjectModelCollision()
 		'No defined getParent() method in \'Model Collision\' object!',
 		"common.IsObjectModelCollision({}) : Test of parameter with object without getParent() method!"
 	);
+
+	throws( function() {
+			var r = common.IsObjectModelCollision({getParent: function() {} });
+		},
+		'No defined isCollideWith() method in \'Model Collision\' object!',
+		"common.IsObjectModelCollision({getParent: function() {}}) : Test of parameter with object without getParent() method!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {} });
+		},
+		'No defined setCollideWith() method in \'Model Collision\' object!',
+		"common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}}) : Test of parameter with object without getParent() method!"
+	);
 	
 	strictEqual(
-		common.IsObjectModelCollision({getParent: function() {}}),
+		common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}, setCollideWith : function() {}}),
 		true,
-		"common.IsObjectModelCollision({getParent: function() {}}) : check that result test with object collision parameter type is true"
+		"common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}, setCollideWith : function() {} }) : check that result test with object collision parameter type is true"
 	);
 	
 }

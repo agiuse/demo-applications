@@ -146,6 +146,7 @@ group create Observables x3
 	Model -> Observable : new(name, Model)
 	activate Observable
 	Observable -[#red]> Exception : throw("'Observable' is not a Object!")
+	Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 	Observable --> Model : <I><< observable created >></I>
 end
 deactivate Observable
@@ -248,8 +249,10 @@ participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
 participant Exception
+participant mvcTir.Controller  << (C,#ADD1B2) >>
+participant mvcTir.Model << (C,#ADD1B2) >>
 
-== Ship movements ==
+== Ship movements and fire ==
 Game -> Controller : run()
 activate Controller
 alt [38] : move to up
@@ -420,8 +423,33 @@ else stop rotation
 	deactivate Model
 end
 
-deactivate Controller
+Controller -> mvcTir.Controller : isFire()
+activate mvcTir.Controller
+mvcTir.Controller --> Controller : true/false
+deactivate mvcTir.Controller
+alt Fired in progress
+	Controller -> mvcTir.Model : moveToRight()
+	activate mvcTir.Model
+	mvcTir.Model --> Controller : <I><< movement ended >></I>
+	deactivate mvcTir.Model
+else No Fire
+	alt [32] Fire
+		Controller -> mvcTir.Controller : isFire()
+		activate mvcTir.Controller
+		mvcTir.Controller --> Controller : true/false
+		deactivate mvcTir.Controller
+		alt : Fired
+		else : Not Fired
+			Controller -> mvcTir.Controller : fire()
+			activate mvcTir.Controller
+			mvcTir.Controller --> Controller : <I><< launched fire >>
+			deactivate mvcTir.Controller
+		end
+	else No Event
+	end
+end
 Controller --> Game : <I><< movement processing ended >></I>
+deactivate Controller
 @enduml
 
 @startuml
@@ -474,14 +502,14 @@ group Model Saucisse
 	deactivate  mvcSaucisse.View
 	View --> Controller : true/false
 	deactivate View
-	Controller -> Controller : collisionWithSaucisse(mvcSaucisse.Model)
-	activate Controller
-	Controller -[#red]> Exception : throw("'obj_model_saucisse' is not mvcSaucisse.Model object")
-	Controller -> mvcSaucisse.Model : isPourrie()
-	activate mvcSaucisse.Model
-	mvcSaucisse.Model --> Controller : (true/false)
-	deactivate mvcSaucisse.Model
 	alt Collision is true
+		Controller -> Controller : collisionWithSaucisse(mvcSaucisse.Model)
+		activate Controller
+		Controller -[#red]> Exception : throw("'obj_model_saucisse' is not mvcSaucisse.Model object")
+		Controller -> mvcSaucisse.Model : isPourrie()
+		activate mvcSaucisse.Model
+		mvcSaucisse.Model --> Controller : (true/false)
+		deactivate mvcSaucisse.Model
 		alt bonne saucisse
 			Controller -> View : playSound('boing')
 			activate View
@@ -501,13 +529,13 @@ group Model Saucisse
 			Model --> Controller : <I><< Life Updated >></I>
 			deactivate Model
 		end
-		Controller -> mvcSaucisse.Controller : collisionWithPlayer()
-		activate mvcSaucisse.Controller
-		mvcSaucisse.Controller --> Controller : <I><< New Saucisse >></I>
-		deactivate mvcSaucisse.Controller
+		deactivate Controller
+		Controller -> mvcSaucisse.Model : setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER)
+		activate mvcSaucisse.Model
+		mvcSaucisse.Model --> Controller
+		deactivate mvcSaucisse.Model
 	else Collision is false
 	end
-	deactivate Controller
 	Controller --> mvcSaucisse.Model : <I><< notification ended >></I>
 	deactivate Controller	
 end

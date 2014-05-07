@@ -141,7 +141,13 @@
 		if ( obj_model_collision.getParent === undefined )
 			throw 'No defined getParent() method in \'Model Collision\' object!';
 
-		return true;
+		if ( obj_model_collision.isCollideWith === undefined )
+			throw 'No defined isCollideWith() method in \'Model Collision\' object!';
+
+		if ( obj_model_collision.setCollideWith === undefined )
+			throw 'No defined setCollideWith() method in \'Model Collision\' object!';
+
+			return true;
 	}
 
 	common.IsObjectControllerCollision = function(obj_controller_collision)
