@@ -41,6 +41,7 @@ function startTest()
 	test("Test des parametres de la méthode preparer()", testModelMethodpreparer);
 	test("Test des parametres de la méthode set()", testModelMethodSet);
 	test("Test des parametres des méthodes add()", testModelMethodAdd);
+	test("Test des parametres de la méthode setCollideWith()", testModelMethodSetCollideWith);
 	test("Test des parametres des getters", testModelMethodGetters);
 
 	module("Controller Saucisse tests", {
@@ -396,7 +397,7 @@ function testModelMethodSet()
 
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
-		ok(obj.set !== undefined, "mvcSaucisse.Controller.set() : Check that this method is defined!");
+		ok(obj.set !== undefined, "mvcSaucisse.Model.set() : Check that this method is defined!");
 	}
 
 	throws( function () {
@@ -426,7 +427,7 @@ function testModelMethodAdd()
 
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
-		ok(obj.add !== undefined, "mvcSaucisse.Controller.add() : Check that this method is defined!");
+		ok(obj.add !== undefined, "mvcSaucisse.Model.add() : Check that this method is defined!");
 	}
 	
 	throws( function() {
@@ -506,37 +507,99 @@ function testModelMethodAdd()
 	);
 }
 
+function testModelMethodSetCollideWith()
+{
+	console.log('testModelMethodSetCollideWith\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		ok(obj.setCollideWith !== undefined, "mvcSaucisse.Model.setCollideWith() : Check that this method is defined!");
+	}
+
+	throws( function() {
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+			obj.setCollideWith();
+		},
+		'Parameter \'collision state\' is not a boolean literal!',
+		"mvcSaucisse.Model.setCollideWith() : check that exception is thrown with no parameter!"
+	);
+
+	throws( function() {
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+			obj.setCollideWith(1);
+		},
+		'Parameter \'collision state\' is not a boolean literal!',
+		"mvcSaucisse.Model.setCollideWith(1) : check that exception is thrown with no boolean parameter!"
+	);
+
+	throws( function() {
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+			obj.setCollideWith('true');
+		},
+		'Parameter \'collision state\' is not a boolean literal!',
+		"mvcSaucisse.Model.setCollideWith('true') : check that exception is thrown with no boolean parameter!"
+	);
+	
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		obj.setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER);
+		equal(obj.collision_state, mvcSaucisse.COLLISION_WITH_PLAYER, "obj.setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER) : check that collision state is equal to 'mvcSaucisse.COLLISION_WITH_PLAYER'");
+	}
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		obj.setCollideWith(mvcSaucisse.NO_COLLISION);
+		equal(obj.collision_state, mvcSaucisse.NO_COLLISION, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.NO_COLLISION'");
+	}
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		obj.collision_state = mvcSaucisse.COLLISION_WITH_PLAYER;
+		obj.setCollideWith(mvcSaucisse.NO_COLLISION);
+		equal(obj.collision_state, mvcSaucisse.COLLISION_WITH_PLAYER, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.COLLISION_WITH_PLAYER'");
+	}	
+}
+
 function testModelMethodGetters()
 {
 	console.log('testModelMethodGetters\n-----------------------------------------');
 
 	{
-		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		var obj_parent = {getView: function() {}, getCollisionId: function() {} };
+		var obj = new mvcSaucisse.Model('model test', obj_parent );
+		ok(obj.getParent !== undefined, "mvcSaucisse.Model.getParent() : Check that this method is defined!");
 		ok(obj.getX !== undefined, "mvcSaucisse.Model.getX() : Check that this method is defined!");
 		ok(obj.getY !== undefined, "mvcSaucisse.Model.getY() : Check that this method is defined!");
 		ok(obj.getRotation !== undefined, "mvcSaucisse.Model.getRotation() : Check that this method is defined!");
 		ok(obj.getSpeed !== undefined, "mvcSaucisse.Model.getSpeed() : Check that this method is defined!");
 		ok(obj.isPourrie !== undefined, "mvcSaucisse.Model.isPourrie() : Check that this method is defined!");
+		ok(obj.isCollideWith !== undefined, "mvcSaucisse.Model.isCollideWith() : Check that this method is defined!");
 	}
 
 	{
-		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		var obj_parent = {getView: function() {}, getCollisionId: function() {} };
+		var obj = new mvcSaucisse.Model('model test', obj_parent );
+		strictEqual(obj.getParent(), obj_parent, "mvcSaucisse.Model.preparer() : Test of right \'Parent\' value");
 		obj.preparer();
 		strictEqual(obj.getX(), 0, "mvcSaucisse.Model.preparer() : Test of right \'X\' default value");
 		strictEqual(obj.getY(), 0, "mvcSaucisse.Model.preparer() : Test of right \'Y\' default value");
 		strictEqual(obj.getRotation(), 0, "mvcSaucisse.Model.preparer() : Test of right \'rotation\' default value");
 		strictEqual(obj.getSpeed(), 4, "mvcSaucisse.Model.preparer() : Test of right \'vitesse\' default value");
 		strictEqual(obj.isPourrie(), false, "mvcSaucisse.Model() : Test of right \'pourrie\' default value");
+		strictEqual(obj.isCollideWith(), false, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'Collide With\' value");
 	}
 	
 	{
-		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		var obj_parent = {getView: function() {}, getCollisionId: function() {} };
+		var obj = new mvcSaucisse.Model('model test', obj_parent );
+		strictEqual(obj.getParent(), obj_parent, "mvcSaucisse.Model.preparer() : Test of right \'Parent\' value");
 		obj.preparer(10, 100, -6, 8, true);
 		strictEqual(obj.getX(), 10, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'X\' value");
 		strictEqual(obj.getY(), 100, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'Y\' value");
 		strictEqual(obj.getRotation(), -6, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'rotation\' value");
 		strictEqual(obj.getSpeed(), 8, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'vitesse\' value");
 		strictEqual(obj.isPourrie(), true, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'pourrie\' value");
+		strictEqual(obj.isCollideWith(), false, "mvcSaucisse.Model.preparer(10, 10, -6, 8, true) : Test of right \'Collide With\' value");
 	}
 
 }
@@ -619,7 +682,6 @@ function testControllerMethodpreparer()
 	
 	{
 		obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator,'controller test');
-		ok(obj.preparer !== undefined, "mvcSaucisse.Controller.preparer() : Check that this method is defined!");
 		strictEqual(obj.obj_model_saucisse.getX(), 108, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
 		strictEqual(obj.obj_model_saucisse.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
 		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
@@ -639,6 +701,7 @@ function testControllerMethodRun()
 
 	{	// move to left
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		// {x:8, y:150, rotation:6, vitesse:8, pourrie:true}
 		obj.run();
 		strictEqual(obj.obj_model_saucisse.getX(), 0, "right move to left from 8 to 2");
 		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
@@ -654,13 +717,34 @@ function testControllerMethodRun()
 		obj.run();	// from -48 to -56
 		obj.run();	// from -56 to -64
 		obj.run();	// from -64 to 108
+		// {x:108, y:150, rotation:-10, vitesse:6, pourrie:false}
 		obj.run();	// from 108 to 102
-		strictEqual(obj.obj_model_saucisse.getX(), 102, "new rotation value after 11th run cycle");
+		strictEqual(obj.obj_model_saucisse.getX(), 102, "new 'x' value after 11th run cycle");
 		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 11th run cycle");
 		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "no change rotation value after 11th run cycle");
 		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "no change speed value after 11th run cycle");
 		strictEqual(obj.obj_model_saucisse.isPourrie(), false, "no change 'pourrie' value after 11th run cycle");
+	}
 
+	{	// collision
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		// {x:108, y:150, rotation:-10, vitesse:6, pourrie:false}
+		obj.run();
+		strictEqual(obj.obj_model_saucisse.getX(), 102, "right move to left from 108 to 102");
+		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model_saucisse.isPourrie(), false, "no change 'pourrie' value after 1 first run cycle");
+		obj.run();	// from 100 to 92
+		obj.run();	// from 92 to 86
+		obj.obj_model_saucisse.setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER);
+		// {x:108, y:250, rotation:10, vitesse:4, pourrie:false}
+		obj.run();	// from 86 to 108
+		strictEqual(obj.obj_model_saucisse.getX(), 108, "new 'x' value after 4th run cycle");
+		strictEqual(obj.obj_model_saucisse.getY(), 250, "new 'Y' value after 4th run cycle");
+		strictEqual(obj.obj_model_saucisse.getRotation(), 10, "new 'rotation' value after 4th run cycle");
+		strictEqual(obj.obj_model_saucisse.getSpeed(), 4, "new 'speed' value after 5th run cycle");
+		strictEqual(obj.obj_model_saucisse.isPourrie(), false, "new 'pourrie' value after 4th run cycle");
 	}
 }
 
@@ -786,20 +870,11 @@ function testControllerMethodcollisionWithPlayer()
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
 		obj.collisionWithPlayer();
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'X\' value");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'Y\' value");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'rotation\' value");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'vitesse\' value");
-		strictEqual(obj.obj_model_saucisse.isPourrie(), false, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'pourrie\'  value");
+		strictEqual(
+			obj.obj_model_saucisse.isCollideWith(),
+			mvcSaucisse.COLLISION_WITH_PLAYER,
+			"mvcSaucisse.Controller.collisionWithPlayer() : check that collisionWithPlayer() change collision state to 'mvcSaucisse.COLLISION_WITH_PLAYER' value"
+		);
 	}
-	
-	{
-		obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator,'controller test');
-		obj.collisionWithPlayer();
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'X\' value");
-		strictEqual(obj.obj_model_saucisse.getY(), 250, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'Y\' value");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 10, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'rotation\' value");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 4, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'vitesse\' value");
-		strictEqual(obj.obj_model_saucisse.isPourrie(), false, "mvcSaucisse.Controller.collisionWithPlayer() : Test of right \'pourrie\'  value");
-	}
+
 }
