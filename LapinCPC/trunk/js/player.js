@@ -248,17 +248,16 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
+participant mvcFire.Controller << (C,#ADD1B2) >>
 participant Exception
-participant mvcFire.Controller  << (C,#ADD1B2) >>
-participant mvcFire.Model << (C,#ADD1B2) >>
 
 == Ship movements and fire ==
 Game -> Controller : run()
 activate Controller
 alt [38] : move to up
-	Controller -> Model : moveToUp()
-	activate Model
-	Model -> Model : set(x,y,rotation)
+	Controller -> Controller: moveToUp()
+	activate Controller
+	Controller -> Model : set(x,y,rotation)
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('display')
@@ -267,6 +266,7 @@ alt [38] : move to up
 		activate View
 		group Player View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -285,13 +285,13 @@ alt [38] : move to up
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	deactivate Model
 	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
+	deactivate Controller
 else [40] : move to down
-	Controller -> Model : moveToDown()
-	activate Model
-	Model -> Model : set(x,y,rotation)
+	Controller -> Controller: moveToDown()
+	activate Controller
+	Controller -> Model : set(x,y,rotation)
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('display')
@@ -300,6 +300,7 @@ else [40] : move to down
 		activate View
 		group Player View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -318,14 +319,14 @@ else [40] : move to down
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	deactivate Model
 	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
+	deactivate Controller
 end
 alt [37] move to left
-	Controller -> Model : moveToLeft()
-	activate Model
-	Model -> Model : set(x,y,rotation)
+	Controller -> Controller: moveToLeft()
+	activate Controller
+	Controller -> Model : set(x,y,rotation)
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('display')
@@ -334,6 +335,7 @@ alt [37] move to left
 		activate View
 		group Player View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -352,13 +354,13 @@ alt [37] move to left
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	deactivate Model
 	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
+	deactivate Controller
 else [39] move to right
-	Controller -> Model : moveToRight()
-	activate Model
-	Model -> Model : set(x,y,rotation)
+	Controller -> Controller : moveToRight()
+	activate Controller
+	Controller -> Model : set(x,y,rotation)
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('display')
@@ -367,6 +369,7 @@ else [39] move to right
 		activate View
 		group Player View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -385,21 +388,22 @@ else [39] move to right
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	deactivate Model
 	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
+	deactivate Controller
 else stop rotation
-	Controller -> Model : annulerRotation()
+	Controller -> Controller : annulerRotation()
+	activate Controller
+	Controller -> Model : set(x,y,rotation)
 	activate Model
-	Model -> Model : set(x,y,rotation)
-	activate Model
-		loop  coordonnee notification
+	loop  coordonnee notification
 		Model -> Observable : notify('display')
 		activate Observable
 		Observable -> View : display(Model)
 		activate View
 		group Player View
 			View -[#red]> Exception : throw("'Observable' is not a Object!")
+			View -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
 			View -> Model : getX()
 			activate Model
 			Model --> View : x
@@ -418,33 +422,36 @@ else stop rotation
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
 	end
-	deactivate Model
 	Model --> Controller : <I><< movement ended >></I>
 	deactivate Model
+	deactivate Controller
 end
 
 Controller -> mvcFire.Controller : isFire()
 activate mvcFire.Controller
-mvcTir.Controller --> Controller : mvcFire.FIRE_ENABLED / mvcFire.FIRE_DISABLED
-deactivate mvcTir.Controller
+mvcFire.Controller --> Controller : mvcFire.FIRE_ENABLED / mvcFire.FIRE_DISABLED
+deactivate mvcFire.Controller
 alt Fired in progress
-	Controller -> mvcFire.Model : moveToRight()
-	activate mvcFire.Model
-	mvcFire.Model --> Controller : <I><< movement ended >></I>
-	deactivate mvcFire.Model
+note over Controller : fire_status is equal to mvcFire.FIRE_ENABLED
+	Controller -> mvcFire.Controller : moveToRight()
+	activate mvcFire.Controller
+	mvcFire.Controller --> Controller : <I><< movement ended >></I>
+	deactivate mvcFire.Controller
 else No Fire
+note over Controller : fire_status is equal to mvcFire.FIRE_DISABLED
 	alt [32] Fire
-		Controller -> mvcFire.Controller : isFire()
+		Controller -> Model : getX()
+		activate Model
+		Model --> Controller : x
+		deactivate Model
+		Controller -> Model : getY()
+		activate Model
+		Model --> Controller : y
+		deactivate Model
+		Controller -> mvcFire.Controller : fire(x, y)
 		activate mvcFire.Controller
-		mvcFire.Controller --> Controller : true/false
+		mvcFire.Controller --> Controller : <I><< launched fire >>
 		deactivate mvcFire.Controller
-		alt : Fired
-		else : Not Fired
-			Controller -> mvcTir.Controller : fire()
-			activate mvcTir.Controller
-			mvcTir.Controller --> Controller : <I><< launched fire >>
-			deactivate mvcTir.Controller
-		end
 	else No Event
 	end
 end
@@ -927,9 +934,6 @@ var mvcPlayer = {};
 		if (my_collision_id in this.collision_matrix) {
 			if (this.obj_view_joueur.isCollision(obj_collision_controller.getView()))
 			{		
-				// remarque : l'ordre d'exécution est important :
-				// 1 : le player  
-				// 2 : la saucisse
 				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
 
 				if  ( obj_collision_controller.collisionWithPlayer !== undefined )
@@ -1006,7 +1010,7 @@ class mvcFire.Model {
 	--
 	int x = 10000
 	int y = 0
-	int vitesse = 6
+	int vitesse = 16
 	Observable coordonnee_notifier
 	==
 	void Model(String name)
@@ -1017,8 +1021,8 @@ class mvcFire.Model {
 	int isFired()
 	__ notify __
 	void preparer()
-	void fire(int x, int y , int rotation)
-	void moveToRight()
+	void fire(int x, int y , int vitesse)
+	void set()
 }
 
 mvcFire.Model *-- Observable : coordonnee_notifier
@@ -1030,13 +1034,11 @@ class mvcFire.Controller {
 	ArrayHashage<Object> collision_matrix
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	boolean isFired()
 	__ notifier __
-	void preparer(int x, int y , int vitesse)
+	void fire(int x, int y , int vitesse)
 	__ execution __
-	void fire()
-	__ Collision __
-	void display(Object obj_collision_model)
-	void collisionWithSaucisse(Object obj_collision_controller)
+	void moveToRight()
 }
 
 mvcFire.Controller *-- mvcFire.View
@@ -1044,7 +1046,6 @@ mvcFire.Controller *-- mvcFire.Model
 mvcFire.Model .. mvcFire.View : "observable/observer"
 
 @enduml
-
 @startuml
 title <b>MVC Fire</b> sequence diagram
 hide footbox
@@ -1087,25 +1088,9 @@ Observable -[#red]> Exception : throw("'Observable' is not a Object!")
 Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
 Observable --> Model : <I><< observable created >></I>
 deactivate Observable
-Model --> Controller : <I><< model created >></I>
-deactivate Model
-
-== Subscription ==
-Controller -> Model : add(View)
-activate Controller
-Model -> Observable : add(View)
-activate Model
-activate Observable
-Observable -[#red]> Exception : throw("'Observer' is not a Object!")
-Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
-Observable -[#red]> Exception : throw("'Observer' is already added!")
-Observable --> Model : <I><< observer entered >></I>
-deactivate Observable
-Model --> Controller : <I><< observer entered >></I>
-deactivate Model
 
 == Preparation ==
-Controller -> Model : preparer()
+Model -> Model : preparer()
 activate Model
 loop  coordonnee notification
 	Model -> Observable : notify('prepare')
@@ -1130,7 +1115,22 @@ loop  coordonnee notification
 	Observable --> Model : <I><< notification ended >></I>
 	deactivate Observable
 end
-Model --> Controller : <I><< fire ready >></I>
+deactivate Model
+Model --> Controller : <I><< model created >></I>
+deactivate Model
+
+== Subscription ==
+Controller -> Model : add(View)
+activate Controller
+Model -> Observable : add(View)
+activate Model
+activate Observable
+Observable -[#red]> Exception : throw("'Observer' is not a Object!")
+Observable -[#red]> Exception : throw("No 'prepare' and 'display' methods are defined!")
+Observable -[#red]> Exception : throw("'Observer' is already added!")
+Observable --> Model : <I><< observer entered >></I>
+deactivate Observable
+Model --> Controller : <I><< observer entered >></I>
 deactivate Model
 Controller --> mvcPlayer.Controller :  <I><< creation ended >></I>
 deactivate Controller
@@ -1147,22 +1147,14 @@ participant Model << (C,#ADD1B2) >>
 participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
-participant mvcPlayer.Model << (C,#ADD1B2) >>
 participant Exception
 
 == Fire ==
-mvcPlayer.Controller -> Controller : fire()
+mvcPlayer.Controller -> Controller : fire(mvcPlayer.Model.getX(), mvcPlayer.Model.getY())
 activate Controller
-Controller -> mvcPlayer.Model : getX()
-activate mvcPlayer.Model
-mvcPlayer.Model --> Controller : x
-deactivate mvcPlayer.Model
-Controller -> mvcPlayer.Model : getY()
-activate mvcPlayer.Model
-mvcPlayer.Model --> Controller : y
-deactivate mvcPlayer.Model
 Controller -> Model : fire(x,y)
 activate Model
+note over Model: fire_state is setting to enable
 loop  coordonnee notification
 	Model -> Observable : notify('prepare')
 	activate Observable
@@ -1170,6 +1162,11 @@ loop  coordonnee notification
 	activate View
 	group Fire View
 		View -[#red]> Exception : throw("'Observable' is not a Object!")
+		View -[#red]> Exception : throw("No isFired() method is defined in 'Observable'!")
+		View -> Model : isFired()
+		activate Model
+		Model --> View : mvcFire.FIRE_ENABLED
+		deactivate Model
 		View -> Model : getX()
 		View -[#red]> Exception : throw("No getX() method is defined in 'Observable'!")
 		activate Model
@@ -1197,29 +1194,71 @@ deactivate Controller
 
 
 == Fire Movement ==
-mvcPlayer.Controller -> Controller : moveToRight()
+mvcPlayer.Controller -> Controller: moveToRight()
 activate Controller
-alt : Fired
-	activate Model
-	loop  coordonnee notification
-		Model -> Observable : notify('display')
-		activate Observable
-		Observable -> View : display(Model)
-		activate View
-		group Fire View
-			View --> Observable :  <I><< Bitmap displayed >></I>
-		end
-		deactivate View
-		Observable --> Model : <I><< notification ended >></I>
-		deactivate Observable
-	end
-	deactivate Model
-	Model --> Controller : <I><< movement ended >></I>
-	deactivate Model
-else : Not Fired
-end
+Controller -> Model : isFire()
+activate Model
+Model --> Controller : mvcFire.FIRE_ENABLED / mvcFire.FIRE_DISABLED
 deactivate Model
-Controller --> mvcPlayer.Controller :  <I><< movement ended >></I>
+alt Fired : fire state is equal to mvcFire.FIRE_ENABLED
+	Controller -> View : isOverCanvasTopRight()
+	activate View
+	View --> Controller : true/false
+	deactivate View
+	alt Fire over Canvas
+		Controller -> Model : preparer()
+		activate Model
+		note over Model: fire_state is setting to disable
+		loop  coordonnee notification
+			Model -> Observable : notify('prepare')
+			activate Observable
+			Observable -> View : prepare(Model)
+			activate View
+			group Fire View
+				View -[#red]> Exception : throw("'Observable' is not a Object!")
+				View -[#red]> Exception : throw("No isFired() method is defined in 'Observable'!")
+				View -> Model : isFired()
+				activate Model
+				Model --> View : mvcFire.FIRE_DISABLED
+				deactivate Model
+				View --> Observable : <I><< Bitmap is not displayed into the canvas >></I>
+			end
+			deactivate View
+			Observable --> Model : <I><< notification ended >></I>
+			deactivate Observable
+		end
+		Model --> Controller : <I><< fire ended >></I>
+		deactivate Model
+	else Fire into Canvas
+		Controller -> Model : getX()
+		activate Model
+		Model --> Controller: x
+		deactivate Model
+		Controller -> Model : getSpeed()
+		activate Model
+		Model --> Controller : vitesse
+		deactivate Model
+		Controller -> Model : set(x - vitesse)
+		activate Model
+		loop  coordonnee notification
+			Model -> Observable : notify('display')
+			activate Observable
+			Observable -> View : display(Model)
+			activate View
+			group Fire View
+				View --> Observable :  : <I><< Bitmap displayed >></I>
+			end
+			deactivate View
+			Observable --> Model : <I><< notification ended >></I>
+			deactivate Observable
+		end
+		Model --> Controller : <I><< movement ended >></I>
+		deactivate Model
+	end
+else Not Fired : fire state is equal to mvcFire.FIRE_DISABLED
+	Controller -> Exception : throw("Impossible to call 'moveToRight()' method while no fire!")
+end
+Controller --> mvcPlayer.Controller :  <I><< fire processing ended >></I>
 deactivate Controller
 @enduml
 
@@ -1328,6 +1367,10 @@ mvcFire.FIRE_DISABLED = false;
 		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, this.obj_stage.sound_bruitage );
 	}
 
+	mvcFire.View.prototype.isOverCanvasTopRight = function()
+	{
+		return ( this.x >= this.obj_stage.canvas.width );
+	}
 }());
 
 // ============================================================================================================================
@@ -1399,4 +1442,74 @@ mvcFire.FIRE_DISABLED = false;
 		return this.fire_state;
 	}
 
+}());
+
+// ============================================================================================================================
+// Classe mvcPlayer.Controller
+// Cette classe lie l'objet mvcPlayer.View et mvcPlayer.Model via un patron "Observeur/Observer"
+// ============================================================================================================================
+;( function()
+{
+	'use strict';
+
+	mvcFire.Controller = function(obj_stage, obj_queue, name) 
+	{
+		this.obj_stage = common.HasObjectStage(obj_stage);
+		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		this.name = common.HasStringName(name, 'Controller_default');
+	
+		console.log(this.name, ' Controller is being created...');
+		this.obj_view_fire = new mvcFire.View(this.obj_stage, this.obj_queue, this.name+'_view');
+		this.obj_model_fire = new mvcFire.Model(this.name + '_model');
+		this.obj_model_fire.add( this.obj_view_fire );
+
+		this.collision_matrix = {};
+	 	console.log(this.name, ' Controller is created!');
+	}
+
+	mvcFire.Controller.prototype.isFired = function()
+	{
+		return this.obj_model_fire.isFired();
+	}
+	
+	mvcFire.Controller.prototype.fire = function(x, y, vitesse)
+	{
+		this.obj_model_fire.fire(x, y ,vitesse);
+		this.obj_view_fire.playSound('panpan');
+	}
+
+	mvcFire.Controller.prototype.moveToRight = function()
+	{
+		if ( ! this.obj_model_fire.isFired() )
+			throw('Impossible to call \'moveToRight()\' method while no fire!');
+
+		if ( this.obj_view_fire.isOverCanvasTopRight() )
+		{
+			this.obj_model_fire.preparer();	// fin du tir
+		} else {
+			this.obj_model_fire.set( this.obj_model_fire.getX() + this.obj_model_fire.getSpeed());		// déplacement du tir
+		}
+	}
+	
+	mvcFire.Controller.prototype.display = function(obj_collision_model)
+	{
+		common.IsObjectModelCollision(obj_collision_model);
+
+		var obj_collision_controller = obj_collision_model.getParent();
+		common.IsObjectControllerCollision(obj_collision_controller);
+		
+		var my_collision_id = obj_collision_controller.getCollisionId();
+		
+		if (my_collision_id in this.collision_matrix)
+		{
+			if ( this.obj_view_fire.isCollision( obj_collision_controller.getView() ) )
+			{		
+				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
+
+				if  ( obj_collision_controller.collisionWithFire !== undefined )
+					obj_collision_controller.collisionWithFire(this);
+			}
+		} else
+			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
+	}	
 }());

@@ -1,14 +1,16 @@
 "use strict";
 
 var mvcSaucisse = {};
-mvcSaucisse.Model = function(pourrie,x,y) { this.pourrie = pourrie; this.x = x; this.y = y; };
+mvcSaucisse.Model = function(pourrie,x,y) { this.pourrie = pourrie; this.x = x; this.y = y; this.collision_state = false; };
 mvcSaucisse.Model.prototype.isPourrie = function() {  return this.pourrie; };
 mvcSaucisse.Model.prototype.getX = function() { return this.x; };
 mvcSaucisse.Model.prototype.getY = function() { return this.y; };
 mvcSaucisse.Model.prototype.getView = function() { return this; };
 mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
 mvcSaucisse.Model.prototype.getParent = function() { return this; };
-
+mvcSaucisse.Model.prototype.isCollideWith = function() { return this.collision_state; };
+mvcSaucisse.Model.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
+mvcSaucisse.Model.prototype.collisionWithPlayer = function() { this.setCollideWith(true); }
 
 // ===========================================================================================
 function startTest()
@@ -1550,18 +1552,34 @@ function testControllerMethodDisplay()
 
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;} });
+			obj.display({x:10,y:10, getParent : function() { return this;}})
 		},
-		'No defined getView() method in \'Controller Collision\' object!',
-		"mvcPlayer.Controller.display({x:10,y:10,getParent : function() { return this;}}) : Check that exception is up with it is not an Collision Object!"
+		'No defined isCollideWith() method in \'Model Collision\' object!',
+		"mvcPlayer.Controller.display({x:10,y:10}) : Check that exception is up when it is not an Observable object!"
 	);
 
 	throws( function() {
 			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, getView : 100});
+			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}})
+		},
+		'No defined setCollideWith() method in \'Model Collision\' object!',
+		"mvcPlayer.Controller.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}}) : Check that exception is up when it is not an Observable object!"
+	);
+
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;} });
+		},
+		'No defined getView() method in \'Controller Collision\' object!',
+		"mvcPlayer.Controller.display({x:10,y:10,getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;}}) : Check that exception is up with it is not an Collision Object!"
+	);
+
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;}, getView : 100});
 		},
 		'No defined getCollisionId() method in \'Controller Collision\' object!',
-		"mvcPlayer.Controller.display({x:10,y:10, getParent : function() { return this;},getView : 100}) : Check that exception is up with it is not an Collision Object!"
+		"mvcPlayer.Controller.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;}, getView : 100}) : Check that exception is up with it is not an Collision Object!"
 	);
 
 	throws( function() {
