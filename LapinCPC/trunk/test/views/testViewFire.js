@@ -138,7 +138,7 @@ function test2()
 	obj_stage.update();
 
 	mvcFire.FIRE_CANVAS_HIDE = 600;
-	var obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "View_tir");
+	var obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "Controller Tir");
 	console.log(" Controller Tir creation is done.");
 	
 	obj_stage.update();
@@ -162,7 +162,7 @@ function test3()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	var obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "View_tir");
+	var obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "Controller Tir");
 	console.log(" Controller Tir creation is done.\nView-Score creation is in progress.");
 	
 	obj_controller_tir.fire(8,90,6);
@@ -189,7 +189,7 @@ function test4()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "View_tir");
+	obj_controller_tir = new mvcFire.Controller(obj_stage, obj_queue, "Controller Tir");
 	console.log(" Controller Tir creation is done.\nView-Score creation is in progress.");
 
 	obj_player = new ViewPlayer(obj_stage,obj_queue,8,190);
