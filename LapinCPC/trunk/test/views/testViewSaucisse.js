@@ -75,11 +75,8 @@ function startTest()
 
 	obj_queue.loadManifest(
 		[
-			{src:"./images/joueur.png", id:"player0"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
-			{src:"./sounds/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
-			{src:"./sounds/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 		]
 	);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
@@ -98,7 +95,6 @@ function runTest()
 	test("Affichage d'une bonne et mauvaise saucisse", test2);
 	test3();
 	test4();
-	test5();
 	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
@@ -248,38 +244,4 @@ function test4()
 	{
 		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator);
 	}
-}
-
-function test5()
-{
-	console.log("**** Test 5 : Collision entre les saucisses et le vaisseau\n --------------------------------------------");
-
-	var obj_text =  new createjs.Text("Test MVC Saucisse 5 : MVC Controller Saucisses + random", "24px Arial", "#00000");
-	obj_text.x = 0 ; obj_text.y = 400;
-	obj_stage.addChild( obj_text );
-	obj_stage.update();
-	
-	var obj_generator = new Generator('static');
-	obj_generator.elt_lists = [
-		{ x:700, y:450, rotation:0, vitesse:4, pourrie:true},
-		{ x:700, y:460, rotation:0, vitesse:4, pourrie:false},
-		{ x:700, y:440, rotation:0, vitesse:6, pourrie:false},
-	];
-	
-	obj_lists['player'] = new mvcPlayer.Controller(obj_stage, obj_queue, "Player controller");
-
-	for (var i =10; i < 12 ; i++)
-	{
-		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "Saucisse"+i);
-		obj_lists['saucisse'+i].coordonneeHasObservedBy(obj_lists['player']);
-	}
-	
-	obj_lists['player'].run = function() {
-		if ( this.obj_model_joueur.getX() > 500 )
-			this.obj_model_joueur.set(50,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-		else
-			this.obj_model_joueur.set(this.obj_model_joueur.getX() + this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-	}
-	obj_lists['player'].collision_matrix['Saucisse'] = { collisionWithObject : obj_lists['player'].collisionWithSaucisse};
-	obj_lists['player'].preparer(50,440,0,6);
 }

@@ -1,17 +1,5 @@
 "use strict";
 
-var mvcSaucisse = {};
-mvcSaucisse.Model = function(pourrie,x,y) { this.pourrie = pourrie; this.x = x; this.y = y; };
-mvcSaucisse.Model.prototype.isPourrie = function() {  return this.pourrie; };
-mvcSaucisse.Model.prototype.getX = function() { return this.x; };
-mvcSaucisse.Model.prototype.getY = function() { return this.y; };
-mvcSaucisse.Model.prototype.getView = function() { return this; };
-mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
-mvcSaucisse.Model.prototype.getParent = function() { return this; };
-mvcSaucisse.Model.prototype.isCollideWith = function() { return this.collision_state; };
-mvcSaucisse.Model.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
-mvcSaucisse.Model.prototype.collisionWithFire = function() { this.setCollideWith(true); }
-
 // ===========================================================================================
 function startTest()
 {
@@ -37,9 +25,6 @@ function startTest()
 	test("Test des parametres de la méthode Fire()", testControllerMethodFire);
 	test("Test des parametres de la méthode moveToRight()", testControllerMethodMoveToRight);
 	test("Test des parametres de la methode isFired()", testControllerMethodisFired);
-
-	module("Controller Fire tests and Fire collisions");
-	test("Test des parametres de la méthode display()", testControllerMethodDisplay);
 }
 
 // -----------------------------------------------------------------
@@ -79,7 +64,7 @@ function testViewConstructor()
 		strictEqual(obj.obj_stage, obj_stage,"mvcFire.View(obj_stage, obj_queue) : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcFire.View(obj_stage, obj_queue) : LoadQueue ok");
 		strictEqual(obj.name, 'View_default',"mvcFire.View(obj_stage, obj_queue) : name default value ok");
-		strictEqual(obj.x, 10000, "mvcFire.View(obj_stage, obj_queue) : Check that x value is equal to 10000!");
+		strictEqual(obj.x, mvcFire.FIRE_CANVAS_HIDE, "mvcFire.View(obj_stage, obj_queue) : Check that x value is equal to mvcFire.FIRE_CANVAS_HIDE!");
 		strictEqual(obj.y, 0, "mvcFire.View(obj_stage, obj_queue) : Check that y value is equal to 0!");
 		strictEqual(obj.rotation, 0, "mvcFire.View(obj_stage, obj_queue, 'view test') : Check that rotation value is equal to 0");
 	}
@@ -91,7 +76,7 @@ function testViewConstructor()
 		strictEqual(obj.obj_stage, obj_stage,"mvcFire.View(obj_stage, obj_queue, 'view test') : Stage ok");
 		strictEqual(obj.obj_queue, obj_queue,"mvcFire.View(obj_stage, obj_queue, 'view test') : LoadQueue ok");
 		strictEqual(obj.name, 'view test',"mvcFire.View(obj_stage, obj_queue, 'view test') :  new name value ok");
-		strictEqual(obj.x, 10000, "mvcFire.View(obj_stage, obj_queue, 'view test') : Check that x value is equal to 10000!");
+		strictEqual(obj.x, mvcFire.FIRE_CANVAS_HIDE, "mvcFire.View(obj_stage, obj_queue, 'view test') : Check that x value is equal to mvcFire.FIRE_CANVAS_HIDE!");
 		strictEqual(obj.y, 0, "mvcFire.View(obj_stage, obj_queue, 'view test') : Check that y value is equal to 0!");
 		strictEqual(obj.rotation, 0, "mvcFire.View(obj_stage, obj_queue, 'view test') : Check that rotation value is equal to 0!");
 	}
@@ -143,7 +128,8 @@ function testViewMethodprepare()
 			obj.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; } });
 		},
 		'No getX() method is defined in \'Observable\'!',
-		"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; } }) : Check that exception is thrown when observable object doesn't have a getX() method!"
+		"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; } })" +
+			": Check that exception is thrown when observable object doesn't have a getX() method!"
 	);
 
 	throws ( function() {
@@ -151,21 +137,42 @@ function testViewMethodprepare()
 			obj.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; } });
 		},
 		'No getY() method is defined in \'Observable\'!',
-		"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; } }) : Check that exception is thrown when observable object doesn't have a getY() method!"
+		"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; } })"+
+			": Check that exception is thrown when observable object doesn't have a getY() method!"
 	);
 	
 	{
 		var obj = new mvcFire.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.prepare({isFired: function() { return mvcFire.FIRE_DISABLED; }, getX: function() { return 10; }, getY: function() { return 20} });
-		strictEqual(obj.x, 10000, "mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_DISABLED; }, getX: function() { return 10; }, getY: function() { return 20} }) : Check that x value is equal to 10000!");
-		strictEqual(obj.y, 0, "mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_DISABLED; }, getX: function() { return 10; }, getY: function() { return 20} }) : Check that y value is equal to 0!");
+		strictEqual(
+			obj.x,
+			mvcFire.FIRE_CANVAS_HIDE,
+			"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_DISABLED; }, getX: function() { return 10; }, getY: function() { return 20} }) "+
+				": Check that x value is equal to mvcFire.FIRE_CANVAS_HIDE!"
+		);
+		strictEqual(
+			obj.y,
+			0, 
+			"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_DISABLED; }, getX: function() { return 10; }, getY: function() { return 20} })" +
+				": Check that y value is equal to 0!"
+		);
 	}
 
 	{
 		var obj = new mvcFire.View(new createjs.Stage(), new createjs.LoadQueue(), 'view test');
 		obj.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; }, getY: function() { return 20} });
-		strictEqual(obj.x, 10, "mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; }, getY: function() { return 20} }) : Check that x value is equal to 10!");
-		strictEqual(obj.y, 20, "mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; }, getY: function() { return 20} }) : Check that y value is equal to 20!");
+		strictEqual(
+			obj.x,
+			10, 
+			"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; }, getY: function() { return 20} })" +
+				": Check that x value is equal to 10!"
+		);
+		strictEqual(
+			obj.y,
+			20,
+			"mvcFire.View.prepare({isFired: function() { return mvcFire.FIRE_ENABLED; }, getX: function() { return 10; }, getY: function() { return 20} })" +
+				": Check that y value is equal to 20!"
+		);
 	}
 }
 
@@ -916,110 +923,5 @@ function testControllerMethodisFired()
 		strictEqual(obj.obj_model_fire.y, 100, "mvcFire.Model.moveToRight() : Test of right \'Y\' value");
 		strictEqual(obj.obj_model_fire.vitesse, 6, "mvcFire.Model.moveToRight() : Test of right \'vitesse\' value");
 		strictEqual(obj.isFired(), mvcFire.FIRE_ENABLED, "mvcFire.Model.moveToRight() : Test of right \'fire state\' default value");
-	}
-}
-
-function testControllerMethodDisplay()
-{
-	console.log('testControllerMethodDisplay\n-----------------------------------------');
-
-	{
-		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
-		ok(obj.display !== undefined, "mvcFire.Controller.display() : Check that this method is defined!");
-	}
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display()
-		},
-		'\'Model Collision\' is not a Object!',
-		"mvcFire.Controller.display() : Check that exception is up with no parameter!"
-	);
-	
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10})
-		},
-		'No defined getParent() method in \'Model Collision\' object!',
-		"mvcFire.Controller.display({x:10,y:10}) : Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}})
-		},
-		'No defined isCollideWith() method in \'Model Collision\' object!',
-		"mvcFire.Controller.display({x:10,y:10, getParent : function() { return this;}}) : Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}})
-		},
-		'No defined setCollideWith() method in \'Model Collision\' object!',
-		"mvcFire.Controller.display({x:10,y:10, getParent : function() { return this;}}) : Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;} });
-		},
-		'No defined getView() method in \'Controller Collision\' object!',
-		"mvcFire.Controller.display({x:10,y:10,getParent : function() { return this;}}) : Check that exception is up with it is not an Collision Object!"
-	);
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;} , isCollideWith : function() { return this;}, setCollideWith : function() { return this;}, getView : 100});
-		},
-		'No defined getCollisionId() method in \'Controller Collision\' object!',
-		"mvcFire.Controller.display({x:10,y:10, getParent : function() { return this;},getView : 100}) : Check that exception is up with it is not an Collision Object!"
-	);
-
-	throws( function() {
-			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-			obj.fire(200, 200);
-			var obj_model_saucisse = new mvcSaucisse.Model(false, 200, 200);
-			obj.display(obj_model_saucisse);
-		},
-		'\'Saucisse\' is unknow in the collision matrix!',
-		"mvcFire.Controller.display(obj_model_saucisse) : Check that exception is up with collision Fire/Saucisse is not specified!"
-	);
-
-	{
-		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-		obj.fire(100, 100); 
-		if (obj.collisionWithSaucisse === undefined) {
-			obj.collisionWithSaucisse = function() { this.obj_model_fire.preparer; };
-		}
-		
-		obj.collision_matrix['Saucisse'] = { collisionWithObject: obj.collisionWithSaucisse};
-		var obj_saucisse = new mvcSaucisse.Model(false, 200, 200);
-		obj.display(obj_saucisse)
-		strictEqual(obj.obj_model_fire.fire_state,mvcFire.FIRE_ENABLED, "mvcFire.Controller.display(obj_saucisse) : Check that fire is not collide with Saucisse!");
-	}
-	
-	{
-		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-		obj.fire(100,100); 
-		if (obj.collisionWithSaucisse === undefined) {
-			obj.collisionWithSaucisse = function() { this.obj_model_fire.preparer(); }
-		}
-		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
-		var obj_model_saucisse = new mvcSaucisse.Model(false, 120, 100);
-		obj.display(obj_model_saucisse)
-		strictEqual(obj.obj_model_fire.fire_state,mvcFire.FIRE_DISABLED, "mvcFire.Controller.display(obj_saucisse) : Check that fire is collide with Saucisse!");
-	}
-	
-	{
-		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
-		obj.fire(100,100); 
-		if (obj.collisionWithSaucisse === undefined) {
-			obj.collisionWithSaucisse = function() { this.obj_model_fire.preparer(); }
-		}
-		obj.collision_matrix['Saucisse'] = { collisionWithObject : obj.collisionWithSaucisse};
-		var obj_model_saucisse = new mvcSaucisse.Model(true, 120, 100);
-		obj.display(obj_model_saucisse)
-		strictEqual(obj.obj_model_fire.fire_state,mvcFire.FIRE_DISABLED, "mvcFire.Controller.display(obj_saucisse) : Check that fire is collide with Saucisse!");
 	}
 }

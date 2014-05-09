@@ -172,58 +172,9 @@ Observable.prototype.notify = function(type_notify)
 }
 
 // ====================================================================
-var mvcSaucisse = {};
-mvcSaucisse.Model = function(obj_stage, obj_queue, pourrie,x,y) {
-	this.pourrie = pourrie;
-	this.x = x; this.y = y;
-	this.rotation=0 ;
-	this.obj_stage = obj_stage;
-	this.obj_queue = obj_queue;
-	this.obj_stage = obj_stage;
-	this.coordonnee_notifier = new Observable("mvcSaucisse.Model", this);
-	createjs.Bitmap.call(this);
-    this.obj_stage.addChild(this);
-};
-mvcSaucisse.Model.prototype = new createjs.Bitmap();		
-mvcSaucisse.Model.prototype.isPourrie = function() {  return this.pourrie; };
-mvcSaucisse.Model.prototype.getX = function() { return this.x; };
-mvcSaucisse.Model.prototype.getY = function() { return this.y; };
-mvcSaucisse.Model.prototype.getRotation = function() { return this.rotation; };
-mvcSaucisse.Model.prototype.getView = function() { return this; };
-mvcSaucisse.Model.prototype.getParent = function() { return this; };
-mvcSaucisse.Model.prototype.getCollisionId = function() { return 'Saucisse'; };
-mvcSaucisse.Model.prototype.run = function() {
-	this.x = this.x - 4;
-	if ( this.x < -64 )
-		this.x = 700;
-	
-	this.coordonnee_notifier.notify('display');
-};
-
-mvcSaucisse.Model.prototype.prepare = function (obj_observable)
-{ 
-	this.x = obj_observable.getX();
-	this.y = obj_observable.getY();
-	if (obj_observable.isPourrie()) {
-		this.image = this.obj_queue.getResult('mauvaise_saucisse');
-	} else {
-		this.image =  this.obj_queue.getResult('bonne_saucisse');
-	}
-
-	this.rotation = obj_observable.getRotation() ;
-	this.visible=true;
-};
-
-mvcSaucisse.Model.prototype.collisionWithPlayer = function (obj_collision)
-{
-	this.x = 700;
-}
-
-// ====================================================================
 var obj_queue;
 var obj_stage;
-var obj_controller_players = new Array(3);
-var obj_model_saucisses = new Array(4);
+var obj_controller_players = new Array(1);
 var simult_touches = new Array();
 var count=0;
 var count_max=0;
@@ -239,10 +190,6 @@ function startTest()
 	obj_queue.loadManifest([
             {src:"./images/joueur.png", id:"player0"},
             {src:"./images/joueur_hit.png", id:"player1"},
-			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
-			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
-			{src:"./sounds/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
-			{src:"./sounds/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -261,9 +208,6 @@ function runTest()
 	module("Controller Player");
 	test("Affichage d'un vaisseau avec le Controller Player", test3);
 	test("Déplacement d'un vaisseau", test4);
-
-	test5();
-	test6();
 	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
@@ -281,12 +225,6 @@ function test_run(event)
 					obj_controller_players[i].run();
 			}
 
-			for (var j = 0; j < obj_model_saucisses.length; j++)
-			{		
-				if (obj_model_saucisses[j].run() !== undefined )
-					obj_model_saucisses[j].run();
-			}
-			
 			obj_stage.update(event);
 
 			if ( count > 0 ) {
@@ -481,70 +419,4 @@ function test4()
 		{key:39,value:true,count:50},
 		{key:39,value:false}
 	];
-}
-
-// -----------------------------------------------------------------
-function test5()
-{
-	console.log("**** Test 5 :\n --------------------------------------------");
-	var obj_text =  new createjs.Text("Test MVC Player 5 : Controller Player with Mauvaise Saucisse", "24px Arial", "#00000");
-	obj_text.x = 0 ; obj_text.y = 360;
-	obj_stage.addChild( obj_text );
-	obj_stage.update();
-	
-	obj_model_saucisses[0] = new mvcSaucisse.Model(obj_stage, obj_queue, true, 700, 420);
-	obj_model_saucisses[0].prepare(obj_model_saucisses[0]);
-	obj_model_saucisses[1] = new mvcSaucisse.Model(obj_stage, obj_queue, false, 900, 420);
-	obj_model_saucisses[1].prepare(obj_model_saucisses[1]);
-	
-	obj_controller_players[1] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_1");
-	obj_controller_players[1].run = function() {
-		if ( this.obj_model_joueur.getX() > 500)
-			this.obj_model_joueur.set(0,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-		else
-			this.obj_model_joueur.set(this.obj_model_joueur.getX() + this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-	}
-	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,460);
-	obj_controller_players[1].scoreHasObservedBy(obj_view_score);
-	var obj_view_vies = new ViewLife(obj_stage, "View Life", 408,460);
-	obj_controller_players[1].lifeHasObservedBy(obj_view_vies);
-
-	obj_model_saucisses[0].coordonnee_notifier.add(obj_controller_players[1]);
-	obj_model_saucisses[1].coordonnee_notifier.add(obj_controller_players[1]);
-	obj_controller_players[1].collision_matrix['Saucisse'] = { collisionWithObject : obj_controller_players[1].collisionWithSaucisse};
-	obj_controller_players[1].preparer(0,390,0,4,3,100);
-
-}
-
-// -----------------------------------------------------------------
-function test6()
-{
-	console.log("**** Test 6 :\n --------------------------------------------");
-	var obj_text =  new createjs.Text("Test MVC Player 6 : Controller Player with Bonne Saucisse", "24px Arial", "#00000");
-	obj_text.x = 0 ; obj_text.y = 500;
-	obj_stage.addChild( obj_text );
-	obj_stage.update();
-	
-	obj_model_saucisses[2] = new mvcSaucisse.Model(obj_stage, obj_queue, false, 500, 550);
-	obj_model_saucisses[2].prepare(obj_model_saucisses[2]);
-	obj_model_saucisses[3] = new mvcSaucisse.Model(obj_stage, obj_queue, true, 900, 550);
-	obj_model_saucisses[3].prepare(obj_model_saucisses[3]);
-	
-	obj_controller_players[2] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_1");
-	obj_controller_players[2].run = function() {
-		if ( this.obj_model_joueur.getX() < 0 )
-			this.obj_model_joueur.set(700,this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-		else
-			this.obj_model_joueur.set(this.obj_model_joueur.getX() - this.obj_model_joueur.getSpeed(),this.obj_model_joueur.getY(), this.obj_model_joueur.getRotation());
-	}
-	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,600);
-	obj_controller_players[2].scoreHasObservedBy(obj_view_score);
-	var obj_view_vies = new ViewLife(obj_stage, "View Life", 408,600);
-	obj_controller_players[2].lifeHasObservedBy(obj_view_vies);
-
-	obj_model_saucisses[2].coordonnee_notifier.add(obj_controller_players[2]);
-	obj_model_saucisses[3].coordonnee_notifier.add(obj_controller_players[2]);
-	obj_controller_players[2].collision_matrix['Saucisse'] = { collisionWithObject : obj_controller_players[2].collisionWithSaucisse};
-	obj_controller_players[2].preparer(0,530,0,6,3,100);
-
 }

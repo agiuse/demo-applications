@@ -78,7 +78,6 @@ class mvcSaucisse.Controller {
 	void coordonneeHasOBservedBy(Object obj_observer)
 	__ Collision __
 	String getCollisionId()
-	void collisionWithPlayer(Object obj_collision)
 	__ execution __	
 	void run()
 	__ notify __
@@ -614,11 +613,6 @@ mvcSaucisse.NO_COLLISION=false;
 	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer)
 	{
 		this.obj_model_saucisse.add(obj_observer);
-	}
-
-	mvcSaucisse.Controller.prototype.collisionWithPlayer = function(obj_collision)
-	{
-		this.obj_model_saucisse.setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER);
 	}
 
 	mvcSaucisse.Controller.prototype.getCollisionId = function()
