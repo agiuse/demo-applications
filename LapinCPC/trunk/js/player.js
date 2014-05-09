@@ -1156,6 +1156,7 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 		this.rotation = 0;
 		this.x = mvcFire.FIRE_CANVAS_HIDE;
 		this.y = 0;
+		this.visible= true;
 		console.log(this.name, ' View is created!');
 	}
 
@@ -1313,7 +1314,7 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 		this.obj_model_fire = new mvcFire.Model(this.name + '_model');
 		this.obj_model_fire.add( this.obj_view_fire );
 
-		this.collision_matrix = {};
+		this.obj_model_fire.preparer();
 	 	console.log(this.name, ' Controller is created!');
 	}
 
