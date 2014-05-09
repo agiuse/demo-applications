@@ -174,7 +174,7 @@ Observable.prototype.notify = function(type_notify)
 // ====================================================================
 var obj_queue;
 var obj_stage;
-var obj_controller_players = new Array(1);
+var obj_controller = new Array(1);
 var simult_touches = new Array();
 var count=0;
 var count_max=0;
@@ -190,6 +190,8 @@ function startTest()
 	obj_queue.loadManifest([
             {src:"./images/joueur.png", id:"player0"},
             {src:"./images/joueur_hit.png", id:"player1"},
+			{src:"./images/tir.png", id:"tir"},
+			{src:"./sounds/panpan.mp3", id:"panpan", type:createjs.LoadQueue.SOUND}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
 }
@@ -207,7 +209,7 @@ function runTest()
 	
 	module("Controller Player");
 	test("Affichage d'un vaisseau avec le Controller Player", test3);
-	test("Déplacement d'un vaisseau", test4);
+	test("Déplacement d'un vaisseau avec Tir", test4);
 	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
@@ -219,10 +221,10 @@ function test_run(event)
 	if (!createjs.Ticker.getPaused())
 	{
 		try{
-			for (var i = 0; i < obj_controller_players.length; i++)
+			for (var i = 0; i < obj_controller.length; i++)
 			{
-				if ( obj_controller_players[i].run !== undefined )
-					obj_controller_players[i].run();
+				if ( obj_controller[i].run !== undefined )
+					obj_controller[i].run();
 			}
 
 			obj_stage.update(event);
@@ -351,7 +353,7 @@ function test3()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	var obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "View_player", 0 ,230,0,6);
+	var obj_controller_player = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller player", 0 ,230,0,6);
 	console.log(" Controller Player creation is done.\nView-Score creation is in progress.");
 	
 	var obj_view_score = new ViewScore(obj_stage, "View Score", 208,240);
@@ -388,26 +390,34 @@ function test4()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 	
-	obj_controller_players[0] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_0");
+	obj_controller[0] = new mvcPlayer.Controller(obj_stage, obj_queue, "Controller_player_0");
 	console.log(" Controller Player creation done.");
-	obj_controller_players[0].preparer(0,330,0,4);
-	equal(obj_controller_players[0].obj_model_joueur.getX(), 0, "Check that Model X value is equal at 0!"); 
-	equal(obj_controller_players[0].obj_model_joueur.getY(), 330, "Check that Modem Y value is equal at 330!"); 
-	equal(obj_controller_players[0].obj_model_joueur.getSpeed(), 4, "Check that Model Speed value is equal at 4!"); 
+	obj_controller[0].preparer(0,330,0,4);
+	equal(obj_controller[0].obj_model_joueur.getX(), 0, "Check that Model X value is equal at 0!"); 
+	equal(obj_controller[0].obj_model_joueur.getY(), 330, "Check that Modem Y value is equal at 330!"); 
+	equal(obj_controller[0].obj_model_joueur.getSpeed(), 4, "Check that Model Speed value is equal at 4!"); 
 
 	obj_stage.touches = {};
 	
 	simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false},
+		{key:32,value:true,count:1},
+		{key:32,value:false},
 		{key:40,value:true,count:20},
 		{key:39,value:true,count:1},
 		{key:40,value:true,count:20},
 		{key:40,value:false},
+		{key:32,value:true,count:1},
+		{key:32,value:false},
 		{key:39,value:false},
 		{key:37,value:true,count:30},
 		{key:37,value:false},
+		{key:32,value:true,count:1},
+		{key:32,value:false},
 		{key:38,value:true,count:30},
+		{key:32,value:true,count:1},
+		{key:32,value:false},
 		{key:38,value:false},
 		{key:40,value:true,count:1},
 		{key:37,value:true,count:20},
@@ -417,6 +427,9 @@ function test4()
 		{key:39,value:true,count:20},
 		{key:38,value:false},
 		{key:39,value:true,count:50},
-		{key:39,value:false}
+		{key:39,value:false,count:20},
+		{key:32,value:true,count:1},
+		{key:32,value:false}
 	];
 }
+

@@ -665,6 +665,8 @@ var mvcPlayer = {};
 		this.obj_model_joueur = new mvcPlayer.Model(this.name + '_model');
 		this.obj_model_joueur.addCoordonneeNotifier( this.obj_view_joueur );
 		
+		this.obj_controller_tir = new mvcFire.Controller(this.obj_stage, this.obj_queue,this.name + '_fire');
+		
 		this.collision_matrix = {};
 	 	console.log(this.name, ' Controller is created!');
 	}
@@ -705,6 +707,11 @@ var mvcPlayer = {};
 				if (this.obj_model_joueur.getRotation() !== 0)
 					this.annulerRotation();
 
+		if ( this.obj_controller_tir.isFired() )
+			this.obj_controller_tir.moveToRight();
+		else
+			if ( 32 in this.obj_stage.touches )
+				this.obj_controller_tir.fire(this.obj_model_joueur.getX()+90,this.obj_model_joueur.getY());
 	}
 
 	mvcPlayer.Controller.prototype.moveToUp = function()	// Methode observe par la Vue du joueur
