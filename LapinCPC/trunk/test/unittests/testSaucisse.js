@@ -64,7 +64,6 @@ function startTest()
 	test("Test des parametres de la méthode getView()", testControllerMethodGetView);
 	test("Test des parametres de la méthode getCollisionId()", testControllerMethodGetCollisionId);
 	test("Test des parametres de la méthode coordonneeHasObservedBy()", testControllerMethodcoordonneeHasObservedBy);
-	test("Test des parametres de la méthode collisionWithPlayer()", testControllerMethodcollisionWithPlayer);
 }
 
 // -----------------------------------------------------------------
@@ -856,25 +855,4 @@ function testControllerMethodcoordonneeHasObservedBy()
 		'\'Observer\' is already added!',
 		"mvcSaucisse.Controller.coordonneeHasObservedBy(obj_observer) : twice method call test of coordonneeHasObservedBy method!"
 	);
-}
-
-function testControllerMethodcollisionWithPlayer()
-{
-	console.log('testControllerMethodcollisionWithPlayer\n-----------------------------------------');
-
-	{
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue,this.obj_generator, 'controller test');
-		ok(obj.collisionWithPlayer !== undefined, "mvcSaucisse.Controller.collisionWithPlayer() : Check that this method is defined!");
-	}
-
-	{
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		obj.collisionWithPlayer();
-		strictEqual(
-			obj.obj_model_saucisse.isCollideWith(),
-			mvcSaucisse.COLLISION_WITH_PLAYER,
-			"mvcSaucisse.Controller.collisionWithPlayer() : check that collisionWithPlayer() change collision state to 'mvcSaucisse.COLLISION_WITH_PLAYER' value"
-		);
-	}
-
 }

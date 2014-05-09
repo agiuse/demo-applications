@@ -76,9 +76,9 @@ class mvcPlayer.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String Name = "Controller_default"
-	ArrayHashage<Object> collision_matrix
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	boolean isBeAlive()
 	__ notifier __
 	void preparer(int x, int y , int rotation, int vitesse, int nb_vie_de_depart, int nb_points_de_depart)
 	__ subscription by some external observers__
@@ -91,9 +91,6 @@ class mvcPlayer.Controller {
 	void moveToRight()
 	void moveToLeft()
 	void moveToUp()
-	__ Collision __
-	void display(Object obj_collision_model)
-	void collisionWithSaucisse(Object obj_collision_controller)
 }
 
 mvcPlayer.Controller *-- mvcPlayer.View
@@ -457,96 +454,6 @@ note over Controller : fire_status is equal to mvcFire.FIRE_DISABLED
 end
 Controller --> Game : <I><< movement processing ended >></I>
 deactivate Controller
-@enduml
-
-@startuml
-title <b>MVC Player</b> sequence diagram
-hide footbox
-
-participant mvcSaucisse.Model << (C,#ADD1B2) >>
-box "mvcPlayer"
-participant Controller << (C,#ADD1B2) >>
-participant Model << (C,#ADD1B2) >>
-participant Observable << (C,#ADD1B2) >>
-participant View << (C,#ADD1B2) >>
-endbox
-participant mvcSaucisse.View << (C,#ADD1B2) >>
-participant mvcSaucisse.Controller << (C,#ADD1B2) >>
-participant Exception
-
-legend left
- Player.run() is done ; the player object must already be moved.
- Saucisse.run() is done now and Model Saucisse notifying Controller Player !
-endlegend
-== Collision management ==
-activate mvcSaucisse.Model
-group Model Saucisse
-	mvcSaucisse.Model -> Controller : display(mvcSaucisse.Model)
-	activate Controller
-	Controller -[#red]> Exception : throw("'Model Collision' is not a Object!")
-	Controller -[#red]> Exception : throw("No defined getParent() method in 'Model Collision' object!")
-	Controller -[#red]> Exception : throw("'Controller Collision' is not a Object!")
-	Controller -[#red]> Exception : throw("No defined getView() method in 'Controller Collision' object!")
-	Controller -[#red]> Exception : throw("No defined getCollisionId() method in 'Controller Collision' object!")
-	Controller -[#red]> Exception : throw("'Saucisse' is unknow in the collision matrix!")
-	Controller -> mvcSaucisse.Model : getParent()
-	activate mvcSaucisse.Model
-	mvcSaucisse.Model -> Controller : mvcSaucisse.Controller reference object
-	deactivate mvcSaucisse.Model
-	Controller -> mvcSaucisse.Controller : getView()
-	activate mvcSaucisse.Controller
-	mvcSaucisse.Controller --> Controller : mvcSaucisse.View reference object
-	deactivate mvcSaucisse.Controller
-	Controller -> View : isCollision(mvcSaucisse.View)
-	activate View
-	View --> mvcSaucisse.View : getX()
-	activate mvcSaucisse.View
-	mvcSaucisse.View --> View : x
-	deactivate  mvcSaucisse.View
-	View --> mvcSaucisse.View : getY()
-	activate mvcSaucisse.View
-	mvcSaucisse.View --> View : y
-	deactivate  mvcSaucisse.View
-	View --> Controller : true/false
-	deactivate View
-	alt Collision is true
-		Controller -> Controller : collisionWithSaucisse(mvcSaucisse.Model)
-		activate Controller
-		Controller -[#red]> Exception : throw("'obj_model_saucisse' is not mvcSaucisse.Model object")
-		Controller -> mvcSaucisse.Model : isPourrie()
-		activate mvcSaucisse.Model
-		mvcSaucisse.Model --> Controller : (true/false)
-		deactivate mvcSaucisse.Model
-		alt bonne saucisse
-			Controller -> View : playSound('boing')
-			activate View
-			View --> Controller : <I><< boing >></I>
-			deactivate View
-			Controller --> Model : addPoints()
-			activate Model
-			Model --> Controller : <I><< Score Updated >></I>
-			deactivate Model
-		else mauvaise saucisse
-			Controller -> View : playSound('pouet')
-			activate View
-			View --> Controller : <I><< pouet >></I>
-			deactivate View
-			Controller --> Model : removeLife()
-			activate Model
-			Model --> Controller : <I><< Life Updated >></I>
-			deactivate Model
-		end
-		deactivate Controller
-		Controller -> mvcSaucisse.Model : setCollideWith(mvcSaucisse.COLLISION_WITH_PLAYER)
-		activate mvcSaucisse.Model
-		mvcSaucisse.Model --> Controller
-		deactivate mvcSaucisse.Model
-	else Collision is false
-	end
-	Controller --> mvcSaucisse.Model : <I><< notification ended >></I>
-	deactivate Controller	
-end
-deactivate mvcSaucisse.Model
 @enduml
 */
 var mvcPlayer = {};
@@ -922,45 +829,6 @@ var mvcPlayer = {};
 		}
 	}
 
-	mvcPlayer.Controller.prototype.display = function(obj_collision_model)
-	{
-		common.IsObjectModelCollision(obj_collision_model);
-
-		var obj_collision_controller = obj_collision_model.getParent();
-		common.IsObjectControllerCollision(obj_collision_controller);
-		
-		var my_collision_id = obj_collision_controller.getCollisionId();
-		
-		if (my_collision_id in this.collision_matrix) {
-			if (this.obj_view_joueur.isCollision(obj_collision_controller.getView()))
-			{		
-				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
-
-				if  ( obj_collision_controller.collisionWithPlayer !== undefined )
-					obj_collision_controller.collisionWithPlayer(this);
-			}
-		} else
-			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
-	}
-	
-	mvcPlayer.Controller.prototype.collisionWithSaucisse = function(obj_model_saucisse)
-	{
-		if (obj_model_saucisse instanceof mvcSaucisse.Model)
-		{
-			if (obj_model_saucisse.isPourrie())
-			{
-				// Mauvaise Saucisse
-				this.obj_model_joueur.removeLife();
-				this.obj_view_joueur.playSound('pouet');
-			} else {
-				// Bonne saucisse
-				this.obj_model_joueur.addScore(2);
-				this.obj_view_joueur.playSound('boing');
-			}
-		} else
-			throw '\'obj_model_saucisse\' is not mvcSaucisse.Model object!';
-	}
-	
 	mvcPlayer.Controller.prototype.isBeAlive = function()
 	{
 		return (this.obj_model_joueur.getLife() > 0 )
@@ -1031,7 +899,6 @@ class mvcFire.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String Name = "Controller_default"
-	ArrayHashage<Object> collision_matrix
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	boolean isFired()
@@ -1261,29 +1128,12 @@ end
 Controller --> mvcPlayer.Controller :  <I><< fire processing ended >></I>
 deactivate Controller
 @enduml
-
-@startuml
-title <b>MVC Fire</b> sequence diagram
-hide footbox
-
-participant mvcPlayer.Controller << (C,#ADD1B2) >>
-box "mvcFire"
-participant Controller << (C,#ADD1B2) >>
-participant Model << (C,#ADD1B2) >>
-participant Observable << (C,#ADD1B2) >>
-participant View << (C,#ADD1B2) >>
-endbox
-participant mvcPlayer.Model << (C,#ADD1B2) >>
-participant mvcSaucisse.View << (C,#ADD1B2) >>
-participant mvcSaucisse.Controller << (C,#ADD1B2) >>
-
-participant Exception
-@enduml
 */
 
 var mvcFire = {};
 mvcFire.FIRE_ENABLED = true;
 mvcFire.FIRE_DISABLED = false;
+mvcFire.FIRE_CANVAS_HIDE = 10000;
 
 // ============================================================================================================================
 // Classe mvcFire.View
@@ -1304,7 +1154,7 @@ mvcFire.FIRE_DISABLED = false;
 		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
 		this.rotation = 0;
-		this.x = 10000;
+		this.x = mvcFire.FIRE_CANVAS_HIDE;
 		this.y = 0;
 		console.log(this.name, ' View is created!');
 	}
@@ -1319,7 +1169,7 @@ mvcFire.FIRE_DISABLED = false;
 				
 		if (obj_observable.isFired() === mvcFire.FIRE_DISABLED)
 		{
-			this.x = 10000;
+			this.x = mvcFire.FIRE_CANVAS_HIDE;
 			this.y = 0;
 		} else {
 			if ( obj_observable.getX === undefined)
@@ -1491,25 +1341,4 @@ mvcFire.FIRE_DISABLED = false;
 		}
 	}
 	
-	mvcFire.Controller.prototype.display = function(obj_collision_model)
-	{
-		common.IsObjectModelCollision(obj_collision_model);
-
-		var obj_collision_controller = obj_collision_model.getParent();
-		common.IsObjectControllerCollision(obj_collision_controller);
-		
-		var my_collision_id = obj_collision_controller.getCollisionId();
-		
-		if (my_collision_id in this.collision_matrix)
-		{
-			if ( this.obj_view_fire.isCollision( obj_collision_controller.getView() ) )
-			{		
-				this.collision_matrix[my_collision_id].collisionWithObject.call(this,obj_collision_model);
-
-				if  ( obj_collision_controller.collisionWithFire !== undefined )
-					obj_collision_controller.collisionWithFire(this);
-			}
-		} else
-			throw '\''+ my_collision_id +'\' is unknow in the collision matrix!'
-	}	
 }());
