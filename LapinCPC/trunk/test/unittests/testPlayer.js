@@ -28,6 +28,7 @@ function startTest()
 	test("Test des parametres des moveTo()", testControllerMethodMove);
 	test("Test des parametres de la méthode run()", testControllerMethodRun);
 	test("Test des parametres de la méthode isBeAlive()", testControllerMethodIsBeAlive);
+	test("Test des parametres de la méthode collideWithPlayer()", testControllerMethodCollideWithSaucisse);
 }
 
 // -----------------------------------------------------------------
@@ -1464,5 +1465,52 @@ function testControllerMethodIsBeAlive()
 		obj.obj_model_joueur.nb_vies = -1;
 		ok(!obj.isBeAlive(), "mvcPlayer.Controller.isBeAlive() : check that this method returns false while player have a life!");
 	}
+}
 
+function testControllerMethodCollideWithSaucisse ()
+{
+	console.log('testControllerMethodCollideWithSaucisse\n-----------------------------------------');
+	
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue(), 'controller test');
+		ok(obj.collideWithSaucisse !== undefined, "mvcPlayer.Controller.collideWithSaucisse() : Check that this method is defined!");
+	}
+
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.collideWithSaucisse();
+		},
+		'\'pourrie\' is not boolean type!',
+		"mvcPlayer.Controller.collideWithSaucisse() : Check that exception is thrown with no parameter!"
+	);
+	
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.collideWithSaucisse('toto');
+		},
+		'\'pourrie\' is not boolean type!',
+		"mvcPlayer.Controller.collideWithSaucisse() : Check that exception is thrown with no boolean in parameter!"
+	);
+	
+	throws( function() {
+			var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+			obj.collideWithSaucisse({});
+		},
+		'\'pourrie\' is not boolean type!',
+		"mvcPlayer.Controller.collideWithSaucisse() : Check that exception is thrown with no boolean in parameter!"
+	);
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		obj.collideWithSaucisse(true);
+		strictEqual(obj.obj_model_joueur.getLife(),2, "mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse): Check that player lose a life with 'Pourrie' Saucisse collision!");
+		strictEqual(obj.obj_model_joueur.getScore(),0,"mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse): Check that player score didn't change with 'Pourrie' Saucisse collision!!"); 
+	}
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue,'controller test');
+		obj.collideWithSaucisse(false);
+		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
+		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+	}
 }

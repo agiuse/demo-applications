@@ -297,7 +297,7 @@ alt [ x > 0 ]
 	deactivate Model
 	Controller -> Model : isCollideWith()
 	activate Model
-	Model --> Controller : mvcSaucisse.NO_COLLISION/mvcSaucisse.COLLISION_WITH_PLAYER
+	Model --> Controller : mvcSaucisse.NO_COLLISION/mvcSaucisse.COLLIDE_WITH
 	deactivate Model
 	alt Collide with Player
 		Controller -> Controller : preparer()
@@ -395,7 +395,7 @@ deactivate Controller
 */
 
 var mvcSaucisse = {};
-mvcSaucisse.COLLISION_WITH_PLAYER=true;
+mvcSaucisse.COLLIDE_WITH=true;
 mvcSaucisse.NO_COLLISION=false;
 
 // ============================================================================================================================
@@ -540,7 +540,7 @@ mvcSaucisse.NO_COLLISION=false;
 		if (typeof collision_state !== 'boolean')
 			throw 'Parameter \'collision state\' is not a boolean literal!';
 
-		this.collision_state = ( this.collision_state === mvcSaucisse.NO_COLLISION) ? collision_state : mvcSaucisse.COLLISION_WITH_PLAYER;
+		this.collision_state = ( this.collision_state === mvcSaucisse.NO_COLLISION) ? collision_state : mvcSaucisse.COLLIDE_WITH;
 	};
 
 	mvcSaucisse.Model.prototype.isCollideWith = function()
@@ -586,7 +586,7 @@ mvcSaucisse.NO_COLLISION=false;
 		} else {
 			// déplace la saucisse
 			this.obj_model_saucisse.set(x - this.obj_model_saucisse.getSpeed());
-			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLISION_WITH_PLAYER )
+			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLIDE_WITH )
 			{ // la saucisse est entré en collision après le déplacement
 				this.preparer();
 			}
@@ -619,5 +619,9 @@ mvcSaucisse.NO_COLLISION=false;
 	{
 		return 'Saucisse';
 	};
+
+	mvcSaucisse.Controller.prototype.setCollideWith = function(collision_state) {
+		this.obj_model_saucisse.setCollideWith = function(collision_state);
+	}
 
 }());
