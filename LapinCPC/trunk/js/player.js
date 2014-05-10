@@ -91,6 +91,8 @@ class mvcPlayer.Controller {
 	void moveToRight()
 	void moveToLeft()
 	void moveToUp()
+	__ collision __
+	void collideWithSaucisse(boolean pourrie)
 }
 
 mvcPlayer.Controller *-- mvcPlayer.View
@@ -711,7 +713,12 @@ var mvcPlayer = {};
 			this.obj_controller_tir.moveToRight();
 		else
 			if ( 32 in this.obj_stage.touches )
-				this.obj_controller_tir.fire(this.obj_model_joueur.getX()+90,this.obj_model_joueur.getY());
+			{
+				var rotation = this.obj_model_joueur.getRotation();
+				var x = parseInt( Math.cos(rotation)*90);
+				var y = parseInt( Math.sin(rotation));
+				this.obj_controller_tir.fire(this.obj_model_joueur.getX() + x, this.obj_model_joueur.getY() + y);
+			}
 	}
 
 	mvcPlayer.Controller.prototype.moveToUp = function()	// Methode observe par la Vue du joueur
@@ -839,6 +846,23 @@ var mvcPlayer = {};
 	mvcPlayer.Controller.prototype.isBeAlive = function()
 	{
 		return (this.obj_model_joueur.getLife() > 0 )
+	}
+
+	mvcPlayer.Controller.prototype.collideWithSaucisse = function(pourrie)
+	{
+		if (typeof pourrie !== 'boolean')
+			throw '\'pourrie\' is not boolean type!'
+
+		if (pourrie)
+		{
+			// Mauvaise Saucisse
+			this.obj_model_joueur.removeLife();
+			this.obj_view_joueur.playSound('pouet');
+		} else {
+			// Bonne saucisse
+			this.obj_model_joueur.addScore(2);
+			this.obj_view_joueur.playSound('boing');
+		}
 	}
 
 }());
@@ -1348,5 +1372,21 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 			this.obj_model_fire.set( this.obj_model_fire.getX() + this.obj_model_fire.getSpeed());		// déplacement du tir
 		}
 	}
-	
+
+	mvcFire.Controller.prototype.collideWithSaucisse = function(pourrie)
+	{
+		if (typeof pourrie !== 'boolean')
+			throw '\'pourrie\' is not boolean type!'
+
+		if (pourrie)
+		{
+			// Mauvaise Saucisse
+			this.obj_parent.getModel().addScore(3);
+			this.obj_parent.getView().playSound('pouet');
+		} else {
+			// Bonne saucisse
+			this.obj_parent.getModel().addScore(2);
+			this.obj_parent.getView().playSound('boing');
+		}
+	}	
 }());
