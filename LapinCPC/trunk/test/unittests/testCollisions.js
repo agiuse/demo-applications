@@ -6,9 +6,19 @@ mvcSaucisse.Controller = function(pourrie,x,y) { this.pourrie = pourrie; this.x 
 mvcSaucisse.Controller.prototype.isPourrie = function() {  return this.pourrie; };
 mvcSaucisse.Controller.prototype.getParent = function() { return this; };
 mvcSaucisse.Controller.prototype.getView = function() { return this; };
+mvcSaucisse.Controller.prototype.getModel = function() { return this; };
 mvcSaucisse.Controller.prototype.getCollisionId = function() { return 'Saucisse'; };
 mvcSaucisse.Controller.prototype.isCollideWith = function() { return this.collision_state; };
 mvcSaucisse.Controller.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
+
+var mvcBonus = {};
+mvcBonus.Controller = function(x,y) { this.x = x; this.y = y; this.collision_state = false; };
+mvcBonus.Controller.prototype.getParent = function() { return this; };
+mvcBonus.Controller.prototype.getView = function() { return this; };
+mvcBonus.Controller.prototype.getModel = function() { return this; };
+mvcBonus.Controller.prototype.getCollisionId = function() { return 'BonusLife'; };
+mvcBonus.Controller.prototype.isCollideWith = function() { return this.collision_state; };
+mvcBonus.Controller.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
 
 var mvcPlayer = {};
 mvcPlayer.Controller = function(x,y) { this.nb_points = 0; this.nb_vies = 3; this.x = x; this.y = y; };
@@ -17,8 +27,8 @@ mvcPlayer.Controller.prototype.removeLife = function() { this.nb_vies--; };
 mvcPlayer.Controller.prototype.getLife = function() { return this.nb_vies; };
 mvcPlayer.Controller.prototype.getScore = function() { return this.nb_points; };
 mvcPlayer.Controller.prototype.getView = function() { return this; };
-mvcPlayer.Controller.prototype.getParent = function() { return this; }
 mvcPlayer.Controller.prototype.getModel = function() { return this; };
+mvcPlayer.Controller.prototype.getParent = function() { return this; }
 mvcPlayer.Controller.prototype.collideWithSaucisse = function (pourrie) {
 	if (pourrie)
 		this.removeLife();
@@ -33,7 +43,7 @@ mvcPlayer.Controller.prototype.isCollision = function(obj_collision) {
 		( obj_collision.y < this.y + 44 )
 	);
 };
-mvcPlayer.Controller.prototype.getCollisionId = function() { return 'Player'; };
+mvcPlayer.Controller.prototype.getCollisionId = function() { return 'player'; };
 
 var mvcFire = {};
 mvcFire.Controller = function(obj_parent,x,y) { this.obj_parent = obj_parent; this.x = x; this.y = y;};
@@ -56,7 +66,7 @@ mvcFire.Controller.prototype.isCollision = function(obj_collision) {
 		( obj_collision.y < this.y + 44 )
 	);
 };
-mvcFire.Controller.prototype.getCollisionId = function() { return 'Fire'; };
+mvcFire.Controller.prototype.getCollisionId = function() { return 'fire'; };
 
 function startTest()
 {
@@ -69,7 +79,7 @@ function startTest()
 	module("Controller Collision");	
 	test("Test du constructeur", testControllerConstructor);
 	test("Test des parametres de la méthode playerCollideWithSaucisse()", testControllerMethodPlayerCollideWithSaucisse);
-	test("Test des parametres de la méthode tirCollideWithSaucisse()", testControllerMethodTirCollideWithSaucisse);
+	test("Test des parametres de la méthode fireCollideWithSaucisse()", testControllerMethodFireCollideWithSaucisse);
 	test("Test des parametres de la méthode display()", testControllerMethodDisplay);
 }
 
@@ -113,16 +123,16 @@ function testModelMethodAdd()
 			var obj = new mvcCollision.Model('collision');
 			obj.add();
 		},
-		'\'id_collision\' type is not string literal!',
-		"mvcCollision.Model.add() : Check that the first parameter is string type!"
+		'\'Controller Collision\' is not a Object!',
+		"mvcCollision.Model.add() : Check that the first parameter is object type!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
 			obj.add(100);
 		},
-		'\'id_collision\' type is not string literal!',
-		"mvcCollision.Model.add(100) : Check that the first parameter is string type!"
+		'\'Controller Collision\' is not a Object!',
+		"mvcCollision.Model.add(100) : Check that the first parameter is object type!"
 	);
 
 
@@ -130,60 +140,346 @@ function testModelMethodAdd()
 			var obj = new mvcCollision.Model('collision');
 			obj.add({});
 		},
-		'\'id_collision\' type is not string literal!',
-		"mvcCollision.Model.add({}) : Check that the first parameter is string type!"
+		'No defined getView() method in \'Controller Collision\' object!',
+		"mvcCollision.Model.add({}) : " +
+			"Check that exception is thrown when controller object doesn't have a method getModel()!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
-			obj.add('Saucisse');
+			var obj_controller = {
+				getView: function() { return this; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined getCollisionId() method in \'Controller Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : "+
+			"Check that exception is thrown when controller object doesn't have a method getCollisionId()!"
+	);
+
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 100; }
+			};
+			obj.add(obj_controller);
+		},
+		'\'id_collision\' type is not string literal!',
+		"mvcCollision.Model.add(obj_controller) : "+
+			"Check that exception is thrown when the getCollisionId() method returns a bad id collision!"
+	);
+
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined getModel() method in \'Model Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : "+
+			"Check that exception is thrown when controller object doesn't have a method getModel()!"
+	);
+
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return 'toto' }
+			};
+			obj.add(obj_controller);
+		},
+		'\'Model Collision\' is not a Object!',
+		"mvcCollision.Model.add(obj_controller) : "+
+			"Check that exception is thrown with returned model object is not object type!"
+	);
+	
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_model = {};
+			var obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined getParent() method in \'Model Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when model object doesn't have a method getParent()!"
+	);
+
+
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_model = {
+				getParent : function() { return obj_controller;}
+			};
+			obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined getCollisionId() method in \'Model Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when when model object doesn't have a method getCollisionId()!"
+	);
+
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; }
+			};
+			obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined isCollideWith() method in \'Model Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : "+ 
+			"Check that exception is thrown when when model object doesn't have a method isCollideWith()!"
+	);
+
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; },
+				isCollideWith: function() { return false; }
+			};
+			obj_controller = {
+				getView: function() { return this; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No defined setCollideWith() method in \'Model Collision\' object!',
+		"mvcCollision.Model.add(obj_controller}) : " +
+			"Check that exception is thrown when model object doesn't have a method setCollideWith()!"
+	);
+	
+	throws( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; },
+				isCollideWith: function() { return false; },
+				setCollideWith: function() {}
+			};
+			obj_controller = {
+				getView: function() { return 'toto'; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'\'View Collision\' is not a Object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when view object isn't object type!"
+	);
+	
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_view = {};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; },
+				isCollideWith: function() { return false; },
+				setCollideWith: function() {}
+			};
+			obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when view object doesn't have x and y attributes!"
+	);
+
+		throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_view = {x:10};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; },
+				isCollideWith: function() { return false; },
+				setCollideWith: function() {}
+			};
+			obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when view object doesn't have x and y attributes!"
+	);
+
+		throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller = {};
+			var obj_view = {y:10};
+			var obj_model = {
+				getParent : function() { return obj_controller;},
+				getCollisionId: function() { return 'Saucisse'; },
+				isCollideWith: function() { return false; },
+				setCollideWith: function() {}
+			};
+			obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'Saucisse'; },
+				getModel: function() { return obj_model; }
+			};
+			obj.add(obj_controller);
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller) : " +
+			"Check that exception is thrown when view object doesn't have x and y attributes!"
+	);
+	
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			obj.add(obj_controller_saucisse);
 		},
 		'No collision objects in argument!',
-		"mvcCollision.Model.add('Saucisse') : Check that the second parameter is mandatory!"
+		"mvcCollision.Model.add(obj_controller_saucisse) : " +
+			"Check that the second argument is mandatory!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
-			obj.add('Saucisse', 100);
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			obj.add(obj_controller_saucisse, 'string');
 		},
 		'\'collision object\' is not object!',
-		"mvcCollision.Model.add('Saucisse',100) : " +
-			"Check that the second parameter is object type!"
+		"mvcCollision.Model.add(obj_controller_saucisse, 'string') : " + 
+			"Check that the second argument is a object type!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
-			obj.add('Saucisse', 'string');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			obj.add(obj_controller_saucisse, {});
 		},
-		'\'collision object\' is not object!',
-		"mvcCollision.Model.add('Saucisse','string') : " +
-			"Check that the second parameter is object type!"
+		'No defined getView() method in \'Controller Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, { construction: 'function() {}' }) : " + 
+			"Check that second controller object have a defined getView() method!"
+	);
+	
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			var obj_controller = {
+				getView: function() { return this; }
+			};
+			obj.add(obj_controller_saucisse, obj_controller);
+		},
+		'No defined getCollisionId() method in \'Controller Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller) : " + 
+			"Check that second controller object have a defined getCollisionId() method!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
-			obj.add('Saucisse', {});
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			obj_controller = {
+				getView: function() { return 'toto'; },
+				getCollisionId: function() { return 'player'; },
+			};
+			obj.add(obj_controller_saucisse, obj_controller);
 		},
-		'\'controller\' attribute is not found!',
-		"mvcCollision.Model.add('Saucisse', {}) : " + 
-			"Check that object have a defined controller method!"
+		'\'View Collision\' is not a Object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller) : " + 
+			"Check that exception is thrown when second view object isn't object type!"
 	);
 
 	throws ( function() {
 			var obj = new mvcCollision.Model('collision');
-			obj.add('Saucisse', {controller: 'function() {}'});
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			var obj_view = {};
+			var obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'player'; },
+			};
+			obj.add(obj_controller_saucisse, obj_controller);
 		},
-		'\'collision\' method is not found!',
-		"mvcCollision.Model.add('Saucisse', {controller: function() {}}) : " +
-			"Check that object have a defined collision method!"
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller) : " + 
+			"Check that exception is thrown when second view object doesn't have x and y attributes!"
+	);
+
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			var obj_view = {y:10};
+			var obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'player'; },
+			};
+			obj.add(obj_controller_saucisse, obj_controller);
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller) : " + 
+			"Check that exception is thrown when second view object doesn't have x and y attributes!"
+	);
+
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			var obj_view = {x:10};
+			var obj_controller = {
+				getView: function() { return obj_view; },
+				getCollisionId: function() { return 'Saucisse'; },
+			};
+			obj.add(obj_controller_saucisse, obj_controller);
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller) : " + 
+			"Check that second object have a defined get*collisionId() method!"
+	);
+	
+	throws ( function() {
+			var obj = new mvcCollision.Model('collision');
+			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+			var obj_controller_player = new mvcPlayer.Controller();
+			obj.add(obj_controller_saucisse, obj_controller_player );
+		},
+		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
+		"mvcCollision.Model.add(obj_controller_saucisse, obj_controller_player) : " + 
+			"Check that second object have a defined getCollisionId() method!"
 	);
 	
 	{
 		var obj = new mvcCollision.Model('collision');
-		var obj_player = { constructor: 'function() {}' };
-		obj.add('Saucisse', {controller: obj_player, collision: 'function() {}' });
+		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+		var obj_controller_player = new mvcPlayer.Controller(200,200);
+		obj.add(obj_controller_saucisse, obj_controller_player);
 		var collision_matrix={};
-		collision_matrix.Saucisse = new Array({controller: obj_player, collision: 'function() {}' });
+		collision_matrix.Saucisse = new Array(
+			{controller: obj_controller_saucisse, view: obj_controller_saucisse },
+			{controller: obj_controller_player, view: obj_controller_player }
+		);
 
 		ok(
 			obj.collision_matrix.Saucisse !== undefined,
@@ -192,26 +488,44 @@ function testModelMethodAdd()
 		);
 		
 		ok(
-			obj.collision_matrix.Saucisse.length === 1,
+			obj.collision_matrix.Saucisse.length === 2,
 			"mvcCollision.Model.add('Saucisse', ...) : " +
 				"Check that 'Saucisse' id contains a array with one collision object!"
 		);
 
-		deepEqual(
-			obj.collision_matrix.Saucisse[0],
-			collision_matrix.Saucisse[0],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects passed in two function calls for 'Saucisse' id!"
+		for (var i=0; i< obj.collision_matrix.Saucisse.length; i++) 
+		{
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].controller,
+				collision_matrix.Saucisse[i].controller,
+				"Check that Saucisse Controller, index " + i + ",  is the same between collision matrix and test matrix!"
+			)
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].view,
+				collision_matrix.Saucisse[i].view,
+				"Check that Saucisse View, index " + i + ", is the same between collision matrix and test matrix!"
+			)
+		}
+
+		strictEqual(
+			obj.collision_matrix.Saucisse[1].collision,
+			'playerCollideWithSaucisse',
+			"Check that method to call is 'playerCollideWithSaucisse'!"
 		);
 	}
 
 	{
 		var obj = new mvcCollision.Model('collision');
-		var obj_player = { constructor: 'function() {}' };
-		var obj_tir = { constructor: 'function() {}' };
-		obj.add('Saucisse', {controller: obj_player, collision: 'function() {}' }, {controller: obj_tir, collision: 'function() {}' });
+		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+		var obj_controller_player = new mvcPlayer.Controller(200,200);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 240, 200);
+		obj.add(obj_controller_saucisse, obj_controller_player, obj_controller_tir);
 		var collision_matrix={};
-		collision_matrix.Saucisse = new Array({controller: obj_player, collision: 'function() {}' }, {controller: obj_tir, collision: 'function() {}' });
+		collision_matrix.Saucisse = new Array(
+			{controller: obj_controller_saucisse, view: obj_controller_saucisse },
+			{controller: obj_controller_player, view: obj_controller_player },
+			{controller: obj_controller_tir, view: obj_controller_tir }
+		);
 
 		ok(
 			obj.collision_matrix.Saucisse !== undefined,
@@ -220,34 +534,45 @@ function testModelMethodAdd()
 		);
 		
 		ok(
-			obj.collision_matrix.Saucisse.length === 2,
+			obj.collision_matrix.Saucisse.length === 3,
 			"mvcCollision.Model.add('Saucisse', ...) : " +
 				"Check that 'Saucisse' id contains a array with two collision objects!"
 		);
 
-		deepEqual(
-			obj.collision_matrix.Saucisse[0],
-			collision_matrix.Saucisse[0],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects passed in two function calls for 'Saucisse' id!"
-		);
-		
-		deepEqual(
-			obj.collision_matrix.Saucisse[1],
-			collision_matrix.Saucisse[1],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects passed in two function calls for 'Saucisse' id!"
+		for (var i=0; i< obj.collision_matrix.Saucisse.length; i++) 
+		{
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].controller,
+				collision_matrix.Saucisse[i].controller,
+				"Check that Saucisse Controller, index " + i + ",  is the same between collision matrix and test matrix!"
+			)
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].view,
+				collision_matrix.Saucisse[i].view,
+				"Check that Saucisse View, index " + i + ", is the same between collision matrix and test matrix!"
+			)
+		}
+
+		strictEqual(
+			obj.collision_matrix.Saucisse[1].collision,
+			'playerCollideWithSaucisse',
+			"Check that method to call is 'playerCollideWithSaucisse'!"
 		);
 	}
 
 	{
 		var obj = new mvcCollision.Model('collision');
-		var obj_player = { constructor: 'function() {}' };
-		var obj_tir = { constructor: 'function() {}' };
-		obj.add('Saucisse', {controller: obj_player, collision: 'function() {}' });
-		obj.add('Saucisse', {controller: obj_tir, collision: 'function() {}' });
+		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+		var obj_controller_player = new mvcPlayer.Controller(200,200);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 240, 200);
+		obj.add(obj_controller_saucisse, obj_controller_player);
+		obj.add(obj_controller_saucisse, obj_controller_tir);
 		var collision_matrix={};
-		collision_matrix.Saucisse = new Array({controller: obj_player, collision: 'function() {}' },{controller: obj_tir, collision: 'function() {}' });
+		collision_matrix.Saucisse = new Array(
+			{controller: obj_controller_saucisse, view: obj_controller_saucisse },
+			{controller: obj_controller_player, view: obj_controller_player },
+			{controller: obj_controller_tir, view: obj_controller_tir }
+		);
 
 		ok(
 			obj.collision_matrix.Saucisse !== undefined,
@@ -256,36 +581,54 @@ function testModelMethodAdd()
 		);
 		
 		ok(
-			obj.collision_matrix.Saucisse.length === 2,
+			obj.collision_matrix.Saucisse.length === 3,
 			"mvcCollision.Model.add('Saucisse', ...) : " +
 				"Check that 'Saucisse' id contains a array with two collision objects!"
 		);
 
-		deepEqual(
-			obj.collision_matrix.Saucisse[0],
-			collision_matrix.Saucisse[0],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects passed in two function calls for 'Saucisse' id!"
-		);
-		
-		deepEqual(
-			obj.collision_matrix.Saucisse[1],
-			collision_matrix.Saucisse[1],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects passed in two function calls for 'Saucisse' id!"
+		for (var i=0; i< obj.collision_matrix.Saucisse.length; i++) 
+		{
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].controller,
+				collision_matrix.Saucisse[i].controller,
+				"Check that Saucisse Controller, index " + i + ",  is the same between collision matrix and test matrix!"
+			)
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].view,
+				collision_matrix.Saucisse[i].view,
+				"Check that Saucisse View, index " + i + ", is the same between collision matrix and test matrix!"
+			)
+		}
+
+		strictEqual(
+			obj.collision_matrix.Saucisse[1].collision,
+			'playerCollideWithSaucisse',
+			"Check that method to call is 'playerCollideWithSaucisse'!"
 		);
 	}
 
 	{
 		var obj = new mvcCollision.Model('collision');
-		var obj_player = { constructor: 'constructor' };
-		var obj_tir = { constructor: 'constructor' };
-		var obj_blife = { constructor: 'constructor' };
-		obj.add('Saucisse', {controller: obj_player, collision: 'function() {}' }, {controller: obj_tir, collision: 'function() {}' });
-		obj.add('BonusLife', {controller: obj_player, collision: 'function() {}' });
+		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
+		var obj_controller_player = new mvcPlayer.Controller(200,200);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 240, 200);
+		var obj_controller_bonus = new mvcBonus.Controller(240, 200);
+
+		obj.add(obj_controller_saucisse , obj_controller_player, obj_controller_tir);
+		obj.add(obj_controller_bonus, obj_controller_player, obj_controller_tir);
+
 		var collision_matrix={};
-		collision_matrix.Saucisse = new Array({controller: obj_player, collision: 'function() {}' }, {controller: obj_tir, collision: 'function() {}' });
-		collision_matrix.BonusLife = new Array({controller: obj_player, collision: 'function() {}' });
+		collision_matrix.Saucisse = new Array(
+			{controller: obj_controller_saucisse, view: obj_controller_saucisse },
+			{controller: obj_controller_player, view: obj_controller_player },
+			{controller: obj_controller_tir, view: obj_controller_tir }
+		);
+
+		collision_matrix.BonusLife = new Array(
+			{controller: obj_controller_bonus, view: obj_controller_bonus },
+			{controller: obj_controller_player, view: obj_controller_player },
+			{controller: obj_controller_tir, view: obj_controller_tir }
+		);
 
 		ok(
 			obj.collision_matrix.Saucisse !== undefined,
@@ -294,44 +637,62 @@ function testModelMethodAdd()
 		);
 		
 		ok(
-			obj.collision_matrix.Saucisse.length === 2,
+			obj.collision_matrix.Saucisse.length === 3,
 			"mvcCollision.Model.add('Saucisse', ...) : " +
 				"Check that 'Saucisse' id contains a array with two collision objects!"
 		);
 		
-		deepEqual(
-			obj.collision_matrix.Saucisse[0],
-			collision_matrix.Saucisse[0],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects for 'Saucisse' id!"
+		for (var i=0; i< obj.collision_matrix.Saucisse.length; i++) 
+		{
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].controller,
+				collision_matrix.Saucisse[i].controller,
+				"Check that Saucisse Controller, index " + i + ",  is the same between collision matrix and test matrix!"
+			)
+			strictEqual(
+				obj.collision_matrix.Saucisse[i].view,
+				collision_matrix.Saucisse[i].view,
+				"Check that Saucisse View, index " + i + ", is the same between collision matrix and test matrix!"
+			)
+		}
+
+		strictEqual(
+			obj.collision_matrix.Saucisse[1].collision,
+			'playerCollideWithSaucisse',
+			"Check that method to call is 'playerCollideWithSaucisse'!"
 		);
 
-		deepEqual(
-			obj.collision_matrix.Saucisse[1],
-			collision_matrix.Saucisse[1],
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that collision_matrix array contains two collision objects for 'Saucisse' id!"
-		);
-		
 		ok(
 			obj.collision_matrix.BonusLife !== undefined,
-			"mvcCollision.Model.add('BonusLife', ...) : " +
+			"mvcCollision.Model.add('BonusLife', ...) : " + 
 				"Check that 'BonusLife' id is defined!"
-		)
+		);
 		
 		ok(
-			obj.collision_matrix.BonusLife.length === 1,
-			"mvcCollision.Model.add('Saucisse', ...) : " +
-				"Check that 'Saucisse' id contains a array with one collision objects!"
-		);
-
-		deepEqual(
-			obj.collision_matrix.BonusLife[0],
-			collision_matrix.BonusLife[0] ,
-			"mvcCollision.Model.add('BonusLife', ...) :" +
-				"Check that collision_matrix array contains two collision objects for 'BonusLife' id!"
+			obj.collision_matrix.BonusLife.length === 3,
+			"mvcCollision.Model.add('BonusLife', ...) : " +
+				"Check that 'BonusLife' id contains a array with two collision objects!"
 		);
 		
+		for (var i=0; i< obj.collision_matrix.BonusLife.length; i++) 
+		{
+			strictEqual(
+				obj.collision_matrix.BonusLife[i].controller,
+				collision_matrix.BonusLife[i].controller,
+				"Check that BonusLife Controller, index " + i + ",  is the same between collision matrix and test matrix!"
+			)
+			strictEqual(
+				obj.collision_matrix.BonusLife[i].view,
+				collision_matrix.BonusLife[i].view,
+				"Check that BonusLife View, index " + i + ", is the same between collision matrix and test matrix!"
+			)
+		}
+
+		strictEqual(
+			obj.collision_matrix.BonusLife[1].collision,
+			'playerCollideWithBonusLife',
+			"Check that method to call is 'playerCollideWithBonusLife'!"
+		);		
 	}
 }
 
@@ -531,57 +892,57 @@ function testControllerMethodPlayerCollideWithSaucisse()
 	}
 }
 
-function testControllerMethodTirCollideWithSaucisse()
+function testControllerMethodFireCollideWithSaucisse()
 {
-	console.log('testControllerMethodTirCollisionWithSaucisse\n-----------------------------------------');
+	console.log('testControllerMethodFireCollisionWithSaucisse\n-----------------------------------------');
 	
 	{
 		var obj = new mvcCollision.Controller('controller test');
-		ok(obj.tirCollideWithSaucisse !== undefined, "mvcCollision.Controller.tirCollideWithSaucisse() : Check that this method is defined!");
+		ok(obj.fireCollideWithSaucisse !== undefined, "mvcCollision.Controller.fireCollideWithSaucisse() : Check that this method is defined!");
 	}
 
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.tirCollideWithSaucisse()
+			obj.fireCollideWithSaucisse()
 		},
 		'\'obj_controller_saucisse\' is not Mvc Saucisse Controller Object!',
-		"mvcCollision.Controller.tirCollideWithSaucisse() : " +
+		"mvcCollision.Controller.fireCollideWithSaucisse() : " +
 			"Check that exception is created with no parameter!"
 	);
 	
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.tirCollideWithSaucisse({})
+			obj.fireCollideWithSaucisse({})
 		},
 		'\'obj_controller_saucisse\' is not Mvc Saucisse Controller Object!',
-		"mvcCollision.Controller.tirCollideWithSaucisse() : " +
+		"mvcCollision.Controller.fireCollideWithSaucisse() : " +
 			"Check that exception is created with no saucisse controller object in parameter!"
 	);
 
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.tirCollideWithSaucisse(new mvcSaucisse.Controller())
+			obj.fireCollideWithSaucisse(new mvcSaucisse.Controller())
 		},
 		'\'obj_controller_collision\' is not Mvc Fire Controller Object!',
-		"mvcCollision.Controller.tirCollideWithSaucisse(new mvcSaucisse.Controller()) : " +
+		"mvcCollision.Controller.fireCollideWithSaucisse(new mvcSaucisse.Controller()) : " +
 			"Check that exception is created with no fire controller object in parameter!"
 	);
 
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.tirCollideWithSaucisse(new mvcSaucisse.Controller(), 'toto')
+			obj.fireCollideWithSaucisse(new mvcSaucisse.Controller(), 'toto')
 		},
 		'\'obj_controller_collision\' is not Mvc Fire Controller Object!',
-		"mvcCollision.Controller.tirCollideWithSaucisse(new mvcSaucisse.Controller(), 'toto') : " +
+		"mvcCollision.Controller.fireCollideWithSaucisse(new mvcSaucisse.Controller(), 'toto') : " +
 			"Check that exception is created with no fire controller object in parameter!"
 	);
 	
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.tirCollideWithSaucisse(new mvcSaucisse.Controller(), {})
+			obj.fireCollideWithSaucisse(new mvcSaucisse.Controller(), {})
 		},
 		'\'obj_controller_collision\' is not Mvc Fire Controller Object!',
-		"mvcCollision.Controller.tirCollideWithSaucisse(new mvcSaucisse.Controller(), {}) : " +
+		"mvcCollision.Controller.fireCollideWithSaucisse(new mvcSaucisse.Controller(), {}) : " +
 			"Check that exception is created with no fire controller object in parameter!"
 	);
 
@@ -590,17 +951,17 @@ function testControllerMethodTirCollideWithSaucisse()
 		var obj_controller_saucisse = new mvcSaucisse.Controller(true);
 		var obj_controller_player = new mvcPlayer.Controller();
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player);
-		obj.tirCollideWithSaucisse(obj_controller_saucisse, obj_controller_tir);
+		obj.fireCollideWithSaucisse(obj_controller_saucisse, obj_controller_tir);
 		strictEqual(
 			obj_controller_player.getLife(),
 			3,
-			"mvcCollision.Controller.tirCollideWithSaucisse(obj_model_saucisse, obj_controller_player) : " +
+			"mvcCollision.Controller.fireCollideWithSaucisse(obj_model_saucisse, obj_controller_player) : " +
 				"Check that player lose a life with 'Pourrie' Saucisse collision!"
 		);
 		strictEqual(
 			obj_controller_player.getScore(),
 			3,
-			"mvcCollision.Controller.tirCollideWithSaucisse(obj_model_saucisse, obj_controller_player) : " +
+			"mvcCollision.Controller.fireCollideWithSaucisse(obj_model_saucisse, obj_controller_player) : " +
 				"Check that player score didn't change with 'Pourrie' Saucisse collision!"
 		); 
 	}
@@ -610,17 +971,17 @@ function testControllerMethodTirCollideWithSaucisse()
 		var obj_controller_saucisse = new mvcSaucisse.Controller(false);
 		var obj_controller_player = new mvcPlayer.Controller()
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player);
-		obj.tirCollideWithSaucisse(obj_controller_saucisse, obj_controller_tir);
+		obj.fireCollideWithSaucisse(obj_controller_saucisse, obj_controller_tir);
 		strictEqual(
 			obj_controller_player.getLife(),
 			3,
-			"mvcCollision.Controller.tirCollideWithSaucisse(obj_model_saucisse, obj_controller_tir) : "+
+			"mvcCollision.Controller.fireCollideWithSaucisse(obj_model_saucisse, obj_controller_tir) : "+
 				"Check that player life didn't change with 'Bonne' Saucisse collision!"
 		);
 		strictEqual(
 			obj_controller_player.getScore(),
 			2,
-			"mvcCollision.Controller.tirCollideWithSaucisse(obj_model_saucisse, obj_controller_tir) : "+ 
+			"mvcCollision.Controller.fireCollideWithSaucisse(obj_model_saucisse, obj_controller_tir) : "+ 
 				"Check that player score value is 2 points with 'Bonne' Saucisse collision!"
 		); 
 	}
@@ -640,161 +1001,115 @@ function testControllerMethodDisplay()
 			obj.display()
 		},
 		'\'Model Collision\' is not a Object!',
-		"mvcCollision.Controller.display() : Check that exception is up with no parameter!"
+		"mvcCollision.Controller.display() : Check that exception is thrown with no parameter!"
 	);
 	
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			obj.display({x:10,y:10})
-		},
-		'No defined getParent() method in \'Model Collision\' object!',
-		"mvcCollision.Controller.display({x:10,y:10}) : Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}})
-		},
-		'No defined isCollideWith() method in \'Model Collision\' object!',
-		"mvcCollision.Controller.display({x:10,y:10}) : Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() {} })
-		},
-		'No defined setCollideWith() method in \'Model Collision\' object!',
-		"mvcCollision.Controller.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() {} }) : " +
-			"Check that exception is up when it is not an Observable object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;} });
-		},
-		'No defined getView() method in \'Controller Collision\' object!',
-		"mvcCollision.Controller.display({x:10,y:10,getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;}}) : Check that exception is up with it is not an Collision Object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			obj.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() {}, setCollideWith : function() {}, getView : 100});
+			obj.display({});
 		},
 		'No defined getCollisionId() method in \'Controller Collision\' object!',
-		"mvcCollision.Controller.display({x:10,y:10, getParent : function() { return this;}, isCollideWith : function() { return this;}, setCollideWith : function() { return this;}, getView : 100}) : Check that exception is up with it is not an Collision Object!"
+		"mvcCollision.Controller.display({}) : " +
+			"Check that exception is thrown when controller object doesn't have a method getCollisionId()!"
 	);
 
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = new mvcPlayer.Controller(200,200);
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.display(obj_controller_saucisse, obj_controller_player);
+			var obj_model = {
+				getCollisionId: function() { return 100; }
+			};
+			obj.display(obj_model);
+		},
+		'\'id_collision\' type is not string literal!',
+		"mvcCollision.Controller.display(obj_model) : " +
+			"Check that exception is thrown when getCollisionId() method returns a bad id collision!"
+	);
+
+	throws( function() {
+			var obj = new mvcCollision.Controller('controller test');
+			var obj_model = {
+				getCollisionId: function() { return 'Saucisse'; }
+			};
+			obj.display(obj_model);
 		},
 		'\'Saucisse\' is unknown in the collision matrix!',
 		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : "
-			+ "Check that exception is thrown with collision Player/Saucisse is not specified!"
+			+ "Check that exception is thrown when collision Player/Saucisse is not entered!"
 	);
 
 	throws( function() {
 			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = 'toto';
 			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'toto' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
+			var obj_controller_player = new mvcPlayer.Controller(200,200);
+			obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player);
+			var obj_model = {
+				getCollisionId: function() { return 'Saucisse'; }
+			};
+			obj.display(obj_model);
 		},
-		'\'Controller Collision\' is not a Object!',
+		'Inconsistency between entered Model object and this in argument!',
 		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not object!"
+			"Check that exception is thrown when display method call has a different model object in parameter than the model object entered in collision matrix!"
 	);
 
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = {};
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
-		},
-		'No defined getView() method in \'Controller Collision\' object!',
-		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not Controller object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = {getView: function() { return this;}};
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
-		},
-		'No defined getCollisionId() method in \'Controller Collision\' object!',
-		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not Controller object!"
-	);
-
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = {getView: function() { return 'toto';}, getCollisionId:function() { return 'Player';}};
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
-		},
-		'\'View Collision\' is not a Object!',
-		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not View object!"
-	);
-	
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = {getView: function() { return this;}, getCollisionId:function() { return 'Player';}, x:10};
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
-		},
-		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
-		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not View object!"
-	);
-	
-	throws( function() {
-			var obj = new mvcCollision.Controller('controller test');
-			var obj_controller_player = {getView: function() { return this;}, getCollisionId:function() { return 'Player'}, y:10};
-			var obj_controller_saucisse = new mvcSaucisse.Controller(false, 200, 200);
-			obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
-			obj.display(obj_controller_saucisse, obj_controller_player);
-		},
-		'No \'createjs coordonnees\' methods are defined in \'View Collision\' object!',
-		"mvcCollision.Controller.display(obj_model_saucisse, obj_controller_player) : " +
-			"Check that exception is thrown when the second collision object is not View object!"
-	);
-	
 	{  // Pas de collision entre une Saucisse et le vaisseau
 		var obj = new mvcCollision.Controller('controller test');
 		var obj_controller_player = new mvcPlayer.Controller(200,200);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 100, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player);
 		obj.display(obj_controller_saucisse, obj_controller_player)
-		strictEqual(obj_controller_player.getLife(),3, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player life didn't change with no collision!");
-		strictEqual(obj_controller_player.getScore(),0,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player score didn't change with with no collision!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : " +
+				"Check that player score didn't change with with no collision!"
+		); 
 	}
 	
 	{ // Collision entre une Bonne Saucisse et le vaisseau
 		var obj = new mvcCollision.Controller('controller test');
 		var obj_controller_player = new mvcPlayer.Controller(100,100);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 120, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player);
 		obj.display(obj_controller_saucisse, obj_controller_player)
-		strictEqual(obj_controller_player.getLife(),3, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player life didn't change with 'Bonne' Saucisse collision!");
-		strictEqual(obj_controller_player.getScore(),2,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : "+
+				"Check that player life didn't change with 'Bonne' Saucisse collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			2,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : " +
+				"Check that player score value is 2 points with 'Bonne' Saucisse collision!"
+		); 
 	}
 	
 	{ // Collision entre une Mauvaisse Saucisse et le vaisseau
 		var obj = new mvcCollision.Controller('controller test');
 		var obj_controller_player = new mvcPlayer.Controller(100,100);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(true, 120, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player);
 		obj.display(obj_controller_saucisse, obj_controller_player)
-		strictEqual(obj_controller_player.getLife(),2, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player lose a life with with 'Mauvaise' Saucisse collision!!");
-		strictEqual(obj_controller_player.getScore(),0,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : Check that player score didn't change with 'Mauvaise' Saucisse collision!!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			2,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : " +
+				"Check that player lose a life with with 'Mauvaise' Saucisse collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_player) : " +
+				"Check that player score didn't change with 'Mauvaise' Saucisse collision!"
+		); 
 	}
 
 	{  // Pas de collision entre une Saucisse et le tir
@@ -802,10 +1117,20 @@ function testControllerMethodDisplay()
 		var obj_controller_player = new mvcPlayer.Controller(0,200);
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 264,200);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 100, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' }, {controller: obj_controller_tir, collision: 'tirCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player, obj_controller_tir);
 		obj.display(obj_controller_saucisse, obj_controller_tir)
-		strictEqual(obj_controller_player.getLife(),3, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player life didn't change with no collision!");
-		strictEqual(obj_controller_player.getScore(),0,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player score didn't change with with no collision!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player score didn't change with with no collision!"
+		); 
 	}
 	
 	{ // Collision entre une Bonne Saucisse et le tir
@@ -813,10 +1138,20 @@ function testControllerMethodDisplay()
 		var obj_controller_player = new mvcPlayer.Controller(0,100);
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(false, 120, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' }, {controller: obj_controller_tir, collision: 'tirCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player, obj_controller_tir);
 		obj.display(obj_controller_saucisse, obj_controller_tir)
-		strictEqual(obj_controller_player.getLife(),3, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player life didn't change with 'Bonne' Saucisse collision!");
-		strictEqual(obj_controller_player.getScore(),2,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player life didn't change with 'Bonne' Saucisse collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			2,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player score value is 2 points with 'Bonne' Saucisse collision!"
+		); 
 	}
 	
 	{ // Collision entre une Mauvaisse Saucisse et le tir
@@ -824,10 +1159,20 @@ function testControllerMethodDisplay()
 		var obj_controller_player = new mvcPlayer.Controller(0,100);
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(true, 120, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' }, {controller: obj_controller_tir, collision: 'tirCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player, obj_controller_tir);
 		obj.display(obj_controller_saucisse, obj_controller_tir)
-		strictEqual(obj_controller_player.getLife(),3, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player lose a life with with 'Mauvaise' Saucisse collision!!");
-		strictEqual(obj_controller_player.getScore(),3,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player score didn't change with 'Mauvaise' Saucisse collision!!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player lose a life with with 'Mauvaise' Saucisse collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " +
+				"Check that player score didn't change with 'Mauvaise' Saucisse collision!"
+		); 
 	}
 
 	{ // Collision entre une Bonne Saucisse, le player et le tir
@@ -835,9 +1180,19 @@ function testControllerMethodDisplay()
 		var obj_controller_player = new mvcPlayer.Controller(0,100);
 		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 30,100);
 		var obj_controller_saucisse = new mvcSaucisse.Controller(true, 60, 100);
-		obj.obj_model_collision.add('Saucisse', {controller: obj_controller_player, collision: 'playerCollideWithSaucisse' }, {controller: obj_controller_tir, collision: 'tirCollideWithSaucisse' });
+		obj.obj_model_collision.add(obj_controller_saucisse, obj_controller_player, obj_controller_tir);
 		obj.display(obj_controller_saucisse, obj_controller_tir)
-		strictEqual(obj_controller_player.getLife(),2, "mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player lose a life with with 'Mauvaise' Saucisse collision!!");
-		strictEqual(obj_controller_player.getScore(),0,"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : Check that player score didn't change with 'Mauvaise' Saucisse collision!!"); 
+		strictEqual(
+			obj_controller_player.getLife(),
+			2,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : "+
+				"Check that player lose a life with with 'Mauvaise' Saucisse collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse, obj_controller_tir) : " + 
+				"Check that player score didn't change with 'Mauvaise' Saucisse collision!"
+		); 
 	}
 }
