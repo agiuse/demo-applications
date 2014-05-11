@@ -141,6 +141,9 @@
 		if ( obj_model_collision.getParent === undefined )
 			throw 'No defined getParent() method in \'Model Collision\' object!';
 
+		if ( obj_model_collision.getCollisionId === undefined )
+			throw 'No defined getCollisionId() method in \'Model Collision\' object!';
+
 		if ( obj_model_collision.isCollideWith === undefined )
 			throw 'No defined isCollideWith() method in \'Model Collision\' object!';
 

@@ -314,21 +314,42 @@ function testObjectModelCollision()
 	);
 
 	throws( function() {
-			var r = common.IsObjectModelCollision({getParent: function() {} });
+			var r = common.IsObjectModelCollision({
+				getParent: function() {}
+			});
 		},
-		'No defined isCollideWith() method in \'Model Collision\' object!',
+		'No defined getCollisionId() method in \'Model Collision\' object!',
 		"common.IsObjectModelCollision({getParent: function() {}}) : Test of parameter with object without getParent() method!"
 	);
 
 	throws( function() {
-			var r = common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {} });
+			var r = common.IsObjectModelCollision({
+				getParent: function() {},
+				getCollisionId: function() {}
+			});
+		},
+		'No defined isCollideWith() method in \'Model Collision\' object!',
+		"common.IsObjectModelCollision({getParent: function() {}, getCollisionId: function() {}}) : Test of parameter with object without getParent() method!"
+	);
+
+	throws( function() {
+			var r = common.IsObjectModelCollision({
+				getParent: function() {},
+				getCollisionId: function() {},
+				isCollideWith: function() {}
+			});
 		},
 		'No defined setCollideWith() method in \'Model Collision\' object!',
-		"common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}}) : Test of parameter with object without getParent() method!"
+		"common.IsObjectModelCollision({getParent: function() {}, getCollisionId: function() {}, isCollideWith: function() {}}) : Test of parameter with object without getParent() method!"
 	);
 	
 	strictEqual(
-		common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}, setCollideWith : function() {}}),
+		common.IsObjectModelCollision({
+			getParent: function() {},
+			getCollisionId: function() {},
+			isCollideWith: function() {}, 
+			setCollideWith : function() {}
+		}),
 		true,
 		"common.IsObjectModelCollision({getParent: function() {}, isCollideWith: function() {}, setCollideWith : function() {} }) : check that result test with object collision parameter type is true"
 	);
@@ -366,14 +387,19 @@ function testObjectControllerCollision()
 	);
 
 	throws( function() {
-			var r = common.IsObjectControllerCollision({getView: function() {} });
+			var r = common.IsObjectControllerCollision({
+				getView: function() {}
+			});
 		},
 		'No defined getCollisionId() method in \'Controller Collision\' object!',
 		"common.IsObjectControllerCollision(getView: function() {} }) : Test of parameter with object without getCollisionId() method!"
 	);
 
 	strictEqual(
-		common.IsObjectControllerCollision({getView: function() {}, getCollisionId: function() {}}),
+		common.IsObjectControllerCollision({
+			getView: function() {},
+			getCollisionId: function() {}
+		}),
 		true,
 		"common.IsObjectControllerCollision({getView: function() {}, getCollisionId: function() {}}) : check that result test with object collision parameter type is true"
 	);
