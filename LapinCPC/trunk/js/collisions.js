@@ -362,7 +362,7 @@ mvcCollision.NO_COLLISION = false;
 		}
 	}
 
-	mvcCollision.Controller.prototype.playerCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_collision)
+	mvcCollision.Controller.prototype.playerCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_player)
 	{
 		if (obj_controller_saucisse instanceof mvcSaucisse.Controller)
 		{

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Test de MVC Collisions</title>
+  <link rel="stylesheet" href="../resources/qunit-1.14.0.css">
+  <script type="text/javascript" src="../lib/qunit-1.14.0.js"></script>
+  <script type="text/javascript" src="../../lib/easeljs-0.7.1.min.js"></script>
+  <script type="text/javascript" src="../../lib/preloadjs-0.4.1.min.js"></script>
+  <script type="text/javascript" src="../../lib/soundjs-0.4.1.min.js"></script>
+  <script type="text/javascript" src="../../js/common.js"></script>
+  <script type="text/javascript" src="../../js/observables.js"></script>
+  <script type="text/javascript" src="../../js/player.js"></script>
+  <script type="text/javascript" src="../../js/saucisses.js"></script>
+  <script type="text/javascript" src="../../js/collisions.js"></script>
+  <script type="text/javascript" src="./testViewCollisions.js"></script>
+</head>
+<body onload="startTest();">
+ <input type="button" value="pause" id="pauseBtn" onclick="testPause();">
+ <input type="button" value="stop" id="stopBtn" onclick="testEnd();">
+  <select onchange="createjs.Ticker.setFPS(Number(this.value));">
+	<option value="10">10 fps</option>
+	<option value="20">20 fps</option>
+	<option value="30" selected>30 fps</option>
+	<option value="40">40 fps</option>
+	<option value="50">50 fps</option>
+	<option value="60">60 fps</option>
+  </select>
+ <div id="qunit"></div>
+ <div id="qunit-fixture"></div>
+ <canvas height="480" width="640" id="gameCanvas" style="display: block; margin: auto;"></canvas>
+</body></html>

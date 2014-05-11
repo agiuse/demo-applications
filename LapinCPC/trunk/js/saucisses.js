@@ -59,8 +59,10 @@ class mvcSaucisse.Model {
 	int getSpeed()
 	Boolean isPourrie()
 	void add(Object obj_observable)
+	__ collision
 	void setCollideWith(boolean collision_state)
 	boolean isCollideWith()
+	String getCollisionId()
 	__ notify __
 	void preparer(int x, int y, int rotation, int vitesse, Boolean pourrie)
 	void set(int x)
@@ -75,6 +77,7 @@ class mvcSaucisse.Controller {
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
 	mvcSaucisse.View getView()
+	mvcSaucisse.Model getModel()
 	void coordonneeHasOBservedBy(Object obj_observer)
 	__ Collision __
 	String getCollisionId()
@@ -547,7 +550,12 @@ mvcSaucisse.NO_COLLISION=false;
 	{
 		return this.collision_state;
 	};
-	
+
+	mvcSaucisse.Model.prototype.getCollisionId = function()
+	{
+		return 'Saucisse';
+	};
+
 }());
 // ============================================================================================================================
 // Classe mvcSaucisse.Controller
@@ -605,9 +613,20 @@ mvcSaucisse.NO_COLLISION=false;
 		);
 	}
 
+
+	mvcSaucisse.Controller.prototype.isPourrie = function()
+	{
+		return this.obj_model_saucisse.isPourrie();
+	};
+
 	mvcSaucisse.Controller.prototype.getView = function()
 	{
 		return this.obj_view_saucisse;
+	};
+
+	mvcSaucisse.Controller.prototype.getModel = function()
+	{
+		return this.obj_model_saucisse;
 	};
 
 	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer)
@@ -617,11 +636,11 @@ mvcSaucisse.NO_COLLISION=false;
 
 	mvcSaucisse.Controller.prototype.getCollisionId = function()
 	{
-		return 'Saucisse';
+		return this.obj_model_saucisse.getCollisionId();
 	};
 
 	mvcSaucisse.Controller.prototype.setCollideWith = function(collision_state) {
-		this.obj_model_saucisse.setCollideWith = function(collision_state);
+		this.obj_model_saucisse.setCollideWith(collision_state);
 	}
 
 }());

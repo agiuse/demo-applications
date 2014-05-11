@@ -84,6 +84,7 @@ class mvcPlayer.Controller {
 	__ subscription by some external observers__
 	void scoreHasObservedBy(Object obj_observable)
 	void lifeHasObservedBy(Object obj_observable)
+	mvcFire.Controller getControllerFire()
 	__ execution __
 	void run()
 	void annulerRotation()
@@ -93,6 +94,7 @@ class mvcPlayer.Controller {
 	void moveToUp()
 	__ collision __
 	void collideWithSaucisse(boolean pourrie)
+	String getCollisionId()
 }
 
 mvcPlayer.Controller *-- mvcPlayer.View
@@ -457,6 +459,59 @@ end
 Controller --> Game : <I><< movement processing ended >></I>
 deactivate Controller
 @enduml
+
+@startuml
+title <b>MVC Player</b> sequence diagram
+hide footbox
+
+participant mvcCollision.Controller << (C,#ADD1B2) >>
+box "mvcPlayer"
+participant Controller << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
+endbox
+participant mvcSaucisse.View << (C,#ADD1B2) >>
+participant Exception
+
+legend left
+ Player.run() is done ; the player object must already be moved.
+ Saucisse.run() is done now and Model Saucisse notifying Controller Player !
+endlegend
+
+== Collision management ==
+mvcCollision.Controller -> Controller : CollideWithSaucisse(true/false)
+activate Controller
+alt bonne saucisse
+	Controller -> mvcPlayer : playSound('boing')
+	activate View
+	View --> Controller : <I><< boing >></I>
+	View
+	Controller --> Model : addPoints()
+	activate Model
+	note over Model : score notification
+	Model -> Observable : notify('display')
+	...
+	Observable --> Model : <I><< notification ended >></I>
+	Model --> Controller : <I><< Score Updated >></I>
+	deactivate Model
+else mauvaise saucisse
+	Controller -> View : playSound('pouet')
+	activate View
+	View --> Controller : <I><< pouet >></I>
+	deactivate View
+	Controller --> Model : removeLife()
+	activate Model
+	note over Model : life notification
+	Model -> Observable : notify('display')
+	...
+	Observable --> Model : <I><< notification ended >></I>
+	Model --> Controller : <I><< Life Updated >></I>
+	deactivate Model
+end
+Controller --> mvcCollision.Controller : <I><< Collision ended >></I>
+deactivate Controller
+@enduml
 */
 var mvcPlayer = {};
 
@@ -667,9 +722,8 @@ var mvcPlayer = {};
 		this.obj_model_joueur = new mvcPlayer.Model(this.name + '_model');
 		this.obj_model_joueur.addCoordonneeNotifier( this.obj_view_joueur );
 		
-		this.obj_controller_tir = new mvcFire.Controller(this.obj_stage, this.obj_queue,this.name + '_fire');
+		this.obj_controller_tir = new mvcFire.Controller(this.obj_stage, this.obj_queue, this, this.name + '_fire');
 		
-		this.collision_matrix = {};
 	 	console.log(this.name, ' Controller is created!');
 	}
 
@@ -677,6 +731,21 @@ var mvcPlayer = {};
 	{
 		this.obj_model_joueur.preparer(x, y, rotation, vitesse, nb_vies, nb_points);
 	}
+
+	mvcPlayer.Controller.prototype.getView = function()
+	{
+		return this.obj_view_joueur;
+	};
+
+	mvcPlayer.Controller.prototype.getModel = function()
+	{
+		return this.obj_model_joueur;
+	};
+
+	mvcPlayer.Controller.prototype.getControllerFire = function()
+	{
+		return this.obj_controller_tir;
+	};
 
 	// Abonne à l'observable Score par un observateur extérieur
 	mvcPlayer.Controller.prototype.scoreHasObservedBy = function(obj_observer)
@@ -848,6 +917,11 @@ var mvcPlayer = {};
 		return (this.obj_model_joueur.getLife() > 0 )
 	}
 
+	mvcPlayer.Controller.prototype.getCollisionId = function()
+	{
+		return 'player';
+	}
+
 	mvcPlayer.Controller.prototype.collideWithSaucisse = function(pourrie)
 	{
 		if (typeof pourrie !== 'boolean')
@@ -929,14 +1003,19 @@ mvcFire.Model *-- Observable : coordonnee_notifier
 class mvcFire.Controller {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
+	mvcPlayer.Controller obj_parent
 	String Name = "Controller_default"
 	==
-	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, mvcPlayer.Controller obj_parent, String name)
 	boolean isFired()
+	mvcFire.View getView()
 	__ notifier __
 	void fire(int x, int y , int vitesse)
 	__ execution __
 	void moveToRight()
+	__ collision __
+	String getCollisionId()
+	
 }
 
 mvcFire.Controller *-- mvcFire.View
@@ -1159,6 +1238,24 @@ end
 Controller --> mvcPlayer.Controller :  <I><< fire processing ended >></I>
 deactivate Controller
 @enduml
+
+@startuml
+title <b>MVC Fire</b> sequence diagram
+hide footbox
+
+participant mvcPlayer.Controller << (C,#ADD1B2) >>
+box "mvcFire"
+participant Controller << (C,#ADD1B2) >>
+participant Model << (C,#ADD1B2) >>
+participant Observable << (C,#ADD1B2) >>
+participant View << (C,#ADD1B2) >>
+endbox
+participant mvcPlayer.Model << (C,#ADD1B2) >>
+participant mvcSaucisse.View << (C,#ADD1B2) >>
+participant mvcSaucisse.Controller << (C,#ADD1B2) >>
+
+participant Exception
+@enduml
 */
 
 var mvcFire = {};
@@ -1334,10 +1431,15 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 {
 	'use strict';
 
-	mvcFire.Controller = function(obj_stage, obj_queue, name) 
+	mvcFire.Controller = function(obj_stage, obj_queue, obj_parent, name) 
 	{
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
+		if ( obj_parent instanceof mvcPlayer.Controller ) 
+			this.obj_parent = obj_parent;
+		else 
+			throw '\'obj_parent\' must be a mvcPlater.Controller Object!';
+
 		this.name = common.HasStringName(name, 'Controller_default');
 	
 		console.log(this.name, ' Controller is being created...');
@@ -1389,4 +1491,15 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 			this.obj_parent.getView().playSound('boing');
 		}
 	}	
+
+	mvcFire.Controller.prototype.getView = function()
+	{
+		return this.obj_view_fire;
+	};
+	
+	mvcFire.Controller.prototype.getCollisionId = function()
+	{
+		return 'fire';
+	}
+
 }());
