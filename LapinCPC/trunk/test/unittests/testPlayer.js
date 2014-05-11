@@ -1,5 +1,8 @@
 "use strict";
 
+// supprime le mvcFire pour les tests
+var	mvcFire={};
+
 // ===========================================================================================
 function startTest()
 {
@@ -20,15 +23,27 @@ function startTest()
 	test("Test des parametres des méthodes add()", testModelMethodAdds);
 	test("Test des parametres des getters", testModelMethodGetters);
 
-	module("Controller Player tests");
+	module("Controller Player tests", {
+		setup : function () {	
+			mvcFire.Controller = function() { this.x = 0;	this.y = 0;	this.vitesse = 16; this.fire_state = false;};
+			mvcFire.Controller.preparer = function() { this.x = 0;	this.y = 0;	this.vitesse = 16; this.fire_state = false; };
+			mvcFire.Controller.fire = function(x, y) { this.x = x;	this.y = y;	this.vitesse = 16; this.fire_state = true; };
+			mvcFire.Controller.prototype.isFired = function() { return this.fire_state; };
+			mvcFire.Controller.prototype.moveToRight = function() { if (this.x >=640) this.preparer();	else this.x = this.x - this.vitesse;}
+		}
+	});
 	test("Test des parametres du constructeur", testControllerConstructor);
 	test("Test des parametres de la méthode preparer()", testControllerMethodpreparer);
+	test("Test des parametres de la méthode getView()", testControllerMethodGetView);
+	test("Test des parametres de la méthode getModel()", testControllerMethodGetModel);
+	test("Test des parametres de la méthode getControllerFire()", testControllerMethodGetControllerFire);
 	test("Test des parametres de la méthode lifeHasObservedBy()", testControllerMethodlifeHasObservedBy);
 	test("Test des parametres de la méthode scoreHasObservedBy()", testControllerMethodscoreHasObservedBy);
 	test("Test des parametres des moveTo()", testControllerMethodMove);
 	test("Test des parametres de la méthode run()", testControllerMethodRun);
 	test("Test des parametres de la méthode isBeAlive()", testControllerMethodIsBeAlive);
-	test("Test des parametres de la méthode collideWithPlayer()", testControllerMethodCollideWithSaucisse);
+	test("Test des parametres de la méthode collideWithSaucisse()", testControllerMethodCollideWithSaucisse);
+	test("Test des parametres de la méthode getCollisionId()", testControllerMethodGetCollisionId);
 }
 
 // -----------------------------------------------------------------
@@ -1083,6 +1098,28 @@ function testControllerMethodpreparer()
 	}
 }
 
+function testControllerMethodGetView()
+{
+	console.log('testControllerMethodGetView\n-----------------------------------------');
+	
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 'controller test');
+		ok(obj.getView !== undefined, "mvcPlayer.Controller.getView() : Check that this method is defined!");
+		strictEqual(obj.getView(), obj.obj_view_joueur, "mvcPlayer.Controller.getView(), Check that this method returns View Saucisse reference!");
+	}
+}
+
+function testControllerMethodGetModel()
+{
+	console.log('testControllerMethodGetModel\n-----------------------------------------');
+	
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 'controller test');
+		ok(obj.getModel !== undefined, "mvcPlayer.Controller.getModel() : Check that this method is defined!");
+		strictEqual(obj.getModel(), obj.obj_model_joueur, "mvcPlayer.Controller.getModel(), Check that this method returns View Saucisse reference!");
+	}
+}
+
 function testControllerMethodscoreHasObservedBy()
 { 
 	console.log('testControllerMethodscoreHasObservedBy\n-----------------------------------------');
@@ -1512,5 +1549,27 @@ function testControllerMethodCollideWithSaucisse ()
 		obj.collideWithSaucisse(false);
 		strictEqual(obj.obj_model_joueur.getLife(),3, "mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player life didn't change with 'Bonne' Saucisse collision!");
 		strictEqual(obj.obj_model_joueur.getScore(),2,"mvcPlayer.Controller.collisionWithSaucisse(obj_model_saucisse) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+	}
+}
+
+function testControllerMethodGetCollisionId()
+{
+	console.log('testControllerMethodGetCollisionId\n-----------------------------------------');
+	
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 'controller test');
+		ok(obj.getCollisionId !== undefined, "mvcPlayer.Controller.getCollisionId() : Check that this method is defined!");
+		strictEqual(obj.getCollisionId(), 'player', "mvcPlayer.Controller.getCollisionId(), Check that this method returns 'player' value!");
+	}
+}
+
+function testControllerMethodGetControllerFire()
+{
+	console.log('testControllerMethodGetControllerFire\n-----------------------------------------');
+
+	{
+		var obj = new mvcPlayer.Controller(new createjs.Stage(), new createjs.LoadQueue, 'controller test');
+		ok(obj.getControllerFire !== undefined, "mvcPlayer.Controller.getControllerFire() : Check that this method is defined!");
+		strictEqual(obj.getControllerFire(), obj.obj_controller_tir, "mvcPlayer.Controller.getCollisionId(), Check that this method returns 'player' value!");
 	}
 }
