@@ -2,7 +2,7 @@
 // MVC Collision
 // ============================================================================================================================
 var mvcSaucisse = {};
-mvcSaucisse.Controller = function(name, pourrie,x,y) { this.name = name; this.pourrie = pourrie; this.x = x; this.y = y; this.collision_state = false; };
+mvcSaucisse.Controller = function(name, pourrie,x,y) { this.visible = true; this.name = name; this.pourrie = pourrie; this.x = x; this.y = y; this.collision_state = false; };
 mvcSaucisse.Controller.prototype.isPourrie = function() {  return this.pourrie; };
 mvcSaucisse.Controller.prototype.getParent = function() { return this; };
 mvcSaucisse.Controller.prototype.getView = function() { return this; };
@@ -10,20 +10,20 @@ mvcSaucisse.Controller.prototype.getModel = function() { return this; };
 mvcSaucisse.Controller.prototype.getCollisionId = function() { return 'Saucisse'; };
 mvcSaucisse.Controller.prototype.isCollideWith = function() { return this.collision_state; };
 mvcSaucisse.Controller.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
-mvcSaucisse.Controller.prototype.getVisible = function() { return true; };
+mvcSaucisse.Controller.prototype.getVisibility = function() { return this.visible; };
 
 var mvcBonus = {};
-mvcBonus.Controller = function(name, x,y) { this.name = name; this.x = x; this.y = y; this.collision_state = false; };
+mvcBonus.Controller = function(name, x,y) { this.visible = true; this.name = name; this.x = x; this.y = y; this.collision_state = false; };
 mvcBonus.Controller.prototype.getParent = function() { return this; };
 mvcBonus.Controller.prototype.getView = function() { return this; };
 mvcBonus.Controller.prototype.getModel = function() { return this; };
 mvcBonus.Controller.prototype.getCollisionId = function() { return 'BonusLife'; };
 mvcBonus.Controller.prototype.isCollideWith = function() { return this.collision_state; };
 mvcBonus.Controller.prototype.setCollideWith = function(state) { this.collision_state = (this.collision_state === false) ? state : true; };
-mvcBonus.Controller.prototype.getVisible = function() { return true; };
+mvcBonus.Controller.prototype.getVisibility = function() { return this.visible; };
 
 var mvcPlayer = {};
-mvcPlayer.Controller = function(x,y) { this.nb_points = 0; this.nb_vies = 3; this.x = x; this.y = y; };
+mvcPlayer.Controller = function(x,y) { this.visible = true; this.nb_points = 0; this.nb_vies = 3; this.x = x; this.y = y; };
 mvcPlayer.Controller.prototype.addScore = function(nb_points) { this.nb_points += nb_points };
 mvcPlayer.Controller.prototype.removeLife = function() { this.nb_vies--; };
 mvcPlayer.Controller.prototype.getLife = function() { return this.nb_vies; };
@@ -46,10 +46,10 @@ mvcPlayer.Controller.prototype.isCollision = function(obj_collision) {
 	);
 };
 mvcPlayer.Controller.prototype.getCollisionId = function() { return 'player'; };
-mvcPlayer.Controller.prototype.getVisible = function() { return true; };
+mvcPlayer.Controller.prototype.getVisibility = function() { return this.visible; };
 
 var mvcFire = {};
-mvcFire.Controller = function(obj_parent,x,y) { this.obj_parent = obj_parent; this.x = x; this.y = y;};
+mvcFire.Controller = function(obj_parent,x,y) { this.visible = true; this.obj_parent = obj_parent; this.x = x; this.y = y;};
 mvcFire.Controller.prototype.getParent = function() { return this; }
 mvcFire.Controller.prototype.getView = function() { return this; };
 mvcFire.Controller.prototype.collideWithSaucisse = function(pourrie) {
@@ -70,7 +70,7 @@ mvcFire.Controller.prototype.isCollision = function(obj_collision) {
 	);
 };
 mvcFire.Controller.prototype.getCollisionId = function() { return 'fire'; };
-mvcFire.Controller.prototype.getVisible = function() { return true; };
+mvcFire.Controller.prototype.getVisibility = function() { return this.visible; };
 
 function startTest()
 {
@@ -110,12 +110,16 @@ function startTest()
 	test("Test de la méthode fireCollideWithSaucisse() avec une mauvaise Saucisse.", testControllerMethodFireCollideWithSaucisse1);
 	test("Test de la méthode fireCollideWithSaucisse() avec une bonne Saucisse.", testControllerMethodFireCollideWithSaucisse2);
 	test("Test des arguments de la méthode display()", testControllerMethodArgumentDisplay);
-	test("Test de la méthode display() avec aucune collision", testControllerMethodDisplay1);
+	test("Test de la méthode display() avec aucune collision entre une Bonne Saucisse et le vaisseau", testControllerMethodDisplay1);
 	test("Test de la méthode display() avec une collision entre une Bonne Saucisse et le vaisseau", testControllerMethodDisplay2);
+	test("Test de la méthode display() avec aucune collision entre une Bonne Saucisse invisible et le vaisseau", testControllerMethodDisplay2_1);
 	test("Test de la méthode display() avec une collision entre une Mauvaise Saucisse et le vaisseau", testControllerMethodDisplay3);
+	test("Test de la méthode display() avec aucune collision entre une Mauvaise Saucisse invisible et le vaisseau", testControllerMethodDisplay3_1);
 	test("Test de la méthode display() avec aucune collision entre une Saucisse et le tir ", testControllerMethodDisplay4);
 	test("Test de la méthode display() avec une collision entre une Bonne Saucisse et le tir", testControllerMethodDisplay5);
+	test("Test de la méthode display() avec aucune collision entre une Saucisse invisible et le tir invisible", testControllerMethodDisplay5_1);
 	test("Test de la méthode display() avec une collision entre une Mauvaise Saucisse et le tir", testControllerMethodDisplay6);
+	test("Test de la méthode display() avec aucune collision entre une Saucisse invisible et le tir invisible", testControllerMethodDisplay6_1);
 	test("Test de la méthode display() avec une collision entre une Bonne Saucisse, le player et le tir (cas impossible)", testControllerMethodDisplay7);
 	test("Test de la méthode display() avec aucune collision entre deux Saucisse et le vaisseau", testControllerMethodDisplay8);
 	test("Test de la méthode display() avec une collision entre la bonne Saucisse sur les deux Saucisses et le vaisseau", testControllerMethodDisplay9);
@@ -277,7 +281,7 @@ function testModelMethodArgumentAdd3()
 			var obj = new mvcCollision.Model('collision');
 			var obj_controller = {
 				getView: function() { return this; },
-				getCollisionId: function() { return 'Saucisse'; }
+				getCollisionId: function() { return 'Saucisse'; },
 			};
 			obj.add('Saucisse', obj_controller);
 		},
@@ -285,7 +289,6 @@ function testModelMethodArgumentAdd3()
 		"mvcCollision.Model.add('Saucisse', obj_controller) : "+
 			"Check that exception is thrown when controller object doesn't have a method getModel()!"
 	);
-
 
 	throws( function() {
 			var obj = new mvcCollision.Model('collision');
@@ -658,7 +661,7 @@ function testModelMethodArgumentAdd6()
 			var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', false, 200, 200);
 			var obj_controller = {
 				getView: function() { return this; },
-				getCollisionId: function() { return 'Saucisse'; }
+				getCollisionId: function() { return 'Saucisse'; },
 			};
 			obj.add('Saucisse', obj_controller_saucisse, obj_controller);
 		},
@@ -666,7 +669,6 @@ function testModelMethodArgumentAdd6()
 		"mvcCollision.Model.add('Saucisse', obj_controller_saucisse, obj_controller) : " + 
 			"Check that exception is thrown when second controller object doesn't have a method getModel()!"
 	);
-
 
 	throws( function() {
 			var obj = new mvcCollision.Model('collision');
@@ -2427,7 +2429,60 @@ function testControllerMethodDisplay2()
 		); 
 	};
 };
-	
+
+function testControllerMethodDisplay2_1()
+{
+	'use strict';
+	console.log('testControllerMethodDisplay2_1\n-----------------------------------------');
+
+	{
+		var obj = new mvcCollision.Controller( 'controller test');
+		ok(obj.display !== undefined, "mvcCollision.Controller.display() : Check that this method is defined!");
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(100,100);
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', false, 120, 100);
+		obj_controller_saucisse.visible=false;
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_player);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(100,100);
+		obj_controller_player.visible=false;
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', false, 120, 100);
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_player);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+};
+
 function testControllerMethodDisplay3()
 {
 	'use strict';
@@ -2456,6 +2511,59 @@ function testControllerMethodDisplay3()
 			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
 				"Check that player score didn't change with 'Mauvaise' Saucisse collision!"
 		); 
+	};
+};
+
+function testControllerMethodDisplay3_1()
+{
+	'use strict';
+	console.log('testControllerMethodDisplay3_1\n-----------------------------------------');
+
+	{
+		var obj = new mvcCollision.Controller( 'controller test');
+		ok(obj.display !== undefined, "mvcCollision.Controller.display() : Check that this method is defined!");
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(100,100);
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', true, 120, 100);
+		obj_controller_saucisse.visible=false;
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_player);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(100,100);
+		obj_controller_player.visible=false;
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', true, 120, 100);
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_player);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);  
 	};
 };
 
@@ -2523,6 +2631,62 @@ function testControllerMethodDisplay5()
 	};
 };
 
+function testControllerMethodDisplay5_1()
+{
+	'use strict';
+	console.log('testControllerMethodDisplay5_1\n-----------------------------------------');
+	
+	{
+		var obj = new mvcCollision.Controller( 'controller test');
+		ok(obj.display !== undefined, "mvcCollision.Controller.display() : Check that this method is defined!");
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(0,100);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', false, 120, 100);
+		obj_controller_saucisse.visible=false;
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_tir);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+
+	{
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(0,100);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
+		obj_controller_tir.visible=false;
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', false, 120, 100);
+		obj.obj_model_collision.add('Saucisse', obj_controller_saucisse, obj_controller_tir);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+
+};
+
 function testControllerMethodDisplay6()
 {
 	'use strict';
@@ -2555,6 +2719,60 @@ function testControllerMethodDisplay6()
 	};
 };
 
+function testControllerMethodDisplay6_1()
+{
+	'use strict';
+	console.log('testControllerMethodDisplay6_1\n-----------------------------------------');
+	
+	{
+		var obj = new mvcCollision.Controller( 'controller test');
+		ok(obj.display !== undefined, "mvcCollision.Controller.display() : Check that this method is defined!");
+	};
+
+	{ // Collision entre une Mauvaisse Saucisse et le tir
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(0,100);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', true, 120, 100);
+		obj_controller_saucisse.visible=false;
+		obj.obj_model_collision.add('Saucisse',obj_controller_saucisse, obj_controller_tir);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+
+	{ // Collision entre une Mauvaisse Saucisse et le tir
+		var obj = new mvcCollision.Controller('controller test');
+		var obj_controller_player = new mvcPlayer.Controller(0,100);
+		var obj_controller_tir = new mvcFire.Controller(obj_controller_player, 100,100);
+		obj_controller_tir.visible=false;
+		var obj_controller_saucisse = new mvcSaucisse.Controller('saucisse1', true, 120, 100);
+		obj.obj_model_collision.add('Saucisse',obj_controller_saucisse, obj_controller_tir);
+		obj.display(obj_controller_saucisse.getModel());
+		strictEqual(
+			obj_controller_player.getLife(),
+			3,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player life didn't change with no collision!"
+		);
+		strictEqual(
+			obj_controller_player.getScore(),
+			0,
+			"mvcCollision.Controller.display(obj_controller_saucisse.getModel()) : " +
+				"Check that player score didn't change with with no collision!"
+		);
+	};
+};
 function testControllerMethodDisplay7()
 {
 	'use strict';

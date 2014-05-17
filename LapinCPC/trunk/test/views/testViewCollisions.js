@@ -6,6 +6,7 @@ function ViewStage() {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.touches = {};
 	this.sound_bruitage = 0.4;
+	
 }
 
 ViewStage.prototype = new createjs.Stage();
@@ -95,6 +96,23 @@ Keypress.prototype.run = function()
 	this.obj_stage.touches = this.touches;
 }
 
+// ----------------------------------------------------------------------------------------------------------------------------
+mvcFire.View.prototype.isOverCanvasTopRight = function() {
+	return ( this.x >= 640 );
+};
+
+mvcSaucisse.View.prototype.getVisibility = function() {
+	return ( this.x < 640 && this.visible );
+};
+
+mvcFire.View.prototype.getVisibility = function() {
+	return ( this.x < 640 && this.visible );
+};
+
+mvcPlayer.View.prototype.getVisibility = function() {
+	return this.visible;
+}
+
 // ============================================================================================================================
 var obj_queue;
 var obj_stage;
@@ -125,11 +143,23 @@ function runTest()
 {
 	console.log("Lancement des tests...");
 	obj_stage = new ViewStage();
+
+	var g_trait_640 = new createjs.Graphics();
+	g_trait_640.setStrokeStyle(1);
+	g_trait_640.beginStroke(createjs.Graphics.getRGB(0,0,0));
+	g_trait_640.moveTo(640, 0);
+	g_trait_640.lineTo(640, 600);
+	g_trait_640.endStroke();
+	
+	var trait_640 = new createjs.Shape(g_trait_640);
+	obj_stage.addChild(trait_640);
+	trait_640.visible = true;
 	
 	testCollisionBonneSaucisse();
 	testCollisionMauvaiseSaucisse();
 	testCollisionTirBonneSaucisse();
 	testCollisionTirMauvaiseSaucisse();
+	testCollisionPlayerTirSaucisses();
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);	
@@ -219,13 +249,12 @@ function testCollisionBonneSaucisse()
 	obj_lists[2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
 
 	obj_lists[3] = new mvcCollision.Controller('collision');
-	obj_lists[3].obj_model_collision.add(obj_lists[2], obj_lists[1]);
-	obj_lists[2].coordonneeHasObservedBy(obj_lists[3]);
+	obj_lists[3].obj_model_collision.add('Saucisse', obj_lists[2], obj_lists[1]);
+	// obj_lists[2].coordonneeHasObservedBy(obj_lists[3]);
 	
 };
 
-function testCollisionMauvaiseSaucisse()
-{
+function testCollisionMauvaiseSaucisse() {
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 2 : Controller Collision", "24px Arial", "#00000");
@@ -251,12 +280,11 @@ function testCollisionMauvaiseSaucisse()
 	obj_lists[6] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
 
 	obj_lists[7] = new mvcCollision.Controller('collision');
-	obj_lists[7].obj_model_collision.add(obj_lists[6], obj_lists[5]);
+	obj_lists[7].obj_model_collision.add('Saucisse', obj_lists[6], obj_lists[5]);
 	obj_lists[6].coordonneeHasObservedBy(obj_lists[7]);
 };
 
-function testCollisionTirBonneSaucisse()
-{
+function testCollisionTirBonneSaucisse() {
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 3 : Controller Collision", "24px Arial", "#00000");
@@ -278,20 +306,22 @@ function testCollisionTirBonneSaucisse()
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
 		{x:700, y:240, rotation:0, vitesse:4, pourrie:false},
-		{x:700, y:260, rotation:0, vitesse:4, pourrie:false},
-		{x:700, y:285, rotation:0, vitesse:4, pourrie:false}
+		{x:800, y:260, rotation:0, vitesse:4, pourrie:true},
+		{x:700, y:285, rotation:0, vitesse:4, pourrie:false},
+		{x:800, y:240, rotation:0, vitesse:4, pourrie:true}
 	);
 
-	obj_lists[10] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[10] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
+	obj_lists[11] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
 
-	obj_lists[11] = new mvcCollision.Controller('collision');
-	obj_lists[11].obj_model_collision.add(obj_lists[10], obj_lists[9], obj_lists[9].getControllerFire() );
-	obj_lists[10].coordonneeHasObservedBy(obj_lists[11]);
+	obj_lists[12] = new mvcCollision.Controller('collision');
+	obj_lists[12].obj_model_collision.add('Saucisse', obj_lists[10], obj_lists[11], obj_lists[9], obj_lists[9].getControllerFire() );
+	obj_lists[10].coordonneeHasObservedBy(obj_lists[12]);
+	obj_lists[11].coordonneeHasObservedBy(obj_lists[12]);
 	
 };
 
-function testCollisionTirMauvaiseSaucisse()
-{
+function testCollisionTirMauvaiseSaucisse() {
 	console.log("**** Test testCollisionTirMauvaiseSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 4 : Controller Collision", "24px Arial", "#00000");
@@ -299,16 +329,16 @@ function testCollisionTirMauvaiseSaucisse()
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[12] = new Keypress(obj_stage);
-	obj_lists[12].simult_touches=[
+	obj_lists[13] = new Keypress(obj_stage);
+	obj_lists[13].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false},
 		{key:32,value:true,count:1000},
 		{key:32,value:false}
 	];
 	
-	obj_lists[13] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[13].preparer(0,340,0,3,0);
+	obj_lists[14] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[14].preparer(0,340,0,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
@@ -317,10 +347,53 @@ function testCollisionTirMauvaiseSaucisse()
 		{x:700, y:385, rotation:0, vitesse:4, pourrie:true}
 	);
 
-	obj_lists[14] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[15] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
 
-	obj_lists[15] = new mvcCollision.Controller('collision');
-	obj_lists[15].obj_model_collision.add(obj_lists[14], obj_lists[13], obj_lists[13].getControllerFire() );
-	obj_lists[14].coordonneeHasObservedBy(obj_lists[15]);
+	obj_lists[16] = new mvcCollision.Controller('collision');
+	obj_lists[16].obj_model_collision.add('Saucisse', obj_lists[15], obj_lists[14], obj_lists[14].getControllerFire() );
+	obj_lists[15].coordonneeHasObservedBy(obj_lists[16]);
+	
+};
+
+function testCollisionPlayerTirSaucisses() {
+	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
+
+	var obj_text =  new createjs.Text("Test MVC Collision 5 : Controller Collision", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = 400;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
+
+	obj_lists[17] = new Keypress(obj_stage);
+	obj_lists[17].simult_touches=[
+		{key:39,value:true,count:50},
+		{key:39,value:false},
+		{key:32,value:true,count:3000},
+		{key:32,value:false}
+	];
+	
+	obj_lists[18] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[18].preparer(0,440,0,3,0);
+
+	var obj_generator = new Generator('static');
+	obj_generator.elt_lists.push(
+		{x:700, y:440, rotation:0, vitesse:4, pourrie:true},
+		{x:700, y:460, rotation:0, vitesse:4, pourrie:false},
+		{x:700, y:485, rotation:0, vitesse:4, pourrie:true},
+		{x:700, y:440, rotation:0, vitesse:4, pourrie:false},
+		{x:800, y:460, rotation:0, vitesse:4, pourrie:true},
+		{x:700, y:485, rotation:0, vitesse:4, pourrie:false},
+		{x:900, y:460, rotation:0, vitesse:4, pourrie:true},
+		{x:800, y:440, rotation:0, vitesse:4, pourrie:false}
+	);
+
+	obj_lists[19] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
+	obj_lists[20] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
+	obj_lists[21] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse3');
+
+	obj_lists[22] = new mvcCollision.Controller('collision');
+	obj_lists[22].obj_model_collision.add('Saucisse', obj_lists[21], obj_lists[19], obj_lists[20], obj_lists[18], obj_lists[18].getControllerFire() );
+	obj_lists[19].coordonneeHasObservedBy(obj_lists[22]);
+	obj_lists[21].coordonneeHasObservedBy(obj_lists[22]);
+	obj_lists[20].coordonneeHasObservedBy(obj_lists[22]);
 	
 };
