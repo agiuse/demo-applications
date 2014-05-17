@@ -1037,14 +1037,14 @@ function testControllerArgumentConstructor() {
 	throws( function() {
 			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue, 100);
 		},
-		'\'obj_parent\' must be a mvcPlater.Controller Object!',
+		'\'obj_parent\' must be a mvcPlayer.Controller Object!',
 		"mvcFire.Controller(new createjs.Stage(),, new createjs.LoadQueue, 100) : Check that the 3eme argument is a object type!"
 	);
 
 	throws( function() {
 			var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue, {});
 		},
-		'\'obj_parent\' must be a mvcPlater.Controller Object!',
+		'\'obj_parent\' must be a mvcPlayer.Controller Object!',
 		"mvcFire.Controller(new createjs.Stage(),{}) : Check that the 3eme argument is a player controller object type!"
 	);
 
@@ -1372,7 +1372,7 @@ function testControllerMethodCollideWithSaucisse1() {
 		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue, obj_parent);
 		obj.collideWithSaucisse(true);
 		strictEqual(obj.obj_parent,obj_parent,"mvcFire.Controller.collisionWithSaucisse(true) : Check that obj_parent is argument value!"); 
-		strictEqual(obj.obj_parent.model.nb_points,3,"mvcFire.Controller.collisionWithSaucisse(true) : Check that player score value is 3 points with 'Mauvaise' Saucisse collision!"); 
+		strictEqual(obj.obj_parent.model.nb_points,2,"mvcFire.Controller.collisionWithSaucisse(true) : Check that player score value is 3 points with 'Mauvaise' Saucisse collision!"); 
 		strictEqual(obj.obj_parent.view.sound,'pouet',"mvcFire.Controller.collisionWithSaucisse(true) : Check that player view sounds 'pouet'!"); 
 	};
 };
@@ -1391,7 +1391,7 @@ function testControllerMethodCollideWithSaucisse2() {
 		var obj = new mvcFire.Controller(new createjs.Stage(), new createjs.LoadQueue, obj_parent);
 		obj.collideWithSaucisse(false);
 		strictEqual(obj.obj_parent,obj_parent,"mvcFire.Controller.collisionWithSaucisse(false) : Check that obj_parent is argument value!"); 
-		strictEqual(obj.obj_parent.model.nb_points,2,"mvcFire.Controller.collisionWithSaucisse(false) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
+		strictEqual(obj.obj_parent.model.nb_points,0,"mvcFire.Controller.collisionWithSaucisse(false) : Check that player score value is 2 points with 'Bonne' Saucisse collision!"); 
 		strictEqual(obj.obj_parent.view.sound,'boing',"mvcFire.Controller.collisionWithSaucisse(false) : Check that player view sounds 'boing'!"); 
 	};
 };
