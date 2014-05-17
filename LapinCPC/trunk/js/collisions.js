@@ -18,7 +18,8 @@ class mvcCollision.Model {
 	==
 	void Model(name);
 	void add(Object obj_observable, [Object obj_observable, ... ])
-	ArrayHashage<Object> getCollision(String id_collision) 
+	Array<Object> getObserverLists(String id_collision)
+	Object getObservableInfo(String id_collision, Object obj_model_collision)
 }
 
 class mvcCollision.Controller {
@@ -233,7 +234,8 @@ mvcCollision.NO_COLLISION = false;
 // ============================================================================================================================
 ;( function()
 {
-
+	'use strict';
+	
 	mvcCollision.Model = function(name)
 	{
 		this.name = common.HasStringName(name, 'Model_default');
@@ -243,67 +245,133 @@ mvcCollision.NO_COLLISION = false;
 		console.log(this.name, ' Model is created!');
 	}
 	
-	mvcCollision.Model.prototype.add = function(obj_collision_controller)
+	mvcCollision.Model.prototype.add = function(id_collision)
 	{
-		common.IsObjectControllerCollision(obj_collision_controller);
-		var id_collision = obj_collision_controller.getCollisionId();
-
-		if ( typeof id_collision !== 'string' )
+		if ( typeof id_collision !== 'string' ) {
 			throw '\'id_collision\' type is not string literal!';
-
-		if ( ! ( id_collision in this.collision_matrix)  )
-		{
-			if (obj_collision_controller.getModel === undefined )
-				throw 'No defined getModel() method in \'Model Collision\' object!';
-
-			var model = obj_collision_controller.getModel();
-			common.IsObjectModelCollision(model);
+		};
 		
-			var view = obj_collision_controller.getView();
-			common.IsObjectViewCollision(view);
-			
-			this.collision_matrix[id_collision] = new Array();
-			this.collision_matrix[id_collision].push(
-				{
-					controller: obj_collision_controller,
-					view : view,
-					model : model
-				}
-			);
-		}
-
-		if (arguments.length < 2)
+		if (arguments.length < 2) {
 			throw 'No collision objects in argument!';
-
-		for (var i =1; i < arguments.length; i++)
-		{
-			if ( typeof arguments[i] !== 'object' )
-				throw '\'collision object\' is not object!';
-					
+		};
+		
+		var id_collision_argument;
+		var model;
+		var view;
+		
+		for (var i =1; i < arguments.length; i++) {
 			common.IsObjectControllerCollision(arguments[i]);
-			common.IsObjectViewCollision(arguments[i].getView());
-			var  my_collision_id_static = arguments[i].getCollisionId();
+			id_collision_argument = arguments[i].getCollisionId();
 
-			this.collision_matrix[id_collision].push(
-				{
-					controller : arguments[i],
-					view : arguments[i].getView(),
-					collision : my_collision_id_static + 'CollideWith' + id_collision
-				}
-			);
-		}
-	}
+			if (typeof id_collision_argument !== 'string') {
+				throw '\'id_collision\' type is not string literal!';
+			};
 
-	mvcCollision.Model.prototype.getCollision = function(id_collision)
-	{
-		if ( typeof id_collision !== 'string' )
+			if ( id_collision_argument === id_collision ) {
+				// sender ; observable_lists
+				if (arguments[i].getModel === undefined ) {
+					throw 'No defined getModel() method in \'Model Collision\' object!';
+				};
+
+				model = arguments[i].getModel();
+				common.IsObjectModelCollision(model);
+				if (model.name === undefined) {
+					throw '\'name\' attribute is not defined in \'Model Collision\' object!'; 
+				};
+				
+				if ( ( this.collision_matrix[id_collision] !== undefined ) && ( this.collision_matrix[id_collision].observable_lists !== undefined ) ) {
+					if ( model.name in this.collision_matrix[id_collision].observable_lists ) {
+							throw '\'Model Collision\' object is already a input in the collision matrix!';
+					};
+				};
+
+				view = arguments[i].getView();
+				common.IsObjectViewCollision(view);
+
+				if ( this.collision_matrix[id_collision] === undefined ) {
+					this.collision_matrix[id_collision] = {};
+				};
+				
+				if ( this.collision_matrix[id_collision].observable_lists === undefined ) {
+					this.collision_matrix[id_collision].observable_lists = {};
+				};
+
+				
+				this.collision_matrix[id_collision].observable_lists[model.name] = {
+					controller: arguments[i],
+					view : view
+				};
+
+			} else {
+					// subscriber ; observer_lists
+				common.IsObjectViewCollision(arguments[i].getView());
+	
+				// id_collision input creation of collision matrix observer lists 
+				if ( this.collision_matrix[id_collision] === undefined ) {
+					this.collision_matrix[id_collision] = {};
+				};
+
+				if ( this.collision_matrix[id_collision].observer_lists === undefined  ) {
+					this.collision_matrix[id_collision].observer_lists = new Array();
+				};
+				
+				this.collision_matrix[id_collision].observer_lists.push(
+					{
+						controller : arguments[i],
+						view : arguments[i].getView(),
+						collision : id_collision_argument + 'CollideWith' + id_collision
+					}
+				);
+			};
+		};
+	};
+
+
+	mvcCollision.Model.prototype.getObserverLists = function(id_collision) {
+		if ( typeof id_collision !== 'string' ) {
 			throw '\'id_collision\' type is not string literal!';
-			
-		if ( ! ( id_collision in this.collision_matrix ) )
+		};
+
+		if ( ! ( id_collision in this.collision_matrix ) ) {
 			throw '\'' + id_collision +'\' is unknown in the collision matrix!';
-			
-		return this.collision_matrix[id_collision];
-	}
+		};
+
+		if ( this.collision_matrix[id_collision].observer_lists !== undefined ) {
+			return this.collision_matrix[id_collision].observer_lists;
+		} else {
+			return undefined;
+		};
+	};
+
+	mvcCollision.Model.prototype.getObservableInfo = function(obj_model_collision) {
+		if ( typeof obj_model_collision !== 'object' ) {
+			throw '\'Model Collision\' is not a Object!';
+		};
+
+		if ( obj_model_collision.getCollisionId === undefined ) {
+			throw 'No defined getCollisionId() method in \'Model Collision\' object!';
+		};
+
+		var id_collision = obj_model_collision.getCollisionId();
+		
+		if ( typeof id_collision !== 'string' ) {
+			throw '\'id_collision\' type is not string literal!';
+		};
+
+		if ( ! ( id_collision in this.collision_matrix ) ) {
+			throw '\'' + id_collision +'\' is unknown in the collision matrix!';
+		};
+
+		if ( this.collision_matrix[id_collision].observable_lists === undefined ) {
+			throw 'No subscribed observable in the \'' + id_collision +'\' collision matrix!';
+		};
+		
+		if ( obj_model_collision.name in this.collision_matrix[id_collision].observable_lists ) {
+			return this.collision_matrix[id_collision].observable_lists[obj_model_collision.name];
+		} else {
+			throw '\''+obj_model_collision.name+'\' is unknown in the \'' + id_collision + '\' collision matrix!';
+		};
+	};
 
 }());
 
@@ -312,82 +380,79 @@ mvcCollision.NO_COLLISION = false;
 // ============================================================================================================================
 ;( function()
 {
-	mvcCollision.Controller = function(name)
-	{
+	'use strict';
+
+	mvcCollision.Controller = function(name) {
 		this.name = common.HasStringName(name, 'Controller_default');
 		
 		console.log(this.name, ' Controller is being created...');		
 		this.obj_model_collision = new mvcCollision.Model(this.name);
 		console.log(this.name, ' Controller is created.');
-	}
+	};
 
-
-	mvcCollision.Controller.prototype.display = function(obj_collision_model_in_movement)
-	{
-		if ( typeof obj_collision_model_in_movement !== 'object')
+	mvcCollision.Controller.prototype.display = function(obj_collision_model_in_movement) {
+		if ( typeof obj_collision_model_in_movement !== 'object' ) {
 			throw '\'Model Collision\' is not a Object!';
-			
-		if ( obj_collision_model_in_movement.getCollisionId === undefined )
+		};
+		
+		if ( obj_collision_model_in_movement.getCollisionId === undefined ) {
 			throw 'No defined getCollisionId() method in \'Controller Collision\' object!';
-
+		};
+		
 		// determine le type de Collision
 		var my_collision_id = obj_collision_model_in_movement.getCollisionId(); // Saucisse
-		var obj_collision_object_lists = this.obj_model_collision.getCollision(my_collision_id);
+		
+		var obj_collision_object_lists = this.obj_model_collision.getObserverLists(my_collision_id);
+		var obj_collision_object_info = this.obj_model_collision.getObservableInfo(obj_collision_model_in_movement);
 	
-		// Rappel : les verifications sont faites lors de l'ajout dans le tableau
-		if ( obj_collision_object_lists[0].model !== obj_collision_model_in_movement)
-			throw 'Inconsistency between entered Model object and this in argument!';
-			
-		var obj_collision_controller_in_movement = obj_collision_object_lists[0].controller;
-		var obj_collision_view_in_movement = obj_collision_object_lists[0].view;
+		var obj_collision_controller_in_movement = obj_collision_object_info.controller;
+		var obj_collision_view_in_movement = obj_collision_object_info.view;
 						
-		var index_object_collision = 0;
+		var index_object_collision = -1;
 		var collision_state = mvcCollision.NO_COLLISION;
-		while ( collision_state === mvcCollision.NO_COLLISION )
-		{
+		while ( collision_state === mvcCollision.NO_COLLISION ) {
 			index_object_collision++;
-			if ( index_object_collision < obj_collision_object_lists.length)
-			{
+			if ( index_object_collision < obj_collision_object_lists.length) {
 				var my_collision_controller_in_static = obj_collision_object_lists[index_object_collision].controller;
 				var obj_collision_view_in_static = obj_collision_object_lists[index_object_collision].view;
 		
 				// determine la collision entre les deux viewer
-				if ( obj_collision_view_in_static.isCollision(obj_collision_view_in_movement) )
-				{
+				if ( obj_collision_view_in_static.isCollision(obj_collision_view_in_movement) ) {
 					collision_state = mvcCollision.COLLIDE_WITH;
 					this[obj_collision_object_lists[index_object_collision].collision](obj_collision_controller_in_movement, my_collision_controller_in_static);
-				}
-			} else
+				};
+			} else {
 				collision_state = mvcCollision.COLLIDE_WITH;
-		}
-	}
+			};
+		};
+	};
 
-	mvcCollision.Controller.prototype.playerCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_player)
-	{
+	mvcCollision.Controller.prototype.playerCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_player) {
 		if (obj_controller_saucisse instanceof mvcSaucisse.Controller)
 		{
-			if ( obj_controller_player instanceof mvcPlayer.Controller )
-			{
+			if ( obj_controller_player instanceof mvcPlayer.Controller ) {
 				obj_controller_player.collideWithSaucisse(obj_controller_saucisse.isPourrie());
 				obj_controller_saucisse.setCollideWith(mvcSaucisse.COLLIDE_WITH);
-			} else
+			} else {
 				throw '\'obj_controller_player\' is not Mvc Player Controller Object!';
-		} else
+			};
+		} else {
 			throw '\'obj_controller_saucisse\' is not Mvc Saucisse Controller Object!';
-	}
+		};
+	};
 
-	mvcCollision.Controller.prototype.fireCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_fire)
-	{
-		if (obj_controller_saucisse instanceof mvcSaucisse.Controller)
-		{		
-			if ( obj_controller_fire instanceof mvcFire.Controller )
-			{
+	mvcCollision.Controller.prototype.fireCollideWithSaucisse = function(obj_controller_saucisse, obj_controller_fire) {
+		if (obj_controller_saucisse instanceof mvcSaucisse.Controller) {		
+			if ( obj_controller_fire instanceof mvcFire.Controller ) {
 				obj_controller_fire.collideWithSaucisse(obj_controller_saucisse.isPourrie());
 				obj_controller_saucisse.setCollideWith(mvcSaucisse.COLLIDE_WITH);
-			} else
+			} else {
 				throw "\'obj_controller_fire\' is not Mvc Fire Controller Object!";
-			
-		} else
+			};
+		
+		} else {
 			throw "\'obj_controller_saucisse\' is not Mvc Saucisse Controller Object!";
-	}
+		};
+	};
+	
 }());
