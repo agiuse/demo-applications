@@ -295,7 +295,6 @@ mvcCollision.NO_COLLISION = false;
 				if ( this.collision_matrix[id_collision].observable_lists === undefined ) {
 					this.collision_matrix[id_collision].observable_lists = {};
 				};
-
 				
 				this.collision_matrix[id_collision].observable_lists[model.name] = {
 					controller: arguments[i],
@@ -325,7 +324,6 @@ mvcCollision.NO_COLLISION = false;
 			};
 		};
 	};
-
 
 	mvcCollision.Model.prototype.getObserverLists = function(id_collision) {
 		if ( typeof id_collision !== 'string' ) {
@@ -415,11 +413,13 @@ mvcCollision.NO_COLLISION = false;
 			if ( index_object_collision < obj_collision_object_lists.length) {
 				var my_collision_controller_in_static = obj_collision_object_lists[index_object_collision].controller;
 				var obj_collision_view_in_static = obj_collision_object_lists[index_object_collision].view;
-		
-				// determine la collision entre les deux viewer
-				if ( obj_collision_view_in_static.isCollision(obj_collision_view_in_movement) ) {
-					collision_state = mvcCollision.COLLIDE_WITH;
-					this[obj_collision_object_lists[index_object_collision].collision](obj_collision_controller_in_movement, my_collision_controller_in_static);
+
+				if ( obj_collision_view_in_static.getVisibility() && obj_collision_view_in_movement.getVisibility() ) {
+					// determine la collision entre les deux viewer
+					if ( obj_collision_view_in_static.isCollision(obj_collision_view_in_movement) ) {
+						collision_state = mvcCollision.COLLIDE_WITH;
+						this[obj_collision_object_lists[index_object_collision].collision](obj_collision_controller_in_movement, my_collision_controller_in_static);
+					};
 				};
 			} else {
 				collision_state = mvcCollision.COLLIDE_WITH;
