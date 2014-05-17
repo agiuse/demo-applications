@@ -18,27 +18,22 @@ class ViewStage {
 }
 @enduml
 */
-;( function(window)
-{
+;( function(window) {
 	'use strict';
-	function ViewStage()
-	{
-		
+	function ViewStage() {
 		createjs.Stage.call(this, window.document.getElementById("gameCanvas"));
 		this.touches = {};
 		this.sound_musique = 0.1;
 		this.sound_bruitage = 0.4;
-
-	}
+	};
 
 	ViewStage.prototype = new createjs.Stage();
 
-	ViewStage.prototype.go = function()
-	{
+	ViewStage.prototype.go = function() {
 		createjs.Ticker.setFPS(30);
 		createjs.Ticker.addEventListener("tick", mainTick);
 		createjs.Sound.play("music", createjs.Sound.INTERRUPT_NONE, 0, 0, -1, this.sound_musique );
-	}
+	};
 
 	window.ViewStage = ViewStage;
 }(window));
@@ -70,15 +65,12 @@ Generator -- Object
 @enduml
 */
 
-;(function(window)
-{
+;(function(window) {
 	'use strict';
-	function Generator()
-	{
-	}
+	function Generator() {
+	};
 
-	Generator.prototype.iterator = function()
-	{
+	Generator.prototype.iterator = function() {
 		return {
 			x:		Math.floor(Math.random() * 480 + 640),
 			y:		Math.floor(Math.random() * 460 + 5),
@@ -86,7 +78,7 @@ Generator -- Object
 			vitesse:	Math.floor(Math.random() * 6 + 2),
 			pourrie:	( Math.floor(Math.random() < 0.5 ) === 0 )? false : true
 		};
-	}
+	};
 
 	window.Generator = Generator;
 }(window));
@@ -94,8 +86,7 @@ Generator -- Object
 // ============================================================================================================================
 // Programme prinpale
 // ============================================================================================================================
-;(function(window)
-{
+;(function(window) {
 	'use strict';
 
 	// Variables globales
@@ -114,30 +105,28 @@ Generator -- Object
 	// ---------------------------------------------------------------------------------------------------------------------
 	// Gestion du clavier
 	addEventListener("keydown",
-		function(e)
-		{
+		function(e) {
 			obj_lists[index_stage].touches[e.keyCode]=true;	// enregistre la touche enfoncÃ©e dans le table de hashage "touches"
-			if ( ( (e.keyCode >= 37) && (e.keyCode <=40) ) || ( e.keyCode == 32 ) )
+			if ( ( (e.keyCode >= 37) && (e.keyCode <=40) ) || ( e.keyCode == 32 ) ) {
 				e.preventDefault();
-
-			if ( (e.keyCode >= 112) && (e.keyCode <=114) )
+			}; 
+			
+			if ( (e.keyCode >= 112) && (e.keyCode <=114) ) {
 				e.preventDefault();
-
+			};
 			return false;
 		}
 	);
 
 	addEventListener("keyup",
-		function(e)
-		{
+		function(e) {
 			delete obj_lists[index_stage].touches[e.keyCode];	// supprime la touche enfoncÃ©e dans le table de hashage "touches"
 		}
 	);
 
 
 	// ---------------------------------------------------------------------------------------------------------------------
-	function startGame()
-	{
+	function startGame() {
 		console.log("Programme start!\npreLoadAssets in being...");
 		obj_queue.installPlugin(createjs.Sound);
 	
@@ -159,11 +148,10 @@ Generator -- Object
 				{src:"./sounds/prout_3.mp3", id:"prout", type:createjs.LoadQueue.SOUND}
 		]);
 		console.log("preLoadAssets is ended.\nProgramme is ended!");
-	}
+	};
 
 	// ---------------------------------------------------------------------------------------------------------------------
-	function launchGame()
-	{
+	function launchGame() {
 		console.log("Load is ended!\nController creations are being done...");
 
 		obj_lists[index_stage] = new ViewStage();
@@ -180,68 +168,63 @@ Generator -- Object
 		obj_lists[index_player].scoreHasObservedBy(obj_lists[index_highscore].getObserver());
 		obj_lists[index_player].preparer(0,240, 0, 6, 3, 0);
 		obj_lists[index_highscore].preparer(0);
+		obj_lists[index_collision].obj_model_collision.add(
+			'Saucisse',
+			obj_lists[index_player],
+			obj_lists[index_player].getControllerFire()
+		);
 
 		var obj_generator = new Generator();
 
-		for (var i =0; i < 10 ; i++)
-		{
+		for (var i =0; i < 10 ; i++) {
 			obj_lists[index_saucisse + i] = new mvcSaucisse.Controller(obj_lists[index_stage], obj_queue, obj_generator, 'saucisse'+i);
 			obj_lists[index_saucisse + i].coordonneeHasObservedBy(obj_lists[index_collision]);
-		}
+			obj_lists[index_collision].obj_model_collision.add(
+				'Saucisse',
+				obj_lists[index_saucisse + i]
+			);
+		};
 
-		// Configuration du moteur de collision
-		obj_lists[index_collision].obj_model_collision.add(obj_lists[index_saucisse], obj_lists[index_player], obj_lists[index_player].getControllerFire() );
-		// mettre l'objet viewstage dans la liste et ajouter la function run().
 		obj_lists[index_stage].go();
-	}
+	};
 
-	function pauseGame()
-	{
+	function pauseGame() {
 		var paused = !createjs.Ticker.getPaused();
 		createjs.Ticker.setPaused(paused);
 		window.document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
 		createjs.Sound.setMute(paused);
-	}
+	};
 
-	function endGame()
-	{
+	function endGame() {
 		createjs.Ticker.removeEventListener("tick", mainTick);
 		createjs.Sound.setMute(true);
-	}
+	};
 	
 	// ---------------------------------------------------------------------------------------------------------------------
-	function mainTick(event)
-	{
-		if (!createjs.Ticker.getPaused())
-		{
-			try
-			{
+	function mainTick(event) {
+		if (!createjs.Ticker.getPaused()) {
+			try {
 				obj_lists[index_stage].update(event);
 
 				// regarde au tour précédent si il reste de la vie au joueur
-				if (! obj_lists[index_player].isBeAlive() )
-				{
+				if (! obj_lists[index_player].isBeAlive() ) {
 					createjs.Ticker.removeEventListener("tick", mainTick);
 					createjs.Sound.play("prout", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, obj_lists[0].sound_bruitage );
 				} else {
 					// anime l'ensemble des objets graphiques
-					for ( var i=index_ciel; i <obj_lists.length ; i++ )
-					{
-						if ( obj_lists[i].run !== undefined )
-						{
+					for ( var i=index_ciel; i <obj_lists.length ; i++ ) {
+						if ( obj_lists[i].run !== undefined ) {
 							obj_lists[i].run();
-						}
-					}
-				}	
-			}
-			catch(e) {
+						};
+					};
+				};
+			} catch(e) {
 					createjs.Ticker.removeEventListener("tick", mainTick);
 					createjs.Sound.setMute(true);
 					console.error(e);
-			}
-			
-		}
-	}
+			};
+		};
+	};
 	
 	window.startGame = startGame;
 	window.mainTick = mainTick;

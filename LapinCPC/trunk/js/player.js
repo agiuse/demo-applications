@@ -1407,7 +1407,7 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 		if ( obj_parent instanceof mvcPlayer.Controller ) {
 			this.obj_parent = obj_parent;
 		} else {
-			throw '\'obj_parent\' must be a mvcPlater.Controller Object!';
+			throw '\'obj_parent\' must be a mvcPlayer.Controller Object!';
 		};
 		
 		this.name = common.HasStringName(name, 'Controller_default');
@@ -1449,11 +1449,10 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 
 		if (pourrie) {
 			// Mauvaise Saucisse
-			this.obj_parent.getModel().addScore(3);
+			this.obj_parent.getModel().addScore(2);
 			this.obj_parent.getView().playSound('pouet');
 		} else {
 			// Bonne saucisse
-			this.obj_parent.getModel().addScore(2);
 			this.obj_parent.getView().playSound('boing');
 		};
 	};

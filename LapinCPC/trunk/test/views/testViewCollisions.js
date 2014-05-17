@@ -6,37 +6,35 @@ function ViewStage() {
 	createjs.Stage.call(this, document.getElementById("gameCanvas"));
 	this.touches = {};
 	this.sound_bruitage = 0.4;
-	
-}
+};
 
 ViewStage.prototype = new createjs.Stage();
 
 // -----------------------------------------------------------------
-function Generator(type)
-{
+function Generator(type) {
 	this.type = (type == undefined) ? 'random' : type;
 	this.elt_lists = new Array();
 	this.init();
-}
+};
 
-Generator.prototype.init = function()
-{
+Generator.prototype.init = function() {
 	this.inc = -1;
-}
+};
 
-Generator.prototype.iterator = function()
-{
+Generator.prototype.iterator = function() {
 	var elt;
 	switch (this.type) {
 	case 'static':
 		this.inc++
-		if ( this.inc === this.elt_lists.length )
+		if ( this.inc === this.elt_lists.length ) {
 			this.inc = 0;
-			
-		elt = this.elt_lists[this.inc];
-		if (elt === undefined)
-			throw 'Generator List is empty!';
+		};
 
+		elt = this.elt_lists[this.inc];
+		if (elt === undefined) {
+			throw 'Generator List is empty!';
+		};
+		
 		break;
 	case 'random_test3':
 		elt =  {
@@ -56,22 +54,20 @@ Generator.prototype.iterator = function()
 			pourrie:	( ( Math.floor(Math.random() < 0.5 ) === 0 )? false : true)
 		};
 		break;
-	}
+	};
 
 	return  elt;
-}
+};
 
 // ==========================================================================================================
-function Keypress(obj_stage)
-{
+function Keypress(obj_stage) {
 	this.obj_stage = obj_stage;
 	this.simult_touches = new Array();
 	this.count = 0;
 	this.touches = {};
-}
+};
 
-Keypress.prototype.run = function()
-{
+Keypress.prototype.run = function() {
 	if ( this.count > 0 ) {
 		this.count--;
 	} else {
@@ -88,13 +84,13 @@ Keypress.prototype.run = function()
 					if (touche.count !== undefined ) {
 						this.count_max=touche.count;
 						this.count=this.count_max;
-					}
-				}
-			}
-		}
-	}
+					};
+				};
+			};
+		};
+	};
 	this.obj_stage.touches = this.touches;
-}
+};
 
 // ----------------------------------------------------------------------------------------------------------------------------
 mvcFire.View.prototype.isOverCanvasTopRight = function() {
@@ -111,7 +107,7 @@ mvcFire.View.prototype.getVisibility = function() {
 
 mvcPlayer.View.prototype.getVisibility = function() {
 	return this.visible;
-}
+};
 
 // ============================================================================================================================
 var obj_queue;
@@ -119,8 +115,7 @@ var obj_stage;
 var obj_lists = new Array();
 
 // ============================================================================================================================
-function startTest()
-{
+function startTest() {
 	console.log("Programme start!\npreLoadAssets in being...");
 	obj_queue = new createjs.LoadQueue(false);	
 	obj_queue.installPlugin(createjs.Sound);
@@ -136,11 +131,10 @@ function startTest()
 			{src:"./sounds/panpan.mp3", id:"panpan", type:createjs.LoadQueue.SOUND}
 	]);
 	console.log("preLoadAssets is ended.\nProgramme is ended!");
-}
+};
 
 // ============================================================================================================================
-function runTest()
-{
+function runTest() {
 	console.log("Lancement des tests...");
 	obj_stage = new ViewStage();
 
@@ -163,43 +157,39 @@ function runTest()
 
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);	
-}
+};
 
-function test_run(event)
-{
+function test_run(event) {
 	obj_stage.update(event);
-	if (!createjs.Ticker.getPaused())
-	{
-		try
-		{
-			for (var i = 0; i < obj_lists.length; i++)
-			{
+	if (!createjs.Ticker.getPaused()) {
+		try {
+			for (var i = 0; i < obj_lists.length; i++) {
 				
-				if ( obj_lists[i].run !== undefined )
+				if ( obj_lists[i].run !== undefined ) {
 					obj_lists[i].run();
-			}
+				};
+			};
 
 			obj_stage.update(event);
-		}
-		catch(e) {
+		} catch(e) {
 			createjs.Ticker.removeEventListener("tick", test_run);
 			console.error(e);
-		}
-	}
-}
+		};
+	};
+};
 
 function testPause() {
 	var paused = !createjs.Ticker.getPaused();
 	createjs.Ticker.setPaused(paused);
 	document.getElementById("pauseBtn").value = paused ? "unpause" : "pause";
-}
+};
 
 function testEnd() {
 		createjs.Ticker.removeEventListener("tick", test_run);	
-}
+};
 
-function testCollisionBonneSaucisse()
-{
+function testCollisionBonneSaucisse() {
+	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 1 : Controller Collision", "24px Arial", "#00000");
@@ -255,6 +245,7 @@ function testCollisionBonneSaucisse()
 };
 
 function testCollisionMauvaiseSaucisse() {
+	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 2 : Controller Collision", "24px Arial", "#00000");
@@ -285,6 +276,7 @@ function testCollisionMauvaiseSaucisse() {
 };
 
 function testCollisionTirBonneSaucisse() {
+	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 3 : Controller Collision", "24px Arial", "#00000");
@@ -318,10 +310,10 @@ function testCollisionTirBonneSaucisse() {
 	obj_lists[12].obj_model_collision.add('Saucisse', obj_lists[10], obj_lists[11], obj_lists[9], obj_lists[9].getControllerFire() );
 	obj_lists[10].coordonneeHasObservedBy(obj_lists[12]);
 	obj_lists[11].coordonneeHasObservedBy(obj_lists[12]);
-	
 };
 
 function testCollisionTirMauvaiseSaucisse() {
+	'use strict';
 	console.log("**** Test testCollisionTirMauvaiseSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 4 : Controller Collision", "24px Arial", "#00000");
@@ -352,10 +344,10 @@ function testCollisionTirMauvaiseSaucisse() {
 	obj_lists[16] = new mvcCollision.Controller('collision');
 	obj_lists[16].obj_model_collision.add('Saucisse', obj_lists[15], obj_lists[14], obj_lists[14].getControllerFire() );
 	obj_lists[15].coordonneeHasObservedBy(obj_lists[16]);
-	
 };
 
 function testCollisionPlayerTirSaucisses() {
+	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
 	var obj_text =  new createjs.Text("Test MVC Collision 5 : Controller Collision", "24px Arial", "#00000");
@@ -395,5 +387,4 @@ function testCollisionPlayerTirSaucisses() {
 	obj_lists[19].coordonneeHasObservedBy(obj_lists[22]);
 	obj_lists[21].coordonneeHasObservedBy(obj_lists[22]);
 	obj_lists[20].coordonneeHasObservedBy(obj_lists[22]);
-	
 };
