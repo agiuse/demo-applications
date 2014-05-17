@@ -27,8 +27,10 @@ class mvcPlayer.View {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String name = "View_default"
+	boolean visible
 	==
 	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	boolean getVisibility()
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
@@ -519,12 +521,10 @@ var mvcPlayer = {};
 // Classe mvcPlayer.View
 // Cette classe s'occupe d'afficher le vaisseau
 // ============================================================================================================================
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcPlayer.View = function(obj_stage, obj_queue, name )
-	{
+	mvcPlayer.View = function(obj_stage, obj_queue, name ) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
 		this.name = common.HasStringName(name, 'View_default');
@@ -533,31 +533,29 @@ var mvcPlayer = {};
 		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
 		console.log(this.name, ' View is created!');
-	}
+	};
 
 	mvcPlayer.View.prototype = new createjs.Bitmap();
 
-	mvcPlayer.View.prototype.prepare = function(obj_observable)
-	{
+	mvcPlayer.View.prototype.prepare = function(obj_observable) {
 		common.IsObjectObservable(obj_observable);
 		this.visible=true;
 		this.image = this.obj_queue.getResult('player0');
 		this.display(obj_observable);
-	}
+	};
 
-	mvcPlayer.View.prototype.display = function(obj_observable)
-	{
+	mvcPlayer.View.prototype.display = function(obj_observable) {
 		common.IsObjectObservable(obj_observable);
-		if ( obj_observable.getX == undefined || obj_observable.getY === undefined ||  obj_observable.getRotation === undefined )
+		if ( obj_observable.getX == undefined || obj_observable.getY === undefined ||  obj_observable.getRotation === undefined ) {
 			throw 'No getX, getY() or getRotation() method is defined in \'Observable\'!';
+		};
 
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
 		this.rotation = obj_observable.getRotation();
-	}
+	};
 
-	mvcPlayer.View.prototype.isCollision = function(obj_collision)
-	{
+	mvcPlayer.View.prototype.isCollision = function(obj_collision) {
 		common.IsObjectViewCollision(obj_collision);
 
 		return  (
@@ -566,28 +564,30 @@ var mvcPlayer = {};
 			( obj_collision.y > this.y - 16 ) &&
 			( obj_collision.y < this.y + 44 )
 		);
-	}
+	};
 	
-	mvcPlayer.View.prototype.playSound = function(sound_id, sound_bruitage)
-	{
-		if (sound_id === undefined)
+	mvcPlayer.View.prototype.playSound = function(sound_id, sound_bruitage) {
+		if (sound_id === undefined) {
 			throw('\'sound_id\' parameter is mandatoty!');
+		};
 		
 		sound_bruitage = ( sound_bruitage === undefined ) ? 0.4 : sound_bruitage;
 		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, this.obj_stage.sound_bruitage );
-	}
+	};
+	
+	mvcPlayer.View.prototype.getVisibility = function (obj_observable) { 
+		return (this.x < this.obj_stage.canvas.width && this.visible);
+	};
 }());
 
 // ============================================================================================================================
 // Classe mvcPlayer.Model
 // Cette classe gère les données du joueur.
 // ============================================================================================================================
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcPlayer.Model = function(name)
-	{
+	mvcPlayer.Model = function(name) {
 		this.name = common.HasStringName(name, 'Model_default');
 	
 		console.log(this.name, ' Model is being created...');
@@ -604,10 +604,9 @@ var mvcPlayer = {};
 		this.nb_points_notifier = new Observable(this.name + '_score_notifier', this);
 	
 		console.log(this.name, ' Model is created!');
-	}
+	};
 
-	mvcPlayer.Model.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart)
-	{
+	mvcPlayer.Model.prototype.preparer = function(x, y, rotation, vitesse, nb_vies_de_depart, nb_points_de_depart) {
 		this.x = common.HasNumberX(x,0);
 		this.y = common.HasNumberY(y, 224);
 		this.rotation = common.HasNumberRotation(rotation, 0);
@@ -616,20 +615,21 @@ var mvcPlayer = {};
 		this.coordonnee_notifier.notify('prepare');
 	
 		this.nb_vies = (nb_vies_de_depart === undefined) ? 3 : nb_vies_de_depart;
-		if ( common.IsNotNumber(this.nb_vies) ) 
+		if ( common.IsNotNumber(this.nb_vies) ) {
 			throw 'Parameter \'nb_vies\' is not a number literal!';
+		};
 
 		this.nb_vies_notifier.notify('prepare');
 	
 		this.nb_points = (nb_points_de_depart === undefined) ? 0 : nb_points_de_depart;
-		if ( common.IsNotNumber(this.nb_points) )
+		if ( common.IsNotNumber(this.nb_points) ) {
 			throw 'Parameter \'nb_points\' is not a number literal!';
+		};
 
 		this.nb_points_notifier.notify('prepare');
-	}
+	};
 
-	mvcPlayer.Model.prototype.set = function(x, y, rotation)
-	{
+	mvcPlayer.Model.prototype.set = function(x, y, rotation) {
 		this.x = common.HasNumberX(x,0);
 		this.y = common.HasNumberY(y, 224);
 		this.rotation = common.HasNumberRotation(rotation, 0);
@@ -637,69 +637,61 @@ var mvcPlayer = {};
 		this.coordonnee_notifier.notify('display');
 
 		console.log(this.name, ' Model is displayed!');
-	}
+	};
 
-	mvcPlayer.Model.prototype.addCoordonneeNotifier = function(obj_observer)
-	{
+	mvcPlayer.Model.prototype.addCoordonneeNotifier = function(obj_observer) {
 		this.coordonnee_notifier.add(obj_observer);
-	}
+	};
 
-	mvcPlayer.Model.prototype.addLifeNotifier = function(obj_observer)
-	{
-		if ( common.IsObjectObserver(obj_observer) )
+	mvcPlayer.Model.prototype.addLifeNotifier = function(obj_observer) {
+		if ( common.IsObjectObserver(obj_observer) ) {
 			this.nb_vies_notifier.add(obj_observer);
-	}
+		};
+	};
 
-	mvcPlayer.Model.prototype.addScoreNotifier = function(obj_observer)
-	{
-		if ( common.IsObjectObserver(obj_observer) )
+	mvcPlayer.Model.prototype.addScoreNotifier = function(obj_observer) {
+		if ( common.IsObjectObserver(obj_observer) ) {
 			this.nb_points_notifier.add(obj_observer);
-	}
+		};
+	};
 
-	mvcPlayer.Model.prototype.getX = function()
-	{
+	mvcPlayer.Model.prototype.getX = function() {
 		return this.x;
-	}
+	};
 
-	mvcPlayer.Model.prototype.getY = function()
-	{
+	mvcPlayer.Model.prototype.getY = function() {
 		return this.y;
-	}
+	};
 
-	mvcPlayer.Model.prototype.getRotation = function()
-	{
+	mvcPlayer.Model.prototype.getRotation = function() {
 		return this.rotation;
-	}
+	};
 
-	mvcPlayer.Model.prototype.removeLife = function()
-	{
+	mvcPlayer.Model.prototype.removeLife = function() {
 		this.nb_vies--;
 		this.nb_vies_notifier.notify('display');
-	}
+	};
 
-	mvcPlayer.Model.prototype.getLife = function()
-	{
+	mvcPlayer.Model.prototype.getLife = function() {
 		return this.nb_vies;
-	}
+	};
 
-	mvcPlayer.Model.prototype.addScore = function(points)
-	{
-		if ( common.IsNotNumber(points) )
+	mvcPlayer.Model.prototype.addScore = function(points) {
+		if ( common.IsNotNumber(points) ) {
 			throw 'Parameter \'points\' is not a number literal!';
-		
+		};
+
 		this.nb_points += points;
 		this.nb_points_notifier.notify('display');
-	}
+	};
 
-	mvcPlayer.Model.prototype.getScore = function()
-	{
+	mvcPlayer.Model.prototype.getScore = function() {
 		return this.nb_points;
-	}
+	};
 
-	mvcPlayer.Model.prototype.getSpeed = function()
-	{
+	mvcPlayer.Model.prototype.getSpeed = function() {
 		return this.vitesse;
-	}
+	};
 
 }());
 
@@ -707,12 +699,10 @@ var mvcPlayer = {};
 // Classe mvcPlayer.Controller
 // Cette classe lie l'objet mvcPlayer.View et mvcPlayer.Model via un patron "Observeur/Observer"
 // ============================================================================================================================
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcPlayer.Controller = function(obj_stage, obj_queue, name) 
-	{
+	mvcPlayer.Controller = function(obj_stage, obj_queue, name) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
 		this.name = common.HasStringName(name, 'Controller_default');
@@ -725,77 +715,73 @@ var mvcPlayer = {};
 		this.obj_controller_tir = new mvcFire.Controller(this.obj_stage, this.obj_queue, this, this.name + '_fire');
 		
 	 	console.log(this.name, ' Controller is created!');
-	}
+	};
 
-	mvcPlayer.Controller.prototype.preparer = function(x, y, rotation, vitesse, nb_vies, nb_points)
-	{
+	mvcPlayer.Controller.prototype.preparer = function(x, y, rotation, vitesse, nb_vies, nb_points) {
 		this.obj_model_joueur.preparer(x, y, rotation, vitesse, nb_vies, nb_points);
-	}
+	};
 
-	mvcPlayer.Controller.prototype.getView = function()
-	{
+	mvcPlayer.Controller.prototype.getView = function() {
 		return this.obj_view_joueur;
 	};
 
-	mvcPlayer.Controller.prototype.getModel = function()
-	{
+	mvcPlayer.Controller.prototype.getModel = function() {
 		return this.obj_model_joueur;
 	};
 
-	mvcPlayer.Controller.prototype.getControllerFire = function()
-	{
+	mvcPlayer.Controller.prototype.getControllerFire = function() {
 		return this.obj_controller_tir;
 	};
 
 	// Abonne à l'observable Score par un observateur extérieur
-	mvcPlayer.Controller.prototype.scoreHasObservedBy = function(obj_observer)
-	{
+	mvcPlayer.Controller.prototype.scoreHasObservedBy = function(obj_observer) {
 		this.obj_model_joueur.addScoreNotifier(obj_observer);
-	}
+	};
 
 	// Abonne à l'observable Life par un observateur extérieur
-	mvcPlayer.Controller.prototype.lifeHasObservedBy = function(obj_observer)
-	{
+	mvcPlayer.Controller.prototype.lifeHasObservedBy = function(obj_observer) {
 		this.obj_model_joueur.addLifeNotifier(obj_observer);
-	}
+	};
 
-	mvcPlayer.Controller.prototype.run = function()
-	{	
+	mvcPlayer.Controller.prototype.run = function() {	
 		// gestion des touches flÃ¨che haut et flÃ¨che bas
-		if ( 38 in this.obj_stage.touches) 
+		if ( 38 in this.obj_stage.touches) {
 			this.moveToUp();
-		else
-			if ( 40 in this.obj_stage.touches )
+		} else {
+			if ( 40 in this.obj_stage.touches ) {
 				this.moveToDown();
+			};
+		};
 			
 		// gestion des touches flÃ¨che gauche et flÃ¨che droite
-		if ( 37 in this.obj_stage.touches) 
+		if ( 37 in this.obj_stage.touches) {
 			this.moveToLeft();
-		else
-			if ( 39 in this.obj_stage.touches )
+		} else {
+			if ( 39 in this.obj_stage.touches ) {
 				this.moveToRight();
-			else
-				if (this.obj_model_joueur.getRotation() !== 0)
+			} else {
+				if (this.obj_model_joueur.getRotation() !== 0) {
 					this.annulerRotation();
+				};
+			};
+		};
 
-		if ( this.obj_controller_tir.isFired() )
+		if ( this.obj_controller_tir.isFired() ) {
 			this.obj_controller_tir.moveToRight();
-		else
-			if ( 32 in this.obj_stage.touches )
-			{
+		 } else {
+			if ( 32 in this.obj_stage.touches ) {
 				var rotation = this.obj_model_joueur.getRotation();
 				var x = parseInt( Math.cos(rotation)*90);
 				var y = parseInt( Math.sin(rotation));
 				this.obj_controller_tir.fire(this.obj_model_joueur.getX() + x, this.obj_model_joueur.getY() + y);
-			}
-	}
+			};
+		};
+	};
 
-	mvcPlayer.Controller.prototype.moveToUp = function()	// Methode observe par la Vue du joueur
-	{
+	mvcPlayer.Controller.prototype.moveToUp = function() {
 		var y = this.obj_model_joueur.getY();
 
-		if (this.obj_model_joueur.getY() > 0 )
-		{
+		if (this.obj_model_joueur.getY() > 0 ) {
 			var vitesse = this.obj_model_joueur.getSpeed();
 			var new_y;
 
@@ -803,22 +789,20 @@ var mvcPlayer = {};
 				new_y = 0;
 			} else {
 				new_y  = y - vitesse;
-			}
+			};
 
 			this.obj_model_joueur.set(
 				this.obj_model_joueur.getX(),
 				new_y,
 				this.obj_model_joueur.getRotation()
 			);
-		}
-	}
+		};
+	};
 
-	mvcPlayer.Controller.prototype.moveToDown = function()	// Methode observe par la Vue du joueur
-	{
+	mvcPlayer.Controller.prototype.moveToDown = function() {
 		var y = this.obj_model_joueur.getY();
 
-		if ( y < this.obj_stage.canvas.height )
-		{
+		if ( y < this.obj_stage.canvas.height ) {
 			var new_y;
 			var vitesse = this.obj_model_joueur.getSpeed();
 
@@ -826,27 +810,25 @@ var mvcPlayer = {};
 				new_y = y + vitesse;
 			} else {
 				new_y = this.obj_stage.canvas.height - this.obj_view_joueur.image.height;
-			}
+			};
 
 			this.obj_model_joueur.set(
 				this.obj_model_joueur.getX(),
 				new_y,
 				this.obj_model_joueur.getRotation()
 			);
-		}
-	}
+		};
+	};
 
-	mvcPlayer.Controller.prototype.moveToRight = function()	// Methode observe par la Vue du joueur
-	{
+	mvcPlayer.Controller.prototype.moveToRight = function() {
 		var x = this.obj_model_joueur.getX();
 
-		if ( x < this.obj_stage.canvas.width  )
-		{
+		if ( x < this.obj_stage.canvas.width ) {
 			var vitesse = this.obj_model_joueur.getSpeed();
 			var rotation = this.obj_model_joueur.getRotation()
 			if ( rotation < 20) {
 				rotation += 2;
-			}
+			};
 
 			var new_x;
 
@@ -854,46 +836,42 @@ var mvcPlayer = {};
 				new_x = this.obj_stage.canvas.width - this.obj_view_joueur.image.width;
 			} else {
 				new_x = x + vitesse;
-			}
+			};
 
 			this.obj_model_joueur.set(
 				new_x,
 				this.obj_model_joueur.getY(),
 				rotation
 			);
-		}
-	}
+		};
+	};
 
-	mvcPlayer.Controller.prototype.moveToLeft = function()	// Methode observe par la Vue du joueur
-	{
+	mvcPlayer.Controller.prototype.moveToLeft = function() {
 		var x = this.obj_model_joueur.getX();
-		if ( x > 0 )
-		{
+		if ( x > 0 ) {
 			var vitesse = this.obj_model_joueur.getSpeed();
 			var rotation = this.obj_model_joueur.getRotation()
 			if ( rotation > - 20) {
 				rotation -= 2;
-			}
+			};
 
 			var new_x;
 
-			if ( x < vitesse )
-			{
+			if ( x < vitesse ) {
 				new_x = 0;
 			} else {
 				new_x = x - vitesse;
-			}
+			};
 
 			this.obj_model_joueur.set(
 				new_x,
 				this.obj_model_joueur.getY(),
 				rotation
 			);
-		}
-	}
+		};
+	};
 
-	mvcPlayer.Controller.prototype.annulerRotation = function()
-	{
+	mvcPlayer.Controller.prototype.annulerRotation = function() {
 		var rotation = this.obj_model_joueur.getRotation();
 
 		if ( rotation > 0 ) {
@@ -903,32 +881,29 @@ var mvcPlayer = {};
 				--rotation
 			);
 		} else {
-			if ( rotation < 0 )
+			if ( rotation < 0 ) {
 				this.obj_model_joueur.set(
 					this.obj_model_joueur.getX(),
 					this.obj_model_joueur.getY(),
 					++rotation
 				);
-		}
-	}
+			};
+		};
+	};
 
-	mvcPlayer.Controller.prototype.isBeAlive = function()
-	{
+	mvcPlayer.Controller.prototype.isBeAlive = function() {
 		return (this.obj_model_joueur.getLife() > 0 )
-	}
+	};
 
-	mvcPlayer.Controller.prototype.getCollisionId = function()
-	{
+	mvcPlayer.Controller.prototype.getCollisionId = function() {
 		return 'player';
-	}
+	};
 
-	mvcPlayer.Controller.prototype.collideWithSaucisse = function(pourrie)
-	{
+	mvcPlayer.Controller.prototype.collideWithSaucisse = function(pourrie) {
 		if (typeof pourrie !== 'boolean')
 			throw '\'pourrie\' is not boolean type!'
 
-		if (pourrie)
-		{
+		if (pourrie) {
 			// Mauvaise Saucisse
 			this.obj_model_joueur.removeLife();
 			this.obj_view_joueur.playSound('pouet');
@@ -936,8 +911,8 @@ var mvcPlayer = {};
 			// Bonne saucisse
 			this.obj_model_joueur.addScore(2);
 			this.obj_view_joueur.playSound('boing');
-		}
-	}
+		};
+	};
 
 }());
 
@@ -965,8 +940,11 @@ class mvcFire.View {
 	createjs.Stage obj_stage
 	createjs.LoadQueue obj_queue
 	String name = "View_default"
+	boolean visible
 	==
 	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	boolean getVisibility();
+
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
@@ -992,6 +970,7 @@ class mvcFire.Model {
 	int getY()
 	int getSpeed()
 	int isFired()
+
 	__ notify __
 	void preparer()
 	void fire(int x, int y , int vitesse)
@@ -1268,12 +1247,10 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 // Cette classe s'occupe d'afficher le tir
 // ============================================================================================================================
 
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcFire.View = function(obj_stage, obj_queue, name )
-	{
+	mvcFire.View = function(obj_stage, obj_queue, name ) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
 		this.name = common.HasStringName(name, 'View_default');
@@ -1286,47 +1263,46 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 		this.y = 0;
 		this.visible= true;
 		console.log(this.name, ' View is created!');
-	}
+	};
 
 	mvcFire.View.prototype = new createjs.Bitmap();
 
-	mvcFire.View.prototype.prepare = function(obj_observable)
-	{
+	mvcFire.View.prototype.prepare = function(obj_observable) {
 		common.IsObjectObservable(obj_observable);
-		if ( obj_observable.isFired === undefined)
+		if ( obj_observable.isFired === undefined) {
 				throw 'No isFired() method is defined in \'Observable\'!';
-				
-		if (obj_observable.isFired() === mvcFire.FIRE_DISABLED)
-		{
+		};
+
+		if (obj_observable.isFired() === mvcFire.FIRE_DISABLED) {
 			this.x = mvcFire.FIRE_CANVAS_HIDE;
 			this.y = 0;
 		} else {
-			if ( obj_observable.getX === undefined)
+			if ( obj_observable.getX === undefined) {
 				throw 'No getX() method is defined in \'Observable\'!';
-				
+			};
+			
 			this.x = obj_observable.getX();
 			
-			if ( obj_observable.getY === undefined)
+			if ( obj_observable.getY === undefined) {
 				throw 'No getY() method is defined in \'Observable\'!';
-
+			};
+			
 			this.y = obj_observable.getY();	
-		}
+		};
 
 		this.visible=true;
 		this.image = this.obj_queue.getResult('tir');
-	}
+	};
 
-	mvcFire.View.prototype.display = function(obj_observable)
-	{
+	mvcFire.View.prototype.display = function(obj_observable) {
 		common.IsObjectObservable(obj_observable);
 		if ( obj_observable.getX === undefined)
 			throw 'No getX() method is defined in \'Observable\'!';
 
 		this.x = obj_observable.getX();
-	}
+	};
 
-	mvcFire.View.prototype.isCollision = function(obj_collision)
-	{
+	mvcFire.View.prototype.isCollision = function(obj_collision) {
 		common.IsObjectViewCollision(obj_collision);
 
 		return  (
@@ -1335,33 +1311,35 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 			( obj_collision.y > this.y - 16 ) &&
 			( obj_collision.y < this.y + 44 )
 		);
-	}
+	};
 	
-	mvcFire.View.prototype.playSound = function(sound_id, sound_bruitage)
-	{
-		if (sound_id === undefined)
+	mvcFire.View.prototype.playSound = function(sound_id, sound_bruitage) {
+		if (sound_id === undefined) {
 			throw('\'sound_id\' parameter is mandatoty!');
+		};
 		
 		sound_bruitage = ( sound_bruitage === undefined ) ? 0.4 : sound_bruitage;
 		createjs.Sound.play(sound_id, createjs.Sound.INTERRUPT_NONE, 0, 0, 0, this.obj_stage.sound_bruitage );
-	}
+	};
 
-	mvcFire.View.prototype.isOverCanvasTopRight = function()
-	{
+	mvcFire.View.prototype.isOverCanvasTopRight = function() {
 		return ( this.x >= this.obj_stage.canvas.width );
-	}
+	};
+	
+	mvcFire.View.prototype.getVisibility = function (obj_observable) { 
+		return (this.x < this.obj_stage.canvas.width && this.visible);
+	};
+
 }());
 
 // ============================================================================================================================
 // Classe mvcFire.Model
 // Cette classe gère les données du tir du vaisseau.
 // ============================================================================================================================
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcFire.Model = function(name)
-	{
+	mvcFire.Model = function(name) {
 		this.name = common.HasStringName(name, 'Model_default');
 	
 		console.log(this.name, ' Model is being created...');
@@ -1369,57 +1347,49 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 		this.coordonnee_notifier = new Observable(this.name + '_coordonnee_nofitier', this);
 		this.preparer();
 		console.log(this.name, ' Model is created!');
-	}
+	};
 
-	mvcFire.Model.prototype.preparer = function()
-	{
+	mvcFire.Model.prototype.preparer = function() {
 		this.x = 0;
 		this.y = 0;
 		this.vitesse = 16;
 		this.fire_state = mvcFire.FIRE_DISABLED;
 		this.coordonnee_notifier.notify('prepare');
-	}
+	};
 
 	// enclenche le tir
-	mvcFire.Model.prototype.fire = function(x, y, vitesse)
-	{
+	mvcFire.Model.prototype.fire = function(x, y, vitesse) {
 		this.x = common.HasNumberX(x, 0);
 		this.y = common.HasNumberY(y, 0);
 		this.vitesse = common.HasNumberSpeed(vitesse, 16);
 		this.fire_state = mvcFire.FIRE_ENABLED;
 		this.coordonnee_notifier.notify('prepare');
-	}
+	};
 
-	mvcFire.Model.prototype.set = function(x)
-	{
+	mvcFire.Model.prototype.set = function(x) {
 		this.x = common.HasNumberX(x, 0);
 		this.coordonnee_notifier.notify('display');
-	}
+	};
 
-	mvcFire.Model.prototype.add = function(obj_observer)
-	{
+	mvcFire.Model.prototype.add = function(obj_observer) {
 		this.coordonnee_notifier.add(obj_observer);
-	}
+	};
 
-	mvcFire.Model.prototype.getX = function()
-	{
+	mvcFire.Model.prototype.getX = function() {
 		return this.x;
-	}
+	};
 
-	mvcFire.Model.prototype.getY = function()
-	{
+	mvcFire.Model.prototype.getY = function() {
 		return this.y;
-	}
+	};
 
-	mvcFire.Model.prototype.getSpeed = function()
-	{
+	mvcFire.Model.prototype.getSpeed = function() {
 		return this.vitesse;
-	}
+	};
 
-	mvcFire.Model.prototype.isFired = function()
-	{
+	mvcFire.Model.prototype.isFired = function() {
 		return this.fire_state;
-	}
+	};
 
 }());
 
@@ -1427,19 +1397,19 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 // Classe mvcPlayer.Controller
 // Cette classe lie l'objet mvcPlayer.View et mvcPlayer.Model via un patron "Observeur/Observer"
 // ============================================================================================================================
-;( function()
-{
+;( function() {
 	'use strict';
 
-	mvcFire.Controller = function(obj_stage, obj_queue, obj_parent, name) 
-	{
+	mvcFire.Controller = function(obj_stage, obj_queue, obj_parent, name)  {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
-		if ( obj_parent instanceof mvcPlayer.Controller ) 
-			this.obj_parent = obj_parent;
-		else 
-			throw '\'obj_parent\' must be a mvcPlater.Controller Object!';
 
+		if ( obj_parent instanceof mvcPlayer.Controller ) {
+			this.obj_parent = obj_parent;
+		} else {
+			throw '\'obj_parent\' must be a mvcPlater.Controller Object!';
+		};
+		
 		this.name = common.HasStringName(name, 'Controller_default');
 	
 		console.log(this.name, ' Controller is being created...');
@@ -1449,39 +1419,35 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 
 		this.obj_model_fire.preparer();
 	 	console.log(this.name, ' Controller is created!');
-	}
+	};
 
-	mvcFire.Controller.prototype.isFired = function()
-	{
+	mvcFire.Controller.prototype.isFired = function() {
 		return this.obj_model_fire.isFired();
-	}
+	};
 	
-	mvcFire.Controller.prototype.fire = function(x, y, vitesse)
-	{
+	mvcFire.Controller.prototype.fire = function(x, y, vitesse) {
 		this.obj_model_fire.fire(x, y ,vitesse);
 		this.obj_view_fire.playSound('panpan');
-	}
+	};
 
-	mvcFire.Controller.prototype.moveToRight = function()
-	{
-		if ( ! this.obj_model_fire.isFired() )
+	mvcFire.Controller.prototype.moveToRight = function() {
+		if ( ! this.obj_model_fire.isFired() ) {
 			throw('Impossible to call \'moveToRight()\' method while no fire!');
+		};
 
-		if ( this.obj_view_fire.isOverCanvasTopRight() )
-		{
+		if ( this.obj_view_fire.isOverCanvasTopRight() ) {
 			this.obj_model_fire.preparer();	// fin du tir
 		} else {
 			this.obj_model_fire.set( this.obj_model_fire.getX() + this.obj_model_fire.getSpeed());		// déplacement du tir
-		}
-	}
+		};
+	};
 
-	mvcFire.Controller.prototype.collideWithSaucisse = function(pourrie)
-	{
-		if (typeof pourrie !== 'boolean')
+	mvcFire.Controller.prototype.collideWithSaucisse = function(pourrie) {
+		if (typeof pourrie !== 'boolean') {
 			throw '\'pourrie\' is not boolean type!'
+		};
 
-		if (pourrie)
-		{
+		if (pourrie) {
 			// Mauvaise Saucisse
 			this.obj_parent.getModel().addScore(3);
 			this.obj_parent.getView().playSound('pouet');
@@ -1489,17 +1455,14 @@ mvcFire.FIRE_CANVAS_HIDE = 10000;
 			// Bonne saucisse
 			this.obj_parent.getModel().addScore(2);
 			this.obj_parent.getView().playSound('boing');
-		}
-	}	
+		};
+	};
 
-	mvcFire.Controller.prototype.getView = function()
-	{
+	mvcFire.Controller.prototype.getView = function() {
 		return this.obj_view_fire;
 	};
 	
-	mvcFire.Controller.prototype.getCollisionId = function()
-	{
+	mvcFire.Controller.prototype.getCollisionId = function() {
 		return 'fire';
-	}
-
+	};
 }());
