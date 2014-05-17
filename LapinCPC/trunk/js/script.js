@@ -99,16 +99,17 @@ Generator -- Object
 	'use strict';
 
 	// Variables globales
-	var obj_lists = new Array(16);  // JE VIENS DE CASSER LE TABLEAU ET REVOIR LA NOTION GLOBALE 
+	var obj_lists = new Array(17);
 	var obj_queue = new createjs.LoadQueue(false);
 
 	var index_stage = 0;
-	var index_ciel = 1;
-	var index_life = 2;
-	var index_score = 3;
-	var index_highscore = 4;
-	var index_player = 5;
-	var index_saucisse = 6;
+	var index_collision = 1;
+	var index_ciel = 2;
+	var index_life = 3;
+	var index_score = 4;
+	var index_highscore = 5;
+	var index_player = 6;
+	var index_saucisse = 7;
 
 	// ---------------------------------------------------------------------------------------------------------------------
 	// Gestion du clavier
@@ -166,6 +167,9 @@ Generator -- Object
 		console.log("Load is ended!\nController creations are being done...");
 
 		obj_lists[index_stage] = new ViewStage();
+		// Moteur de collision
+		obj_lists[index_collision] = new mvcCollision.Controller('collision engine');
+
 		obj_lists[index_ciel] = new ViewCiel(obj_lists[index_stage], obj_queue);
 		obj_lists[index_life] = new mvcLife.Controller(obj_lists[index_stage], "Vie_Text", 8, 420);
 		obj_lists[index_score] = new mvcScore.Controller(obj_lists[index_stage],"Score_Text", 8, 450);
@@ -182,8 +186,11 @@ Generator -- Object
 		for (var i =0; i < 10 ; i++)
 		{
 			obj_lists[index_saucisse + i] = new mvcSaucisse.Controller(obj_lists[index_stage], obj_queue, obj_generator, 'saucisse'+i);
+			obj_lists[index_saucisse + i].coordonneeHasObservedBy(obj_lists[index_collision]);
 		}
 
+		// Configuration du moteur de collision
+		obj_lists[index_collision].obj_model_collision.add(obj_lists[index_saucisse], obj_lists[index_player], obj_lists[index_player].getControllerFire() );
 		// mettre l'objet viewstage dans la liste et ajouter la function run().
 		obj_lists[index_stage].go();
 	}
@@ -212,13 +219,13 @@ Generator -- Object
 				obj_lists[index_stage].update(event);
 
 				// regarde au tour précédent si il reste de la vie au joueur
-				if (! obj_lists[5].isBeAlive() )
+				if (! obj_lists[index_player].isBeAlive() )
 				{
 					createjs.Ticker.removeEventListener("tick", mainTick);
 					createjs.Sound.play("prout", createjs.Sound.INTERRUPT_NONE, 0, 0, 0, obj_lists[0].sound_bruitage );
 				} else {
 					// anime l'ensemble des objets graphiques
-					for ( var i=1; i <obj_lists.length ; i++ )
+					for ( var i=index_ciel; i <obj_lists.length ; i++ )
 					{
 						if ( obj_lists[i].run !== undefined )
 						{

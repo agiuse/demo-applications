@@ -33,8 +33,10 @@ class mvcSaucisse.View {
 	int y
 	int rotation
 	Image image
+	boolean visible
 	==
 	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
+	boolean getVisibility();
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
@@ -78,7 +80,7 @@ class mvcSaucisse.Controller {
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
 	mvcSaucisse.View getView()
 	mvcSaucisse.Model getModel()
-	void coordonneeHasOBservedBy(Object obj_observer)
+	void coordonneeHasObservedBy(Object obj_observer)
 	__ Collision __
 	String getCollisionId()
 	__ execution __	
@@ -409,8 +411,7 @@ mvcSaucisse.NO_COLLISION=false;
 {
 	'use strict';
 
-	mvcSaucisse.View = function(obj_stage, obj_queue, name)
-	{
+	mvcSaucisse.View = function(obj_stage, obj_queue, name) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
 		this.name = common.HasStringName(name, 'View_default');
@@ -419,19 +420,24 @@ mvcSaucisse.NO_COLLISION=false;
 		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
 		console.log(this.name, ' View is created!');
-	}
+		this.visible=true;
+	};
 
 	mvcSaucisse.View.prototype = new createjs.Bitmap();		
+	
+	mvcSaucisse.View.prototype.getVisibility = function (obj_observable) { 
+		return (this.x < this.obj_stage.canvas.width && this.visible);
+	};
 
-	mvcSaucisse.View.prototype.prepare = function (obj_observable)
-	{ 
+	mvcSaucisse.View.prototype.prepare = function (obj_observable) { 
 		common.IsObjectObservable(obj_observable);
 		if ( obj_observable.getX == undefined ||
 			obj_observable.getY === undefined || 
 			obj_observable.getRotation === undefined ||
 			obj_observable.isPourrie === undefined
-			)
+			) {
 			throw 'No getX, getY(), getRotation() or isPourrie() method is defined in \'Observable\'!';
+		};
 
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
@@ -439,21 +445,20 @@ mvcSaucisse.NO_COLLISION=false;
 			this.image = this.obj_queue.getResult('mauvaise_saucisse');
 		} else {
 			this.image =  this.obj_queue.getResult('bonne_saucisse');
-		}
+		};
 
 		this.rotation = obj_observable.getRotation() ;
 		this.visible=true;
-	}
+	};
 
-	mvcSaucisse.View.prototype.display = function (obj_observable)
-	{ 
+	mvcSaucisse.View.prototype.display = function (obj_observable) { 
 		common.IsObjectObservable(obj_observable);
-		if ( obj_observable.getX === undefined)
+		if ( obj_observable.getX === undefined) {
 			throw 'No getX() method is defined in \'Observable\'!';
-
+		};
+		
 		this.x = obj_observable.getX();
-	}
-
+	};
 }());
 
 // ============================================================================================================================
@@ -464,8 +469,7 @@ mvcSaucisse.NO_COLLISION=false;
 {
 	'use strict';
 
-	mvcSaucisse.Model = function(name, parent)
-	{
+	mvcSaucisse.Model = function(name, parent) {
 		this.name = common.HasStringName(name, 'Model_default');
 		common.IsObjectControllerCollision(parent);
 		this.parent = parent;
@@ -479,10 +483,9 @@ mvcSaucisse.NO_COLLISION=false;
 		this.pourrie = false;	// default value
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 		console.log(this.name, ' Model is created!');
-	}
+	};
 
-	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, pourrie)
-	{
+	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, pourrie) {
 		this.x = common.HasNumberX(x,0);
 		this.y = common.HasNumberY(y, 0);
 		this.rotation = common.HasNumberRotation(rotation, 0);
@@ -490,69 +493,59 @@ mvcSaucisse.NO_COLLISION=false;
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 
 		this.pourrie = (pourrie===undefined) ? false : pourrie;
-		if (! (typeof this.pourrie==='boolean')) 
+		if (! (typeof this.pourrie==='boolean')) {
 			throw 'Parameter \'pourrie\' is not a boolean literal!';
+		};
 
 		this.coordonnee_notifier.notify('prepare');
-	}
+	};
 
-	mvcSaucisse.Model.prototype.getX = function()
-	{
+	mvcSaucisse.Model.prototype.getX = function() {
 		return this.x;
-	}
+	};
 
-	mvcSaucisse.Model.prototype.getY = function()
-	{
+	mvcSaucisse.Model.prototype.getY = function() {
 		return this.y;
-	}
+	};
 
-	mvcSaucisse.Model.prototype.getRotation = function()
-	{
+	mvcSaucisse.Model.prototype.getRotation = function() {
 		return this.rotation;
-	}
+	};
 
-	mvcSaucisse.Model.prototype.getSpeed = function()
-	{
+	mvcSaucisse.Model.prototype.getSpeed = function() {
 		return this.vitesse;
-	}
+	};
 
-	mvcSaucisse.Model.prototype.isPourrie = function ()
-	{
+	mvcSaucisse.Model.prototype.isPourrie = function () {
 		return this.pourrie;
-	}
+	};
 
-	mvcSaucisse.Model.prototype.add = function(obj_observer)
-	{
+	mvcSaucisse.Model.prototype.add = function(obj_observer) {
 		this.coordonnee_notifier.add(obj_observer);
-	}
+	};
 
-	mvcSaucisse.Model.prototype.set = function (x)
-	{
+	mvcSaucisse.Model.prototype.set = function (x) {
 		this.x = common.HasNumberX(x,0);
 
 		this.coordonnee_notifier.notify('display');
-	}
+	};
 
-	mvcSaucisse.Model.prototype.getParent = function()
-	{
+	mvcSaucisse.Model.prototype.getParent = function() {
 		return this.parent;
 	};
 
-	mvcSaucisse.Model.prototype.setCollideWith = function(collision_state)
-	{
+	mvcSaucisse.Model.prototype.setCollideWith = function(collision_state) {
 		if (typeof collision_state !== 'boolean')
 			throw 'Parameter \'collision state\' is not a boolean literal!';
 
 		this.collision_state = ( this.collision_state === mvcSaucisse.NO_COLLISION) ? collision_state : mvcSaucisse.COLLIDE_WITH;
 	};
 
-	mvcSaucisse.Model.prototype.isCollideWith = function()
-	{
+	mvcSaucisse.Model.prototype.isCollideWith = function() {
 		return this.collision_state;
 	};
 
-	mvcSaucisse.Model.prototype.getCollisionId = function()
-	{
+	mvcSaucisse.Model.prototype.getCollisionId = function() {
 		return 'Saucisse';
 	};
 
@@ -565,17 +558,17 @@ mvcSaucisse.NO_COLLISION=false;
 {
 	'use strict';
 
-	mvcSaucisse.Controller = function(obj_stage, obj_queue, obj_generator, name)
-	{
+	mvcSaucisse.Controller = function(obj_stage, obj_queue, obj_generator, name) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
 		this.name = common.HasStringName(name, 'Controller_default');
 
 		this.obj_generator = obj_generator;
-		if (  obj_generator instanceof Generator)
+		if (  obj_generator instanceof Generator) {
 			this.obj_generator = obj_generator;
-		else
+		} else {
 			throw 'Parameter \'obj_generator\' is not Generator instance!';
+		};
 	
 		console.log(this.name, ' Controller is being created!');
 		this.obj_model_saucisse	= new mvcSaucisse.Model( this.name, this );
@@ -583,26 +576,24 @@ mvcSaucisse.NO_COLLISION=false;
 		this.obj_model_saucisse.add ( this.obj_view_saucisse  );
 		this.preparer();
 		console.log(this.name, ' Controller creation is done!');
-	}
+	};
 
-	mvcSaucisse.Controller.prototype.run = function()
-	{
+	mvcSaucisse.Controller.prototype.run = function() {
 		var x = this.obj_model_saucisse.getX();
-		if ( x <= -this.obj_view_saucisse.image.width )
-		{	// la saucisse à travers l'ensemble de canvas
+		if ( x <= -this.obj_view_saucisse.image.width ) {
+			// la saucisse à travers l'ensemble de canvas
 			this.preparer();
 		} else {
 			// déplace la saucisse
 			this.obj_model_saucisse.set(x - this.obj_model_saucisse.getSpeed());
-			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLIDE_WITH )
-			{ // la saucisse est entré en collision après le déplacement
+			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLIDE_WITH ) {
+				// la saucisse est entré en collision après le déplacement
 				this.preparer();
-			}
-		}
-	}
+			};
+		};
+	};
 
-	mvcSaucisse.Controller.prototype.preparer = function()
-	{
+	mvcSaucisse.Controller.prototype.preparer = function() {
 		var obj_coordonnee_random = this.obj_generator.iterator();	
 		this.obj_model_saucisse.preparer(
 			obj_coordonnee_random.x,
@@ -611,11 +602,9 @@ mvcSaucisse.NO_COLLISION=false;
 			obj_coordonnee_random.vitesse,
 			obj_coordonnee_random.pourrie
 		);
-	}
+	},
 
-
-	mvcSaucisse.Controller.prototype.isPourrie = function()
-	{
+	mvcSaucisse.Controller.prototype.isPourrie = function() {
 		return this.obj_model_saucisse.isPourrie();
 	};
 
@@ -624,15 +613,13 @@ mvcSaucisse.NO_COLLISION=false;
 		return this.obj_view_saucisse;
 	};
 
-	mvcSaucisse.Controller.prototype.getModel = function()
-	{
+	mvcSaucisse.Controller.prototype.getModel = function() {
 		return this.obj_model_saucisse;
 	};
 
-	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer)
-	{
+	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer) {
 		this.obj_model_saucisse.add(obj_observer);
-	}
+	};
 
 	mvcSaucisse.Controller.prototype.getCollisionId = function()
 	{
@@ -641,6 +628,6 @@ mvcSaucisse.NO_COLLISION=false;
 
 	mvcSaucisse.Controller.prototype.setCollideWith = function(collision_state) {
 		this.obj_model_saucisse.setCollideWith(collision_state);
-	}
+	};
 
 }());
