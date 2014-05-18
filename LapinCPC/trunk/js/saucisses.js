@@ -50,7 +50,7 @@ class mvcSaucisse.Model {
 	int y
 	int rotation
 	int vitesse
-	boolean pourrie
+	boolean type
 	boolean collision_state = mvcSaucisse.NO_COLLISION
 	==
 	void Model(String name, Controller parent)
@@ -59,7 +59,7 @@ class mvcSaucisse.Model {
 	int getY()
 	int getRotation()
 	int getSpeed()
-	Boolean isPourrie()
+	int getType()
 	void add(Object obj_observable)
 	__ collision
 	void setCollideWith(boolean collision_state)
@@ -403,8 +403,11 @@ deactivate Controller
 var mvcSaucisse = {};
 mvcSaucisse.COLLIDE_WITH=true;
 mvcSaucisse.NO_COLLISION=false;
-mvcSaucisse.BONNE_SAUCISSE=false;
-mvcSaucisse.MAUVAISE_SAUCISSE=true;
+mvcSaucisse.BONNE_SAUCISSE=0;
+mvcSaucisse.MAUVAISE_SAUCISSE=1;
+mvcSaucisse.MECHANTE_SAUCISSE=2;
+mvcSaucisse.VISIBLE=true;
+mvcSaucisse.NO_VISIBLE=false;
 
 // ============================================================================================================================
 // Classe mvcSaucisse.View
@@ -414,6 +417,8 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 {
 	'use strict';
 
+	var array_images = [ 'bonne_saucisse', 'mauvaise_saucisse', 'mechante_saucisse' ];
+	
 	mvcSaucisse.View = function(obj_stage, obj_queue, name) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.obj_queue = common.HasObjectLoadQueue(obj_queue);
@@ -423,7 +428,7 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 		createjs.Bitmap.call(this);
 		this.obj_stage.addChild(this);
 		console.log(this.name, ' View is created!');
-		this.visible=true;
+		this.visible=mvcSaucisse.VISIBLE;
 	};
 
 	mvcSaucisse.View.prototype = new createjs.Bitmap();		
@@ -437,21 +442,17 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 		if ( obj_observable.getX == undefined ||
 			obj_observable.getY === undefined || 
 			obj_observable.getRotation === undefined ||
-			obj_observable.isPourrie === undefined
+			obj_observable.getType() === undefined
 			) {
-			throw 'No getX, getY(), getRotation() or isPourrie() method is defined in \'Observable\'!';
+			throw 'No getX, getY(), getRotation() or getType() method is defined in \'Observable\'!';
 		};
 
 		this.x = obj_observable.getX();
 		this.y = obj_observable.getY();
-		if (obj_observable.isPourrie()) {
-			this.image = this.obj_queue.getResult('mauvaise_saucisse');
-		} else {
-			this.image =  this.obj_queue.getResult('bonne_saucisse');
-		};
+		this.image = this.obj_queue.getResult(array_images[obj_observable.getType()]);
 
 		this.rotation = obj_observable.getRotation() ;
-		this.visible=true;
+		this.visible=mvcSaucisse.VISIBLE;
 	};
 
 	mvcSaucisse.View.prototype.display = function (obj_observable) { 
@@ -483,21 +484,21 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 		this.y = 0;		// default value
 		this.rotation = 0;	// default value
 		this.vitesse = 4;	// default value
-		this.pourrie = mvcSaucisse.BONNE_SAUCISSE;	// default value
+		this.type = mvcSaucisse.BONNE_SAUCISSE;	// default value
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 		console.log(this.name, ' Model is created!');
 	};
 
-	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, pourrie) {
+	mvcSaucisse.Model.prototype.preparer = function ( x, y, rotation, vitesse, type) {
 		this.x = common.HasNumberX(x,0);
 		this.y = common.HasNumberY(y, 0);
 		this.rotation = common.HasNumberRotation(rotation, 0);
 		this.vitesse = common.HasNumberSpeed(vitesse, 4);
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 
-		this.pourrie = (pourrie===undefined) ? mvcSaucisse.BONNE_SAUCISSE : pourrie;
-		if (! (typeof this.pourrie==='boolean')) {
-			throw 'Parameter \'pourrie\' is not a boolean literal!';
+		this.type = (type===undefined) ? mvcSaucisse.BONNE_SAUCISSE : type;
+		if ( common.IsNotNumber(this.type) ){
+			throw 'Parameter \'type\' is not a number literal!';
 		};
 
 		this.coordonnee_notifier.notify('prepare');
@@ -519,8 +520,8 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 		return this.vitesse;
 	};
 
-	mvcSaucisse.Model.prototype.isPourrie = function () {
-		return this.pourrie;
+	mvcSaucisse.Model.prototype.getType = function () {
+		return this.type;
 	};
 
 	mvcSaucisse.Model.prototype.add = function(obj_observer) {
@@ -607,12 +608,12 @@ mvcSaucisse.MAUVAISE_SAUCISSE=true;
 			obj_coordonnee_random.y,
 			obj_coordonnee_random.rotation,
 			obj_coordonnee_random.vitesse,
-			obj_coordonnee_random.pourrie
+			obj_coordonnee_random.type
 		);
 	},
 
 	mvcSaucisse.Controller.prototype.isPourrie = function() {
-		return this.obj_model_saucisse.isPourrie();
+		return ( this.obj_model_saucisse.getType() !== mvcSaucisse.BONNE_SAUCISSE) ;
 	};
 
 	mvcSaucisse.Controller.prototype.getView = function()
