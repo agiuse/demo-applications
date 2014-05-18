@@ -84,6 +84,7 @@ class mvcSaucisse.Controller {
 	__ Collision __
 	String getCollisionId()
 	__ execution __	
+	void moveToLeft()
 	void run()
 	__ notify __
 	void preparer()
@@ -402,6 +403,8 @@ deactivate Controller
 var mvcSaucisse = {};
 mvcSaucisse.COLLIDE_WITH=true;
 mvcSaucisse.NO_COLLISION=false;
+mvcSaucisse.BONNE_SAUCISSE=false;
+mvcSaucisse.MAUVAISE_SAUCISSE=true;
 
 // ============================================================================================================================
 // Classe mvcSaucisse.View
@@ -480,7 +483,7 @@ mvcSaucisse.NO_COLLISION=false;
 		this.y = 0;		// default value
 		this.rotation = 0;	// default value
 		this.vitesse = 4;	// default value
-		this.pourrie = false;	// default value
+		this.pourrie = mvcSaucisse.BONNE_SAUCISSE;	// default value
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 		console.log(this.name, ' Model is created!');
 	};
@@ -492,7 +495,7 @@ mvcSaucisse.NO_COLLISION=false;
 		this.vitesse = common.HasNumberSpeed(vitesse, 4);
 		this.collision_state = mvcSaucisse.NO_COLLISION;
 
-		this.pourrie = (pourrie===undefined) ? false : pourrie;
+		this.pourrie = (pourrie===undefined) ? mvcSaucisse.BONNE_SAUCISSE : pourrie;
 		if (! (typeof this.pourrie==='boolean')) {
 			throw 'Parameter \'pourrie\' is not a boolean literal!';
 		};
@@ -578,7 +581,7 @@ mvcSaucisse.NO_COLLISION=false;
 		console.log(this.name, ' Controller creation is done!');
 	};
 
-	mvcSaucisse.Controller.prototype.run = function() {
+	mvcSaucisse.Controller.prototype.moveToLeft = function() {
 		var x = this.obj_model_saucisse.getX();
 		if ( x <= -this.obj_view_saucisse.image.width ) {
 			// la saucisse à travers l'ensemble de canvas
@@ -591,6 +594,10 @@ mvcSaucisse.NO_COLLISION=false;
 				this.preparer();
 			};
 		};
+	};
+
+	mvcSaucisse.Controller.prototype.run = function() {
+		this.moveToLeft();
 	};
 
 	mvcSaucisse.Controller.prototype.preparer = function() {
