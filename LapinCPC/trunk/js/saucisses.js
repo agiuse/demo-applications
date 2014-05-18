@@ -84,7 +84,6 @@ class mvcSaucisse.Controller {
 	__ Collision __
 	String getCollisionId()
 	__ execution __	
-	void moveToLeft()
 	void run()
 	__ notify __
 	void preparer()
@@ -528,8 +527,9 @@ mvcSaucisse.NO_VISIBLE=false;
 		this.coordonnee_notifier.add(obj_observer);
 	};
 
-	mvcSaucisse.Model.prototype.set = function (x) {
+	mvcSaucisse.Model.prototype.set = function (x,y) {
 		this.x = common.HasNumberX(x,0);
+		this.y = common.HasNumberY(y,this.y);
 
 		this.coordonnee_notifier.notify('display');
 	};
@@ -539,8 +539,9 @@ mvcSaucisse.NO_VISIBLE=false;
 	};
 
 	mvcSaucisse.Model.prototype.setCollideWith = function(collision_state) {
-		if (typeof collision_state !== 'boolean')
+		if (typeof collision_state !== 'boolean') {
 			throw 'Parameter \'collision state\' is not a boolean literal!';
+		}
 
 		this.collision_state = ( this.collision_state === mvcSaucisse.NO_COLLISION) ? collision_state : mvcSaucisse.COLLIDE_WITH;
 	};
@@ -575,35 +576,52 @@ mvcSaucisse.NO_VISIBLE=false;
 		};
 	
 		console.log(this.name, ' Controller is being created!');
-		this.obj_model_saucisse	= new mvcSaucisse.Model( this.name, this );
-		this.obj_view_saucisse = new mvcSaucisse.View(this.obj_stage, this.obj_queue, this.name);
-		this.obj_model_saucisse.add ( this.obj_view_saucisse  );
+		this.obj_model	= new mvcSaucisse.Model( this.name, this );
+		this.obj_view = new mvcSaucisse.View(this.obj_stage, this.obj_queue, this.name);
+		this.obj_model.add ( this.obj_view  );
 		this.preparer();
 		console.log(this.name, ' Controller creation is done!');
 	};
 
-	mvcSaucisse.Controller.prototype.moveToLeft = function() {
-		var x = this.obj_model_saucisse.getX();
-		if ( x <= -this.obj_view_saucisse.image.width ) {
+	mvcSaucisse.Controller.prototype.run = function() {
+		var x = this.obj_model.getX();
+		if ( x <= -this.obj_view.image.width ) {
 			// la saucisse à travers l'ensemble de canvas
 			this.preparer();
 		} else {
-			// déplace la saucisse
-			this.obj_model_saucisse.set(x - this.obj_model_saucisse.getSpeed());
-			if ( this.obj_model_saucisse.isCollideWith() === mvcSaucisse.COLLIDE_WITH ) {
-				// la saucisse est entré en collision après le déplacement
+			if  ( this.obj_model.getType() === mvcSaucisse.MECHANTE_SAUCISSE ) {
+				var y = this.obj_model.getY();
+				var delta = y + 32 - this.obj_model_player.getY();
+				if (delta !== 0 ) {
+					if ( delta > 0 ) {
+						if (delta > 1) {
+							y -= 2;
+						} else {
+							y--;
+						};
+					} else {
+						if (delta < -1) {
+							y += 2;
+						} else {
+							y++;
+						};
+					};
+				};
+				this.obj_model.set(x - this.obj_model.getSpeed(),y);
+			} else {
+				this.obj_model.set(x - this.obj_model.getSpeed());
+			};
+			
+			if ( this.obj_model.isCollideWith() === mvcSaucisse.COLLIDE_WITH ) {
+				// la saucisse est entrée en collision après le déplacement
 				this.preparer();
 			};
 		};
 	};
 
-	mvcSaucisse.Controller.prototype.run = function() {
-		this.moveToLeft();
-	};
-
 	mvcSaucisse.Controller.prototype.preparer = function() {
 		var obj_coordonnee_random = this.obj_generator.iterator();	
-		this.obj_model_saucisse.preparer(
+		this.obj_model.preparer(
 			obj_coordonnee_random.x,
 			obj_coordonnee_random.y,
 			obj_coordonnee_random.rotation,
@@ -613,29 +631,29 @@ mvcSaucisse.NO_VISIBLE=false;
 	},
 
 	mvcSaucisse.Controller.prototype.isPourrie = function() {
-		return ( this.obj_model_saucisse.getType() !== mvcSaucisse.BONNE_SAUCISSE) ;
+		return ( this.obj_model.getType() !== mvcSaucisse.BONNE_SAUCISSE) ;
 	};
 
 	mvcSaucisse.Controller.prototype.getView = function()
 	{
-		return this.obj_view_saucisse;
+		return this.obj_view;
 	};
 
 	mvcSaucisse.Controller.prototype.getModel = function() {
-		return this.obj_model_saucisse;
+		return this.obj_model;
 	};
 
 	mvcSaucisse.Controller.prototype.coordonneeHasObservedBy = function(obj_observer) {
-		this.obj_model_saucisse.add(obj_observer);
+		this.obj_model.add(obj_observer);
 	};
 
 	mvcSaucisse.Controller.prototype.getCollisionId = function()
 	{
-		return this.obj_model_saucisse.getCollisionId();
+		return this.obj_model.getCollisionId();
 	};
 
 	mvcSaucisse.Controller.prototype.setCollideWith = function(collision_state) {
-		this.obj_model_saucisse.setCollideWith(collision_state);
+		this.obj_model.setCollideWith(collision_state);
 	};
 
 }());

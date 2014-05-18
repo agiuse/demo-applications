@@ -44,9 +44,11 @@ function startTest() {
 	test("Test des parametres du constructeur()", testModelArgumentConstructor);
 	test("Test du constructeur()", testModelConstructor);
 	test("Test des parametres de la méthode preparer()", testModelMethodArgumentPreparer);
-	test("Test de la méthode preparer()", testModelMethodPreparer);
+	test("Test de la méthode preparer() sans la notification", testModelMethodPreparer1);
+	test("Test de la méthode preparer() avec la notification 'prepare'", testModelMethodPreparer2);
 	test("Test des parametres de la méthode set()", testModelMethodArgumentSet);
-	test("Test de la méthode set()", testModelMethodSet);
+	test("Test de la méthode set() sans la notification", testModelMethodSet1);
+	test("Test de la méthode set() avec la notification 'display'", testModelMethodSet2);
 	test("Test des parametres des méthodes add()", testModelMethodArgumentAdd);
 	test("Test des méthodes add()", testModelMethodAdd);
 	test("Test des parametres de la méthode setCollideWith()", testModelMethodArgumentSetCollideWith);
@@ -70,10 +72,12 @@ function startTest() {
 	test("Test des parametres du constructeur", testControllerArgumentConstructor);
 	test("Test du constructeur", testControllerConstructor);
 	test("Test de la méthode preparer()", testControllerMethodPreparer);
-	test("Test de la méthode moveToLeft() en arrivant sur le bord gauche", testControllerMethodMoveToLeft1);
-	test("Test de la méthode moveToLeft() en cas de collision", testControllerMethodMoveToLeft2);
-	test("Test de la méthode run() avec une saucisse qui en arrive sur le bord gauche", testControllerMethodRun1);
-	test("Test de la méthode run() avec une saucisse qui entre en collision", testControllerMethodRun2);
+	test("Test de la méthode run() avec une mauvaise saucisse qui en arrive sur le bord gauche", testControllerMethodRun1);
+	test("Test de la méthode run() avec une bonne saucisse qui en arrive sur le bord gauche", testControllerMethodRun2);
+	test("Test de la méthode run() avec une mechante saucisse qui en arrive sur le bord gauche", testControllerMethodRun3);
+	test("Test de la méthode run() avec une mauvaise saucisse qui entre en collision", testControllerMethodRun4);
+	test("Test de la méthode run() avec une bonne saucisse qui entre en collision", testControllerMethodRun5);
+	test("Test de la méthode run() avec une mechante saucisse qui entre en collision", testControllerMethodRun6);
 	test("Test de la méthode getView()", testControllerMethodGetView);
 	test("Test de la méthode getCollisionId()", testControllerMethodGetCollisionId);
 	test("Test des parametres de la méthode coordonneeHasObservedBy()", testControllerMethodArgumentCoordonneeHasObservedBy);
@@ -476,9 +480,9 @@ function testModelMethodArgumentPreparer() {
 	);
 };
 
-function testModelMethodPreparer() {
+function testModelMethodPreparer1() {
 	'use strict';
-	console.log('testModelMethodPreparer\n-----------------------------------------');
+	console.log('testModelMethodPreparer1\n-----------------------------------------');
 
 	{
 		var obj = new mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} });
@@ -492,27 +496,112 @@ function testModelMethodPreparer() {
 		strictEqual(obj.y, 0, "mvcSaucisse.Model.preparer() : Test of right \'Y\' default value");
 		strictEqual(obj.rotation, 0, "mvcSaucisse.Model.preparer() : Test of right \'rotation\' default value");
 		strictEqual(obj.vitesse, 4, "mvcSaucisse.Model.preparer() : Test of right \'vitesse\' default value");
-		strictEqual(obj.type, mvcSaucisse.BONNE_SAUCISSE, "mvcSaucisse.Model() : Test of right \'type\' default value");
+		strictEqual(obj.type, mvcSaucisse.BONNE_SAUCISSE, "mvcSaucisse.Model.preparer() : Test of right \'type\' default value");
 	};
 	
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer(10, 100, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE);
-		strictEqual(obj.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
+		strictEqual(obj.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'X\' value");
 		strictEqual(obj.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		strictEqual(obj.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		strictEqual(obj.vitesse, 8, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		strictEqual(obj.type, mvcSaucisse.MAUVAISE_SAUCISSE, "mvcSaucisse.Model() : Test of right \'type\' value");
+		strictEqual(obj.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'rotation\' value");
+		strictEqual(obj.vitesse, 8, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'vitesse\' value");
+		strictEqual(obj.type, mvcSaucisse.MAUVAISE_SAUCISSE, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'type\' value");
 	};
 
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.preparer(10, 100, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE);
-		strictEqual(obj.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'X\' value");
-		strictEqual(obj.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'Y\' value");
-		strictEqual(obj.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'rotation\' value");
-		strictEqual(obj.vitesse, 8, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 3, 1000) : Test of right \'vitesse\' value");
-		strictEqual(obj.type, mvcSaucisse.MECHANTE_SAUCISSE, "mvcSaucisse.Model() : Test of right \'type\' value");
+		strictEqual(obj.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'X\' value");
+		strictEqual(obj.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'Y\' value");
+		strictEqual(obj.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'rotation\' value");
+		strictEqual(obj.vitesse, 8, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'vitesse\' value");
+		strictEqual(obj.type, mvcSaucisse.MECHANTE_SAUCISSE, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'type\' value");
+	};
+};
+
+function testModelMethodPreparer2() {
+	'use strict';
+	console.log('testModelMethodPreparer2\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} });
+		ok(obj.preparer !== undefined, "mvcSaucisse.Model.preparer() : Check that this method is defined!");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model(undefined, {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+		if (obj.getRotation	=== undefined ) obj.getRotation = function() { return this.rotation; };			
+		if (obj.getType === undefined ) obj.getType = function() { return this.type; };
+
+		var obj_observer_coordonnee = {
+			name: 'observer',
+			prepare: function(obj_observable) {
+				this.x = obj_observable.getX(); 
+				this.y = obj_observable.getY();
+				this.rotation = obj_observable.getRotation();
+				this.type = obj_observable.getType();
+			}
+		};
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+
+		obj.preparer();
+		strictEqual(obj_observer_coordonnee.x, 0, "mvcSaucisse.Model.preparer() : Test of right \'X\' default value");
+		strictEqual(obj_observer_coordonnee.y, 0, "mvcSaucisse.Model.preparer() : Test of right \'Y\' default value");
+		strictEqual(obj_observer_coordonnee.rotation, 0, "mvcSaucisse.Model.preparer() : Test of right \'rotation\' default value");
+		strictEqual(obj_observer_coordonnee.type, mvcSaucisse.BONNE_SAUCISSE, "mvcSaucisse.Model.preparer() : Test of right \'type\' default value");
+	};
+	
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+		if (obj.getRotation	=== undefined ) obj.getRotation = function() { return this.rotation; };			
+		if (obj.getType === undefined ) obj.getType = function() { return this.type; };
+
+		var obj_observer_coordonnee = {
+			name: 'observer',
+			prepare: function(obj_observable) {
+				this.x = obj_observable.getX(); 
+				this.y = obj_observable.getY();
+				this.rotation = obj_observable.getRotation();
+				this.type = obj_observable.getType();
+			}
+		};
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+
+		obj.preparer(10, 100, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE);
+		strictEqual(obj_observer_coordonnee.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'X\' value");
+		strictEqual(obj_observer_coordonnee.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'Y\' value");
+		strictEqual(obj_observer_coordonnee.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'rotation\' value");
+		strictEqual(obj_observer_coordonnee.type, mvcSaucisse.MAUVAISE_SAUCISSE, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MAUVAISE_SAUCISSE) : Test of right \'type\' value");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+		if (obj.getRotation	=== undefined ) obj.getRotation = function() { return this.rotation; };			
+		if (obj.getType === undefined ) obj.getType = function() { return this.type; };
+
+		var obj_observer_coordonnee = {
+			name: 'observer',
+			prepare: function(obj_observable) {
+				this.x = obj_observable.getX(); 
+				this.y = obj_observable.getY();
+				this.rotation = obj_observable.getRotation();
+				this.type = obj_observable.getType();
+			}
+		};
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+
+		obj.preparer(10, 100, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE);
+		strictEqual(obj_observer_coordonnee.x, 10, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'X\' value");
+		strictEqual(obj_observer_coordonnee.y, 100, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'Y\' value");
+		strictEqual(obj_observer_coordonnee.rotation, -6, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'rotation\' value");
+		strictEqual(obj_observer_coordonnee.type, mvcSaucisse.MECHANTE_SAUCISSE, "mvcSaucisse.Model.preparer(10, 10, -6, 8, mvcSaucisse.MECHANTE_SAUCISSE) : Test of right \'type\' value");
 	};
 };
 
@@ -532,11 +621,19 @@ function testModelMethodArgumentSet() {
 		'Parameter \'X\' is not a number literal!',
 		"mvcSaucisse.Model.set('toto') : 'Test of parameter \'X\'!'"
 	);
+
+	throws( function () {
+			var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+			obj.set(100,'toto');
+		},
+		'Parameter \'Y\' is not a number literal!',
+		"mvcSaucisse.Model.set(100, 'toto') : 'Test of parameter \'Y\'!'"
+	);
 };
 
-function testModelMethodSet() {
+function testModelMethodSet1() {
 	'use strict';
-	console.log('testModelMethodSet\n-----------------------------------------');
+	console.log('testModelMethodSet1\n-----------------------------------------');
 
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
@@ -547,12 +644,85 @@ function testModelMethodSet() {
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.set();
 		strictEqual(obj.x, 0, "mvcSaucisse.Model.set() : Test of right \'X\' default value");
+		strictEqual(obj.y, 0, "mvcSaucisse.Model.set() : Test of right \'Y\' default value");
 	};
 	
 	{
 		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
 		obj.set(10);
 		strictEqual(obj.x, 10, "mvcSaucisse.Model.set(10) : Test of right new \'X\' value");
+		strictEqual(obj.y, 0, "mvcSaucisse.Model.set() : Test of right \'Y\' default value");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		obj.set(10, 20);
+		strictEqual(obj.x, 10, "mvcSaucisse.Model.set(10) : Test of right new \'X\' value");
+		strictEqual(obj.y, 20, "mvcSaucisse.Model.set() : Test of right \'Y\' default value");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		obj.y = 20;
+		obj.set(10);
+		strictEqual(obj.x, 10, "mvcSaucisse.Model.set(10) : Test of right new \'X\' value");
+		strictEqual(obj.y, 20, "mvcSaucisse.Model.set() : Test of right \'Y\' default value");
+	};
+};
+
+function testModelMethodSet2() {
+	'use strict';
+	console.log('testModelMethodSet2\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		ok(obj.set !== undefined, "mvcSaucisse.Model.set() : Check that this method is defined!");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+
+		var obj_observer_coordonnee = {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); } };
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+		obj.set();
+		strictEqual(obj_observer_coordonnee.x, 0, "mvcSaucisse.Model.set() : Check that x value is 10 after a 'display' notification!");
+		strictEqual(obj_observer_coordonnee.y, 0, "mvcSaucisse.Model.set() : Check that y value is 0 after a 'display' notification!");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+
+		var obj_observer_coordonnee = {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); } };
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+		obj.set(10);
+		strictEqual(obj_observer_coordonnee.x, 10, "mvcSaucisse.Model.set(10) : Check that x value is 10 after a 'display' notification!");
+		strictEqual(obj_observer_coordonnee.y, 0, "mvcSaucisse.Model.set(10) : Check that y value is 0 after a 'display' notification!");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		if (obj.getX === undefined ) obj.getX = function() { return this.x; };			
+		if (obj.getY === undefined ) obj.getY = function() { return this.y; };
+
+		var obj_observer_coordonnee = {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); } };
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+		obj.set(10,20);
+		strictEqual(obj_observer_coordonnee.x, 10, "mvcSaucisse.Model.set(10,20) : Check that x value is 10 after a 'display' notification!");
+		strictEqual(obj_observer_coordonnee.y, 20, "mvcSaucisse.Model.set(10, 20) : Check that y value is 20 after a 'display' notification!");
+	};
+
+	{
+		var obj = new mvcSaucisse.Model('model test', {getView: function() {}, getCollisionId: function() {} } );
+		var obj_observer_coordonnee = {name: 'observer', display: function(obj_observable) { this.x = obj_observable.getX(); this.y = obj_observable.getY(); } };
+		obj.coordonnee_notifier.add(obj_observer_coordonnee);
+		obj.y = 20;
+		obj.set(10);
+		strictEqual(obj_observer_coordonnee.x, 10, "mvcSaucisse.Model.set(10) : Check that x value is 10 after a 'display' notification!");
+		strictEqual(obj_observer_coordonnee.y, 20, "mvcSaucisse.Model.set(10) : Check that y value is 20 after a 'display' notification!");
 	};
 };
 
@@ -853,98 +1023,28 @@ function testControllerMethodPreparer() {
 
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		strictEqual(obj.obj_model_saucisse.getX(), 8, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 8, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
+		strictEqual(obj.obj_model.getX(), 8, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
+		strictEqual(obj.obj_model.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
+		strictEqual(obj.obj_model.getRotation(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
+		strictEqual(obj.obj_model.getSpeed(), 8, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
 	};
 	
 	{
 		obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator,'controller test');
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
+		strictEqual(obj.obj_model.getX(), 108, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
+		strictEqual(obj.obj_model.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
+		strictEqual(obj.obj_model.getRotation(), -10, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
+		strictEqual(obj.obj_model.getSpeed(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
 	};
 	{
 		obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator,'controller test');
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
-	};
-};
-
-function testControllerMethodMoveToLeft1() {
-	'use strict';
-	console.log('testControllerMethodMoveToLeft1\n-----------------------------------------');
-
-	{
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		ok(obj.moveToLeft !== undefined, "mvcSaucisse.Controller.moveToLeft() : Check that this method is defined!");
-	};
-
-	{	// move to left
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
-		obj.moveToLeft();
-		strictEqual(obj.obj_model_saucisse.getX(), 0, "right move to left from 8 to 2");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 6, "no change rotation value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 8, "no change speed value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
-		obj.moveToLeft();	// from 0 to -8
-		obj.moveToLeft();	// from -8 to -16
-		obj.moveToLeft();	// from -16 to -24
-		obj.moveToLeft();	// from -24 to -32
-		obj.moveToLeft();	// from -32 to -40
-		obj.moveToLeft();	// from -40 to -48
-		obj.moveToLeft();	// from -48 to -56
-		obj.moveToLeft();	// from -56 to -64
-		obj.moveToLeft();	// from -64 to 108
-		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
-		obj.moveToLeft();	// from 108 to 102
-		strictEqual(obj.obj_model_saucisse.getX(), 102, "new 'x' value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "no change rotation value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "no change speed value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 11th run cycle");
-	};
-};
-
-function testControllerMethodMoveToLeft2() {
-	'use strict';
-	console.log('testControllerMethodMoveToLeft2\n-----------------------------------------');
-
-	{
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		ok(obj.moveToLeft !== undefined, "mvcSaucisse.Controller.moveToLeft() : Check that this method is defined!");
-	};
-
-	{	// collision
-		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
-		obj.obj_model_saucisse.x = 108;
-		// {x:108, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
-		obj.moveToLeft();
-		strictEqual(obj.obj_model_saucisse.getX(), 100, "right move to left from 108 to 102");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 6, "no change rotation value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 8, "no change speed value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
-		obj.moveToLeft();	// from 102 to 94
-		obj.moveToLeft();	// from 94 to 86
-		obj.obj_model_saucisse.setCollideWith(mvcSaucisse.COLLIDE_WITH);
-		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
-		obj.moveToLeft();	// from 86 to 108
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "new 'x' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "new 'Y' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "new 'rotation' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "new 'speed' value after 5th run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "new 'type' value after 4th run cycle");
+		strictEqual(obj.obj_model.getX(), 108, "mvcSaucisse.Controller.preparer() : Test of right \'X\' value");
+		strictEqual(obj.obj_model.getY(), 150, "mvcSaucisse.Controller.preparer() : Test of right \'Y\' value");
+		strictEqual(obj.obj_model.getRotation(), -10, "mvcSaucisse.Controller.preparer() : Test of right \'rotation\' value");
+		strictEqual(obj.obj_model.getSpeed(), 6, "mvcSaucisse.Controller.preparer() : Test of right \'vitesse\' value");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "mvcSaucisse.Controller.preparer() : Test of right \'type\'  value");
 	};
 };
 
@@ -961,11 +1061,11 @@ function testControllerMethodRun1() {
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
 		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
 		obj.run();
-		strictEqual(obj.obj_model_saucisse.getX(), 0, "right move to left from 8 to 2");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 6, "no change rotation value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 8, "no change speed value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		strictEqual(obj.obj_model.getX(), 0, "right move to left from 8 to 2");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
 		obj.run();	// from 0 to -8
 		obj.run();	// from -8 to -16
 		obj.run();	// from -16 to -24
@@ -977,11 +1077,11 @@ function testControllerMethodRun1() {
 		obj.run();	// from -64 to 108
 		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
 		obj.run();	// from 108 to 102
-		strictEqual(obj.obj_model_saucisse.getX(), 102, "new 'x' value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "no change rotation value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "no change speed value after 11th run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 11th run cycle");
+		strictEqual(obj.obj_model.getX(), 102, "new 'x' value after 11th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 11th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "no change rotation value after 11th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "no change speed value after 11th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 11th run cycle");
 	};
 };
 
@@ -994,27 +1094,175 @@ function testControllerMethodRun2() {
 		ok(obj.run !== undefined, "mvcSaucisse.Controller.run() : Check that this method is defined!");
 	};
 
+	{	// move to left
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
+		obj.obj_model.type = mvcSaucisse.BONNE_SAUCISSE;
+		
+		obj.run();
+		strictEqual(obj.obj_model.getX(), 0, "right move to left from 8 to 2");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		obj.run();	// from 0 to -8
+		obj.run();	// from -8 to -16
+		obj.run();	// from -16 to -24
+		obj.run();	// from -24 to -32
+		obj.run();	// from -32 to -40
+		obj.run();	// from -40 to -48
+		obj.run();	// from -48 to -56
+		obj.run();	// from -56 to -64
+		obj.run();	// from -64 to 108
+		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
+		obj.run();	// from 108 to 102
+		strictEqual(obj.obj_model.getX(), 102, "new 'x' value after 11th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 11th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "no change rotation value after 11th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "no change speed value after 11th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 11th run cycle");
+	};
+};
+
+function testControllerMethodRun3() {
+	'use strict';
+	console.log('testControllerMethodRun3\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		ok(obj.run !== undefined, "mvcSaucisse.Controller.run() : Check that this method is defined!");
+	};
+
+	{	// move to left
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		obj.obj_model_player = { getY: function() { return 182; }  };
+		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
+		obj.obj_model.type = mvcSaucisse.MECHANTE_SAUCISSE;
+		
+		obj.run();
+		strictEqual(obj.obj_model.getX(), 0, "right move to left from 8 to 2");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		obj.run();	// from 0 to -8
+		obj.run();	// from -8 to -16
+		obj.run();	// from -16 to -24
+		obj.run();	// from -24 to -32
+		obj.run();	// from -32 to -40
+		obj.run();	// from -40 to -48
+		obj.run();	// from -48 to -56
+		obj.run();	// from -56 to -64
+		obj.run();	// from -64 to 108
+		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
+		obj.run();	// from 108 to 102
+		strictEqual(obj.obj_model.getX(), 102, "new 'x' value after 11th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 11th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "no change rotation value after 11th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "no change speed value after 11th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 11th run cycle");
+	};
+};
+
+function testControllerMethodRun4() {
+	'use strict';
+	console.log('testControllerMethodRun4\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		ok(obj.run !== undefined, "mvcSaucisse.Controller.run() : Check that this method is defined!");
+	};
+
 	{	// collision
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
 		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
-		obj.obj_model_saucisse.x = 108;
+		obj.obj_model.x = 108;
 		// {x:108, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
 		obj.run();
-		strictEqual(obj.obj_model_saucisse.getX(), 100, "right move to left from 108 to 102");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "no change Y value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), 6, "no change rotation value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 8, "no change speed value after 1 first run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		strictEqual(obj.obj_model.getX(), 100, "right move to left from 108 to 102");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "no change 'type' value after 1 first run cycle");
 		obj.run();	// from 100 to 92
 		obj.run();	// from 92 to 86
-		obj.obj_model_saucisse.setCollideWith(mvcSaucisse.COLLIDE_WITH);
+		obj.obj_model.setCollideWith(mvcSaucisse.COLLIDE_WITH);
 		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
 		obj.run();	// from 86 to 108
-		strictEqual(obj.obj_model_saucisse.getX(), 108, "new 'x' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getY(), 150, "new 'Y' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getRotation(), -10, "new 'rotation' value after 4th run cycle");
-		strictEqual(obj.obj_model_saucisse.getSpeed(), 6, "new 'speed' value after 5th run cycle");
-		strictEqual(obj.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "new 'type' value after 4th run cycle");
+		strictEqual(obj.obj_model.getX(), 108, "new 'x' value after 4th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "new 'Y' value after 4th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "new 'rotation' value after 4th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "new 'speed' value after 5th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "new 'type' value after 4th run cycle");
+	};
+};
+
+function testControllerMethodRun5() {
+	'use strict';
+	console.log('testControllerMethodRun5\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		ok(obj.run !== undefined, "mvcSaucisse.Controller.run() : Check that this method is defined!");
+	};
+
+	{	// collision
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
+		obj.obj_model.x = 108;
+		obj.obj_model.type = mvcSaucisse.BONNE_SAUCISSE;
+		// {x:108, y:150, rotation:6, vitesse:8, type:mvcSaucisse.BONNE_SAUCISSE}
+		obj.run();
+		strictEqual(obj.obj_model.getX(), 100, "right move to left from 108 to 102");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		obj.run();	// from 100 to 92
+		obj.run();	// from 92 to 86
+		obj.obj_model.setCollideWith(mvcSaucisse.COLLIDE_WITH);
+		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
+		obj.run();	// from 86 to 108
+		strictEqual(obj.obj_model.getX(), 108, "new 'x' value after 4th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "new 'Y' value after 4th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "new 'rotation' value after 4th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "new 'speed' value after 5th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "new 'type' value after 4th run cycle");
+	};
+};
+
+function testControllerMethodRun6() {
+	'use strict';
+	console.log('testControllerMethodRun6\n-----------------------------------------');
+
+	{
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		ok(obj.run !== undefined, "mvcSaucisse.Controller.run() : Check that this method is defined!");
+	};
+
+	{	// collision
+		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
+		obj.obj_model_player = { getY: function() { return 182; }  };
+		// {x:8, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MAUVAISE_SAUCISSE}
+		obj.obj_model.x = 108;
+		obj.obj_model.type = mvcSaucisse.MECHANTE_SAUCISSE;
+		// {x:108, y:150, rotation:6, vitesse:8, type:mvcSaucisse.MECHANTE_SAUCISSE}
+		obj.run();
+		strictEqual(obj.obj_model.getX(), 100, "right move to left from 108 to 102");
+		strictEqual(obj.obj_model.getY(), 150, "no change Y value after 1 first run cycle");
+		strictEqual(obj.obj_model.getRotation(), 6, "no change rotation value after 1 first run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 8, "no change speed value after 1 first run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "no change 'type' value after 1 first run cycle");
+		obj.run();	// from 100 to 92
+		obj.run();	// from 92 to 86
+		obj.obj_model.setCollideWith(mvcSaucisse.COLLIDE_WITH);
+		// {x:108, y:150, rotation:-10, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
+		obj.run();	// from 86 to 108
+		strictEqual(obj.obj_model.getX(), 108, "new 'x' value after 4th run cycle");
+		strictEqual(obj.obj_model.getY(), 150, "new 'Y' value after 4th run cycle");
+		strictEqual(obj.obj_model.getRotation(), -10, "new 'rotation' value after 4th run cycle");
+		strictEqual(obj.obj_model.getSpeed(), 6, "new 'speed' value after 5th run cycle");
+		strictEqual(obj.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "new 'type' value after 4th run cycle");
 	};
 };
 
@@ -1025,7 +1273,7 @@ function testControllerMethodGetView() {
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
 		ok(obj.getView !== undefined, "mvcSaucisse.Controller.getView() : Check that this method is defined!");
-		strictEqual(obj.getView(), obj.obj_view_saucisse, "mvcSaucisse.Controller.getView(), Check that this method returns View Saucisse reference!");
+		strictEqual(obj.getView(), obj.obj_view, "mvcSaucisse.Controller.getView(), Check that this method returns View Saucisse reference!");
 	};
 };
 
@@ -1097,7 +1345,7 @@ function testControllerMethodCoordonneeHasObservedBy() {
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue,this.obj_generator, 'controller test');
 		obj.coordonneeHasObservedBy(obj_observer);
 		deepEqual(
-			obj.obj_model_saucisse.coordonnee_notifier.obj_observer_lists,
+			obj.obj_model.coordonnee_notifier.obj_observer_lists,
 			{'controller test' : obj.getView(), 'observer_1' : obj_observer},
 			"mvcSaucisse.Controller.coordonneeHasObservedBy(obj_observer) : right method call test of coordonneeHasObservedBy method with observer object which prepare method is defined!"
 		);
@@ -1109,7 +1357,7 @@ function testControllerMethodCoordonneeHasObservedBy() {
 		obj.coordonneeHasObservedBy(obj_observer);
 		var obj_notified = {'controller test' : obj.getView(), 'observer_1' : obj_observer};
 		deepEqual(
-			obj.obj_model_saucisse.coordonnee_notifier.obj_observer_lists,
+			obj.obj_model.coordonnee_notifier.obj_observer_lists,
 			obj_notified,
 			"mvcSaucisse.Controller.coordonneeHasObservedBy(obj_observer) : right method call test of coordonneeHasObservedBy method with observer object which display method is defined!"
 		);
@@ -1121,7 +1369,7 @@ function testControllerMethodCoordonneeHasObservedBy() {
 		obj.coordonneeHasObservedBy(obj_observer);
 		var obj_notified = {'controller test' : obj.getView(), 'observer_1' : obj_observer};
 		deepEqual(
-			obj.obj_model_saucisse.coordonnee_notifier.obj_observer_lists,
+			obj.obj_model.coordonnee_notifier.obj_observer_lists,
 			obj_notified,
 			"mvcSaucisse.Controller.coordonneeHasObservedBy(obj_observer) : right method call test of coordonneeHasObservedBy method with observer object which display and prepare methods are defined!"
 		);
@@ -1184,20 +1432,20 @@ function testControllerMethodSetCollideWith() {
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue,this.obj_generator, 'controller test');
 		obj.setCollideWith(mvcSaucisse.COLLIDE_WITH);
-		equal(obj.obj_model_saucisse.collision_state, mvcSaucisse.COLLIDE_WITH, "obj.setCollideWith(mvcSaucisse.COLLIDE_WITH) : check that collision state is equal to 'mvcSaucisse.COLLIDE_WITH'");
+		equal(obj.obj_model.collision_state, mvcSaucisse.COLLIDE_WITH, "obj.setCollideWith(mvcSaucisse.COLLIDE_WITH) : check that collision state is equal to 'mvcSaucisse.COLLIDE_WITH'");
 	};
 
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue,this.obj_generator, 'controller test');
 		obj.setCollideWith(mvcSaucisse.NO_COLLISION);
-		equal(obj.obj_model_saucisse.collision_state, mvcSaucisse.NO_COLLISION, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.NO_COLLISION'");
+		equal(obj.obj_model.collision_state, mvcSaucisse.NO_COLLISION, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.NO_COLLISION'");
 	};
 
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue,this.obj_generator, 'controller test');
-		obj.obj_model_saucisse.collision_state = mvcSaucisse.COLLIDE_WITH;
+		obj.obj_model.collision_state = mvcSaucisse.COLLIDE_WITH;
 		obj.setCollideWith(mvcSaucisse.NO_COLLISION);
-		equal(obj.obj_model_saucisse.collision_state, mvcSaucisse.COLLIDE_WITH, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.COLLIDE_WITH'");
+		equal(obj.obj_model.collision_state, mvcSaucisse.COLLIDE_WITH, "obj.setCollideWith(mvcSaucisse.NO_COLLISION) : check that collision state is equal to 'mvcSaucisse.COLLIDE_WITH'");
 	};
 };
 
@@ -1208,7 +1456,7 @@ function testControllerMethodGetModel() {
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
 		ok(obj.getModel !== undefined, "mvcSaucisse.Controller.getModel() : Check that this method is defined!");
-		strictEqual(obj.getModel(), obj.obj_model_saucisse, "mvcSaucisse.Controller.getModel(), Check that this method returns View Saucisse reference!");
+		strictEqual(obj.getModel(), obj.obj_model, "mvcSaucisse.Controller.getModel(), Check that this method returns View Saucisse reference!");
 	};
 };
 
@@ -1223,18 +1471,18 @@ function testControllerMethodIsPourrie() {
 	
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		obj.obj_model_saucisse.type=mvcSaucisse.BONNE_SAUCISSE;
+		obj.obj_model.type=mvcSaucisse.BONNE_SAUCISSE;
 		ok(! obj.isPourrie(), "mvcSaucisse.Controller.isPourrie(), Check that this method returns View Saucisse reference!");
 	};
 
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		obj.obj_model_saucisse.type=mvcSaucisse.MAUVAISE_SAUCISSE;
+		obj.obj_model.type=mvcSaucisse.MAUVAISE_SAUCISSE;
 		ok(obj.isPourrie(), "mvcSaucisse.Controller.isPourrie(), Check that this method returns View Saucisse reference!");
 	};
 	{
 		var obj = new mvcSaucisse.Controller(new createjs.Stage(), new createjs.LoadQueue, this.obj_generator, 'controller test');
-		obj.obj_model_saucisse.type=mvcSaucisse.MECHANTE_SAUCISSE;
+		obj.obj_model.type=mvcSaucisse.MECHANTE_SAUCISSE;
 		ok(obj.isPourrie(), "mvcSaucisse.Controller.isPourrie(), Check that this method returns View Saucisse reference!");
 	};
 	
