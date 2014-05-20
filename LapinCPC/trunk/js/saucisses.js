@@ -459,8 +459,12 @@ mvcSaucisse.NO_VISIBLE=false;
 		if ( obj_observable.getX === undefined) {
 			throw 'No getX() method is defined in \'Observable\'!';
 		};
-		
 		this.x = obj_observable.getX();
+
+		if ( obj_observable.getY === undefined) {
+			throw 'No getY() method is defined in \'Observable\'!';
+		};
+		this.y = obj_observable.getY();
 	};
 }());
 
@@ -591,7 +595,7 @@ mvcSaucisse.NO_VISIBLE=false;
 		} else {
 			if  ( this.obj_model.getType() === mvcSaucisse.MECHANTE_SAUCISSE ) {
 				var y = this.obj_model.getY();
-				var delta = y + 32 - this.obj_model_player.getY();
+				var delta = y - 32 - this.obj_model_player.getY();
 				if (delta !== 0 ) {
 					if ( delta > 0 ) {
 						if (delta > 1) {

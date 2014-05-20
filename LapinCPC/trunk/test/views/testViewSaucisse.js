@@ -107,6 +107,7 @@ function startTest() {
 
 	obj_queue.loadManifest(
 		[
+            {src:"./images/joueur.png", id:"player0"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
 			{src:"./images/saucisse2.png", id:"mechante_saucisse"}
@@ -140,6 +141,7 @@ function runTest() {
 	test("Affichage d'une bonne et mauvaise saucisse", test2);
 	test3();
 	test4();
+	test5();
 	
 	createjs.Ticker.setFPS(30);
 	createjs.Ticker.addEventListener("tick", test_run);
@@ -253,32 +255,32 @@ function test2() {
 	console.log("Display saucisse bitmaps");
 	obj_stage.update();
 
-	equal(obj_controller_1.obj_view_saucisse.x, 8, "Check that createjs.Bitmap X value of saucisse 1 is equal at 8!"); 
-	equal(obj_controller_1.obj_view_saucisse.y, 150, "Check that createjs.Bitmap Y value of saucisse 1 is equal at 150!"); 
-	equal(obj_controller_1.obj_view_saucisse.rotation, 6, "Check that createjs.Bitmap Rotation value of saucisse 1 is equal at 6!"); 
-	equal(obj_controller_1.obj_model_saucisse.getX(), 8, "Check that Model X value of saucisse 1 is equal at 8!"); 
-	equal(obj_controller_1.obj_model_saucisse.getY(), 150, "Check that Modem Y value of saucisse 1 is equal at 150!"); 
-	equal(obj_controller_1.obj_model_saucisse.getRotation(), 6, "Check that Model Rotation value of saucisse 1 is equal at 6!"); 
-	equal(obj_controller_1.obj_model_saucisse.getSpeed(), 4, "Check that Model Speed value of saucisse 1 is equal at 4!"); 
-	equal(obj_controller_1.obj_model_saucisse.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "Check that Model Type value of saucisse 1 is equal at mvcSaucisse.MAUVAISE_SAUCISSE!"); 
+	equal(obj_controller_1.obj_view.x, 8, "Check that createjs.Bitmap X value of saucisse 1 is equal at 8!"); 
+	equal(obj_controller_1.obj_view.y, 150, "Check that createjs.Bitmap Y value of saucisse 1 is equal at 150!"); 
+	equal(obj_controller_1.obj_view.rotation, 6, "Check that createjs.Bitmap Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_controller_1.obj_model.getX(), 8, "Check that Model X value of saucisse 1 is equal at 8!"); 
+	equal(obj_controller_1.obj_model.getY(), 150, "Check that Modem Y value of saucisse 1 is equal at 150!"); 
+	equal(obj_controller_1.obj_model.getRotation(), 6, "Check that Model Rotation value of saucisse 1 is equal at 6!"); 
+	equal(obj_controller_1.obj_model.getSpeed(), 4, "Check that Model Speed value of saucisse 1 is equal at 4!"); 
+	equal(obj_controller_1.obj_model.getType(), mvcSaucisse.MAUVAISE_SAUCISSE, "Check that Model Type value of saucisse 1 is equal at mvcSaucisse.MAUVAISE_SAUCISSE!"); 
 
-	equal(obj_controller_2.obj_view_saucisse.x, 108, "Check that createjs.Bitmap X value of saucisse 2 is equal at 108!"); 
-	equal(obj_controller_2.obj_view_saucisse.y, 150, "Check that createjs.Bitmap Y value of saucisse 2 is equal at 150!"); 
-	equal(obj_controller_2.obj_view_saucisse.rotation, -10, "Check that createjs.Bitmap Rotation value of saucisse 2 is equal at -10!"); 
-	equal(obj_controller_2.obj_model_saucisse.getX(), 108, "Check that Model X value of saucisse 2 is equal at 108!"); 
-	equal(obj_controller_2.obj_model_saucisse.getY(), 150, "Check that Modem Y value of saucisse 2 is equal at 150!"); 
-	equal(obj_controller_2.obj_model_saucisse.getRotation(), -10, "Check that Model Rotation value of saucisse 2 is equal at -10!"); 
-	equal(obj_controller_2.obj_model_saucisse.getSpeed(), 6, "Check that Model Speed value of saucisse 2 is equal at 6!"); 
-	equal(obj_controller_2.obj_model_saucisse.getType(), mvcSaucisse.BONNE_SAUCISSE, "Check that Model Type value of saucisse 2 is equal at mvcSaucisse.BONNE_SAUCISSE!"); 
+	equal(obj_controller_2.obj_view.x, 108, "Check that createjs.Bitmap X value of saucisse 2 is equal at 108!"); 
+	equal(obj_controller_2.obj_view.y, 150, "Check that createjs.Bitmap Y value of saucisse 2 is equal at 150!"); 
+	equal(obj_controller_2.obj_view.rotation, -10, "Check that createjs.Bitmap Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_controller_2.obj_model.getX(), 108, "Check that Model X value of saucisse 2 is equal at 108!"); 
+	equal(obj_controller_2.obj_model.getY(), 150, "Check that Modem Y value of saucisse 2 is equal at 150!"); 
+	equal(obj_controller_2.obj_model.getRotation(), -10, "Check that Model Rotation value of saucisse 2 is equal at -10!"); 
+	equal(obj_controller_2.obj_model.getSpeed(), 6, "Check that Model Speed value of saucisse 2 is equal at 6!"); 
+	equal(obj_controller_2.obj_model.getType(), mvcSaucisse.BONNE_SAUCISSE, "Check that Model Type value of saucisse 2 is equal at mvcSaucisse.BONNE_SAUCISSE!"); 
 
-	equal(obj_controller_3.obj_view_saucisse.x, 208, "Check that createjs.Bitmap X value of saucisse 3 is equal at 208!"); 
-	equal(obj_controller_3.obj_view_saucisse.y, 150, "Check that createjs.Bitmap Y value of saucisse 3 is equal at 150!"); 
-	equal(obj_controller_3.obj_view_saucisse.rotation, 10, "Check that createjs.Bitmap Rotation value of saucisse 3 is equal at 10!"); 
-	equal(obj_controller_3.obj_model_saucisse.getX(), 208, "Check that Model X value of saucisse 3 is equal at 208!"); 
-	equal(obj_controller_3.obj_model_saucisse.getY(), 150, "Check that Modem Y value of saucisse 3 is equal at 150!"); 
-	equal(obj_controller_3.obj_model_saucisse.getRotation(), 10, "Check that Model Rotation value of saucisse 3 is equal at 10!"); 
-	equal(obj_controller_3.obj_model_saucisse.getSpeed(), 6, "Check that Model Speed value of saucisse 3 is equal at 6!"); 
-	equal(obj_controller_3.obj_model_saucisse.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "Check that Model Type value of saucisse 3 is equal at mvcSaucisse.MECHANTE_SAUCISSE!"); 
+	equal(obj_controller_3.obj_view.x, 208, "Check that createjs.Bitmap X value of saucisse 3 is equal at 208!"); 
+	equal(obj_controller_3.obj_view.y, 150, "Check that createjs.Bitmap Y value of saucisse 3 is equal at 150!"); 
+	equal(obj_controller_3.obj_view.rotation, 10, "Check that createjs.Bitmap Rotation value of saucisse 3 is equal at 10!"); 
+	equal(obj_controller_3.obj_model.getX(), 208, "Check that Model X value of saucisse 3 is equal at 208!"); 
+	equal(obj_controller_3.obj_model.getY(), 150, "Check that Modem Y value of saucisse 3 is equal at 150!"); 
+	equal(obj_controller_3.obj_model.getRotation(), 10, "Check that Model Rotation value of saucisse 3 is equal at 10!"); 
+	equal(obj_controller_3.obj_model.getSpeed(), 6, "Check that Model Speed value of saucisse 3 is equal at 6!"); 
+	equal(obj_controller_3.obj_model.getType(), mvcSaucisse.MECHANTE_SAUCISSE, "Check that Model Type value of saucisse 3 is equal at mvcSaucisse.MECHANTE_SAUCISSE!"); 
 };
 
 function test3() {
@@ -292,8 +294,11 @@ function test3() {
 	obj_stage.update();
 	
 	obj_lists['obj_controller_1'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 1");
+	obj_lists['obj_controller_1'].obj_model_player = { getY: function() { return 282; }  };
 	obj_lists['obj_controller_2'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 2");
-	obj_lists['obj_controller_2'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 3");
+	obj_lists['obj_controller_2'].obj_model_player = { getY: function() { return 282; }  };
+	obj_lists['obj_controller_3'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, "saucisse 3");
+	obj_lists['obj_controller_3'].obj_model_player = { getY: function() { return 282; }  };
 	console.log("Saucisse creation done.");	
 };
 
@@ -308,7 +313,34 @@ function test4() {
 	
 	var obj_generator = new Generator();
 	
-	for (var i =0; i < 10 ; i++) {
+	for (var i =0; i < 9 ; i++) {
 		obj_lists['saucisse'+i] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator);
+		obj_lists['saucisse'+i].obj_model_player = { getY: function() { return 382; }  };
 	};
+};
+
+function test5() {
+	'use strict';
+	console.log("**** Test 5 : Déplacement d'une méchante saucisses vers le vaisseau avec le Controller Saucisses\n --------------------------------------------");
+
+	var obj_text =  new createjs.Text("Test MVC Saucisse 5 : MVC Controller Saucisses", "24px Arial", "#00000");
+	obj_text.x = 0 ; obj_text.y = 440; // +heigth = 464
+	obj_stage.addChild( obj_text );
+	
+	var obj_player = new createjs.Bitmap();
+	obj_stage.addChild(obj_player);
+	obj_player.image = obj_queue.getResult('player0');
+	obj_player.x=8; obj_player.y = 500;
+	obj_player.getX = function() { return this.x ; };
+	obj_player.getY = function() { return this.y ; };
+
+	obj_stage.update();
+
+	var obj_generator = new Generator('static');
+	obj_generator.elt_lists.push({x:800, y:440, rotation:0, vitesse:6, type:mvcSaucisse.MECHANTE_SAUCISSE});
+	obj_generator.elt_lists.push({x:800, y:532, rotation:0, vitesse:6, type:mvcSaucisse.MECHANTE_SAUCISSE});
+	obj_generator.elt_lists.push({x:800, y:600, rotation:0, vitesse:6, type:mvcSaucisse.MECHANTE_SAUCISSE});
+	
+	obj_lists['saucisse_mechante'] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator);
+	obj_lists['saucisse_mechante'].obj_model_player = obj_player;
 };
