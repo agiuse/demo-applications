@@ -71,13 +71,29 @@ Generator -- Object
 	};
 
 	Generator.prototype.iterator = function() {
-		return {
-			x:		Math.floor(Math.random() * 480 + 640),
-			y:		Math.floor(Math.random() * 460 + 5),
-			rotation:	Math.floor(Math.random() * 40 - 20), 
-			vitesse:	Math.floor(Math.random() * 6 + 2),
-			pourrie:	( Math.floor(Math.random() < 0.5 ) === 0 )? false : true
+		var my_type;
+		var my_vitesse;
+		if ( Math.floor(Math.random() < 0.5 ) ) {
+			if ( Math.floor(Math.random() < 0.25 ) ) {
+				my_type = mvcSaucisse.MECHANTE_SAUCISSE;
+				my_vitesse = Math.floor(Math.random() * 6 + 4);
+			} else {
+				my_type = mvcSaucisse.MAUVAISE_SAUCISSE;
+				my_vitesse = Math.floor(Math.random() * 3 + 2);
+			};
+		} else {
+			my_type = mvcSaucisse.BONNE_SAUCISSE;
+			my_vitesse = Math.floor(Math.random() * 3 + 2);
 		};
+
+		return  {
+			x:			Math.floor(Math.random() * 480 + 640),
+			y:			Math.floor(Math.random() * 448),
+			rotation:	Math.floor(Math.random() * 40 - 20), 
+			vitesse:	my_vitesse,
+			type:	my_type
+		};
+
 	};
 
 	window.Generator = Generator;
@@ -143,6 +159,7 @@ Generator -- Object
 				{src:"./sounds/music.mp3|./sounds/music.ogg", id:"music", type:createjs.LoadQueue.SOUND},
 				{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 				{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
+				{src:"./images/saucisse2.png", id:"mechante_saucisse"},
 				{src:"./sounds/boing.mp3|./sounds/boing.ogg", id:"boing", type:createjs.LoadQueue.SOUND},
 				{src:"./sounds/pouet.mp3|./sounds/pouet.ogg", id:"pouet", type:createjs.LoadQueue.SOUND},
 				{src:"./sounds/prout_3.mp3", id:"prout", type:createjs.LoadQueue.SOUND}
@@ -178,6 +195,7 @@ Generator -- Object
 
 		for (var i =0; i < 10 ; i++) {
 			obj_lists[index_saucisse + i] = new mvcSaucisse.Controller(obj_lists[index_stage], obj_queue, obj_generator, 'saucisse'+i);
+			obj_lists[index_saucisse + i].obj_model_player = obj_lists[index_player].getModel();
 			obj_lists[index_saucisse + i].coordonneeHasObservedBy(obj_lists[index_collision]);
 			obj_lists[index_collision].obj_model_collision.add(
 				'Saucisse',
