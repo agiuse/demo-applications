@@ -10,9 +10,108 @@ function ViewStage() {
 
 ViewStage.prototype = new createjs.Stage();
 
+// ====================================================================
+// Copied at 17/04 ; updated at 21/05
+function ViewScore(obj_stage, name, x, y) {
+	createjs.Text.call(this, "Score : 0", "24px Arial", "#000000" );
+
+	if (  obj_stage instanceof createjs.Stage ) {
+		this.obj_stage = obj_stage;
+	} else {
+		throw "Parameter obj_stage is not createjs.Stage instance!";
+	};
+	
+	this.name = (name === undefined) ? "ViewScore_default" : name;
+	if ( typeof this.name !== 'string' ) {
+		throw "Parameter name is not a String!";
+	};
+
+	this.x = (x === undefined) ? 0 : x;
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) {
+		throw "Parameter X is not a number!";
+	};
+	
+	this.y = (y === undefined) ? 0 : y;
+	if (! ((typeof this.y==='number')&&(this.y%1===0))) { 
+		throw "Parameter Y is not a number!";
+	};
+
+	this.obj_stage.addChild(this);
+	this.visible=true;
+	
+	console.log(this.name + " View is created!");
+};
+
+ViewScore.prototype = new createjs.Text();
+
+ViewScore.prototype.prepare = function(obj_observable) {
+	if (typeof obj_observable !== 'object') {
+		throw "Observable is not a Object!";
+	};
+
+	this.text = "Score : " + obj_observable.getScore();
+};
+
+ViewScore.prototype.display = function(obj_observable) {
+	if (typeof obj_observable !== 'object') {
+		throw "Observable is not a Object!";
+	};
+	
+	this.text = "Score : " + obj_observable.getScore();
+};
+
+// ====================================================================
+// copied at 17/04 ; updated at 21/05
+function ViewLife(obj_stage, name, x, y ) {
+	createjs.Text.call(this, "Vies : -", "24px Arial", "#00000" );
+
+	if (  obj_stage instanceof createjs.Stage) {
+		this.obj_stage = obj_stage;
+	} else {
+		throw "Parameter obj_stage is not createjs.Stage instance!";
+	};
+	
+	this.name = (name === undefined) ? "ViewLife_default" : name;
+	if ( typeof this.name !== 'string' ) {
+		throw "Parameter name is not a String!";
+	};
+
+	this.x = (x === undefined) ? 0 : x;
+	if (! ((typeof this.x==='number')&&(this.x%1===0))) {
+		throw "Parameter X is not a number!";
+	};
+		
+	this.y = (y === undefined) ? 0 : y;
+	if (! ((typeof this.y==='number')&&(this.y%1===0))) {
+		throw "Parameter Y is not a number!";
+	};
+
+	this.obj_stage.addChild(this);
+	this.visible=true;
+	console.log(this.name + " Viewer is created!");
+};
+
+ViewLife.prototype = new createjs.Text();
+
+ViewLife.prototype.display = function(obj_observable) {
+	if (typeof obj_observable !== 'object') {
+		throw "Observable is not a Object!";
+	};
+
+	this.text = "Vies : " + obj_observable.getLife();
+};
+
+ViewLife.prototype.prepare = function(obj_observable) {
+	if (typeof obj_observable !== 'object') { 
+		throw "Observable is not a Object!";
+	};
+
+	this.text = "Vies : " + obj_observable.getLife();
+};
+
 // -----------------------------------------------------------------
 function Generator(type) {
-	this.type = (type == undefined) ? 'random' : type;
+	this.type = (type === undefined) ? 'random' : type;
 	this.elt_lists = new Array();
 	this.init();
 };
@@ -23,6 +122,9 @@ Generator.prototype.init = function() {
 
 Generator.prototype.iterator = function() {
 	var elt;
+	var my_type;
+	var my_vitesse;
+
 	switch (this.type) {
 	case 'static':
 		this.inc++
@@ -35,24 +137,6 @@ Generator.prototype.iterator = function() {
 			throw 'Generator List is empty!';
 		};
 		
-		break;
-	case 'random_test3':
-		elt =  {
-			x:			Math.floor(Math.random() * 480 + 640),
-			y:			Math.floor(Math.random() * 100 + 200),
-			rotation:	Math.floor(Math.random() * 40 - 20), 
-			vitesse:	Math.floor(Math.random() * 6 + 2),
-			pourrie:	( ( Math.floor(Math.random() < 0.5 ) === 0 )? false : true)
-		};
-		break;
-	case 'random':
-		elt =  {
-			x:			Math.floor(Math.random() * 480 + 640),
-			y:			Math.floor(Math.random() * 100 + 300),
-			rotation:	Math.floor(Math.random() * 40 - 20), 
-			vitesse:	Math.floor(Math.random() * 6 + 2),
-			pourrie:	( ( Math.floor(Math.random() < 0.5 ) === 0 )? false : true)
-		};
 		break;
 	};
 
@@ -125,6 +209,7 @@ function startTest() {
             {src:"./images/joueur.png", id:"player0"},
 			{src:"./images/saucisse0.png", id:"bonne_saucisse"},
 			{src:"./images/saucisse1.png", id:"mauvaise_saucisse"},
+			{src:"./images/saucisse2.png", id:"mechante_saucisse"},
 			{src:"./images/tir.png", id:"tir"},
 			{src:"./sounds/boing.mp3", id:"boing", type:createjs.LoadQueue.SOUND},
 			{src:"./sounds/pouet.mp3", id:"pouet", type:createjs.LoadQueue.SOUND},
@@ -142,7 +227,7 @@ function runTest() {
 	g_trait_640.setStrokeStyle(1);
 	g_trait_640.beginStroke(createjs.Graphics.getRGB(0,0,0));
 	g_trait_640.moveTo(640, 0);
-	g_trait_640.lineTo(640, 600);
+	g_trait_640.lineTo(640, 700);
 	g_trait_640.endStroke();
 	
 	var trait_640 = new createjs.Shape(g_trait_640);
@@ -151,8 +236,9 @@ function runTest() {
 	
 	testCollisionBonneSaucisse();
 	testCollisionMauvaiseSaucisse();
+	testCollisionMechanteSaucisse();
 	testCollisionTirBonneSaucisse();
-	testCollisionTirMauvaiseSaucisse();
+	testCollisionTirPourrieSaucisse();
 	testCollisionPlayerTirSaucisses();
 
 	createjs.Ticker.setFPS(30);
@@ -192,199 +278,292 @@ function testCollisionBonneSaucisse() {
 	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Collision 1 : Controller Collision", "24px Arial", "#00000");
-	obj_text.x = 100 ; obj_text.y = 0;
+	var y_reference = 0;
+	var obj_text =  new createjs.Text("Test MVC Collision 1 : Controller Collision avec des bonnes saucisses", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[0] = new Keypress(obj_stage);
-	obj_lists[0].simult_touches=[
+	var obj_lists_reference=0;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false}
 	];
-	
-	obj_lists[1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[1].preparer(0,40,6,3,0);
+
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,6,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
-	{x:700, y:40, rotation:-5, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:-5, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:-5, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:-10, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:-10, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:-10, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:-15, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:-15, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:-15, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:-20, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:-20, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:-20, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:0, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:0, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:0, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:5, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:5, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:5, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:10, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:10, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:10, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:15, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:15, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:15, vitesse:4, pourrie:false},
-	{x:700, y:40, rotation:20, vitesse:4, pourrie:false},
-	{x:700, y:60, rotation:20, vitesse:4, pourrie:false},
-	{x:700, y:85, rotation:20, vitesse:4, pourrie:false}
+	{x:700, y:y_reference+40, rotation:-5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:-5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:-5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:-10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:-10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:-10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:-15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:-15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:-15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:-20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:-20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:-20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:5, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:10, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:15, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+40, rotation:20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+60, rotation:20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+	{x:700, y:y_reference+85, rotation:20, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE}
 	);
-	obj_lists[2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
 
-	obj_lists[3] = new mvcCollision.Controller('collision');
-	obj_lists[3].obj_model_collision.add('Saucisse', obj_lists[2], obj_lists[1]);
-	// obj_lists[2].coordonneeHasObservedBy(obj_lists[3]);
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	
+	obj_lists[obj_lists_reference+3] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+3].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+1]);
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+3]);
 	
 };
 
 function testCollisionMauvaiseSaucisse() {
 	'use strict';
-	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
+	console.log("**** Test testCollisionMauvaiseSaucisse:\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Collision 2 : Controller Collision", "24px Arial", "#00000");
-	obj_text.x = 100 ; obj_text.y = 100;
+	var y_reference = 100;
+	var obj_text =  new createjs.Text("Test MVC Collision 2 : Controller Collision avec des mauvaises saucisses", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[4] = new Keypress(obj_stage);
-	obj_lists[4].simult_touches=[
+	var obj_lists_reference=4;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false}
 	];
 	
-	obj_lists[5] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[5].preparer(0,140,6,3,0);
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,6,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
-		{x:700, y:140, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:160, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:185, rotation:0, vitesse:4, pourrie:true}
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE}
 	);
-	obj_lists[6] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	
+	obj_lists[obj_lists_reference+3] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+3].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+1]);
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+3]);
+};
 
-	obj_lists[7] = new mvcCollision.Controller('collision');
-	obj_lists[7].obj_model_collision.add('Saucisse', obj_lists[6], obj_lists[5]);
-	obj_lists[6].coordonneeHasObservedBy(obj_lists[7]);
+function testCollisionMechanteSaucisse() {
+	'use strict';
+	console.log("**** Test testCollisionMechanteSaucisse:\n --------------------------------------------");
+
+	var y_reference = 200;
+	var obj_text =  new createjs.Text("Test MVC Collision 3 : Controller Collision avec des méchantes saucisses", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
+	obj_stage.addChild( obj_text );
+	obj_stage.update();
+
+	var obj_lists_reference=8;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
+		{key:39,value:true,count:50},
+		{key:39,value:false}
+	];
+	
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,6,3,0);
+
+	var obj_generator = new Generator('static');
+	obj_generator.elt_lists.push(
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:700, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE}
+	);
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	
+	obj_lists[obj_lists_reference+3] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+3].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+1]);
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+3]);
 };
 
 function testCollisionTirBonneSaucisse() {
 	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Collision 3 : Controller Collision", "24px Arial", "#00000");
-	obj_text.x = 100 ; obj_text.y = 200;
+	var y_reference = 300;
+	var obj_text =  new createjs.Text("Test MVC Collision 4 : Controller Collision", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[8] = new Keypress(obj_stage);
-	obj_lists[8].simult_touches=[
+	var obj_lists_reference=12;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false},
 		{key:32,value:true,count:1000},
 		{key:32,value:false}
 	];
 	
-	obj_lists[9] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[9].preparer(0,240,0,3,0);
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,0,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
-		{x:700, y:240, rotation:0, vitesse:4, pourrie:false},
-		{x:800, y:260, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:285, rotation:0, vitesse:4, pourrie:false},
-		{x:800, y:240, rotation:0, vitesse:4, pourrie:true}
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+		{x:800, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+		{x:800, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE}
 	);
 
-	obj_lists[10] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
-	obj_lists[11] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	obj_lists[obj_lists_reference+3] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
+	obj_lists[obj_lists_reference+3].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
 
-	obj_lists[12] = new mvcCollision.Controller('collision');
-	obj_lists[12].obj_model_collision.add('Saucisse', obj_lists[10], obj_lists[11], obj_lists[9], obj_lists[9].getControllerFire() );
-	obj_lists[10].coordonneeHasObservedBy(obj_lists[12]);
-	obj_lists[11].coordonneeHasObservedBy(obj_lists[12]);
+	obj_lists[obj_lists_reference+4] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+4].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+3], obj_lists[obj_lists_reference+1], obj_lists[obj_lists_reference+1].getControllerFire() );
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+4]);
+	obj_lists[obj_lists_reference+3].coordonneeHasObservedBy(obj_lists[obj_lists_reference+4]);
 };
 
-function testCollisionTirMauvaiseSaucisse() {
+function testCollisionTirPourrieSaucisse() {
 	'use strict';
-	console.log("**** Test testCollisionTirMauvaiseSaucisse:\n --------------------------------------------");
+	console.log("**** Test testCollisionTirPourrieSaucisse:\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Collision 4 : Controller Collision", "24px Arial", "#00000");
-	obj_text.x = 100 ; obj_text.y = 300;
+	var y_reference = 400;
+	var obj_text =  new createjs.Text("Test MVC Collision 5 : Controller Collision", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[13] = new Keypress(obj_stage);
-	obj_lists[13].simult_touches=[
+	var obj_lists_reference=17;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false},
 		{key:32,value:true,count:1000},
 		{key:32,value:false}
 	];
 	
-	obj_lists[14] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[14].preparer(0,340,0,3,0);
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,0,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
-		{x:700, y:340, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:360, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:385, rotation:0, vitesse:4, pourrie:true}
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:800, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:800, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:800, y:y_reference+85, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE}
 	);
 
-	obj_lists[15] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
 
-	obj_lists[16] = new mvcCollision.Controller('collision');
-	obj_lists[16].obj_model_collision.add('Saucisse', obj_lists[15], obj_lists[14], obj_lists[14].getControllerFire() );
-	obj_lists[15].coordonneeHasObservedBy(obj_lists[16]);
+	obj_lists[obj_lists_reference+3] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+3].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+1], obj_lists[obj_lists_reference+1].getControllerFire() );
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+3]);
 };
 
 function testCollisionPlayerTirSaucisses() {
 	'use strict';
 	console.log("**** Test testCollisionBonneSaucisse:\n --------------------------------------------");
 
-	var obj_text =  new createjs.Text("Test MVC Collision 5 : Controller Collision", "24px Arial", "#00000");
-	obj_text.x = 100 ; obj_text.y = 400;
+	var y_reference = 500;
+	var obj_text =  new createjs.Text("Test MVC Collision 6 : Controller Collision", "24px Arial", "#00000");
+	obj_text.x = 100 ; obj_text.y = y_reference;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	obj_lists[17] = new Keypress(obj_stage);
-	obj_lists[17].simult_touches=[
+	var obj_lists_reference=21;
+
+	obj_lists[obj_lists_reference] = new Keypress(obj_stage);
+	obj_lists[obj_lists_reference].simult_touches=[
 		{key:39,value:true,count:50},
 		{key:39,value:false},
 		{key:32,value:true,count:3000},
 		{key:32,value:false}
 	];
 	
-	obj_lists[18] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
-	obj_lists[18].preparer(0,440,0,3,0);
+	var obj_view_score = new ViewScore(obj_stage, "View Score", 308,y_reference+80);
+	var obj_view_vies = new ViewLife(obj_stage, "View Life", 508,y_reference+80);
+
+	obj_lists[obj_lists_reference+1] = new mvcPlayer.Controller(obj_stage, obj_queue, 'mvcPlayer.Controller');
+	obj_lists[obj_lists_reference+1].lifeHasObservedBy(obj_view_vies);
+	obj_lists[obj_lists_reference+1].scoreHasObservedBy(obj_view_score);
+	obj_lists[obj_lists_reference+1].preparer(0,y_reference+40,0,3,0);
 
 	var obj_generator = new Generator('static');
 	obj_generator.elt_lists.push(
-		{x:700, y:440, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:460, rotation:0, vitesse:4, pourrie:false},
-		{x:700, y:485, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:440, rotation:0, vitesse:4, pourrie:false},
-		{x:800, y:460, rotation:0, vitesse:4, pourrie:true},
-		{x:700, y:485, rotation:0, vitesse:4, pourrie:false},
-		{x:900, y:460, rotation:0, vitesse:4, pourrie:true},
-		{x:800, y:440, rotation:0, vitesse:4, pourrie:false}
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:700, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:6, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:700, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.BONNE_SAUCISSE},
+		{x:800, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:700, y:y_reference+85, rotation:0, vitesse:6, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:900, y:y_reference+60, rotation:0, vitesse:4, type:mvcSaucisse.MECHANTE_SAUCISSE},
+		{x:800, y:y_reference+40, rotation:0, vitesse:4, type:mvcSaucisse.MAUVAISE_SAUCISSE},
+		{x:900, y:y_reference+85, rotation:0, vitesse:6, type:mvcSaucisse.BONNE_SAUCISSE}
 	);
 
-	obj_lists[19] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
-	obj_lists[20] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
-	obj_lists[21] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse3');
+	obj_lists[obj_lists_reference+2] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse1');
+	obj_lists[obj_lists_reference+2].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	obj_lists[obj_lists_reference+3] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse2');
+	obj_lists[obj_lists_reference+3].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
+	obj_lists[obj_lists_reference+4] = new mvcSaucisse.Controller(obj_stage, obj_queue, obj_generator, 'saucisse3');
+	obj_lists[obj_lists_reference+4].obj_model_player = obj_lists[obj_lists_reference+1].getModel();
 
-	obj_lists[22] = new mvcCollision.Controller('collision');
-	obj_lists[22].obj_model_collision.add('Saucisse', obj_lists[21], obj_lists[19], obj_lists[20], obj_lists[18], obj_lists[18].getControllerFire() );
-	obj_lists[19].coordonneeHasObservedBy(obj_lists[22]);
-	obj_lists[21].coordonneeHasObservedBy(obj_lists[22]);
-	obj_lists[20].coordonneeHasObservedBy(obj_lists[22]);
+	obj_lists[obj_lists_reference+5] = new mvcCollision.Controller('collision');
+	obj_lists[obj_lists_reference+5].obj_model_collision.add('Saucisse', obj_lists[obj_lists_reference+3], obj_lists[obj_lists_reference+2], obj_lists[obj_lists_reference+4], obj_lists[obj_lists_reference+1], obj_lists[obj_lists_reference+1].getControllerFire() );
+	obj_lists[obj_lists_reference+2].coordonneeHasObservedBy(obj_lists[obj_lists_reference+5]);
+	obj_lists[obj_lists_reference+3].coordonneeHasObservedBy(obj_lists[obj_lists_reference+5]);
+	obj_lists[obj_lists_reference+4].coordonneeHasObservedBy(obj_lists[obj_lists_reference+5]);
 };
