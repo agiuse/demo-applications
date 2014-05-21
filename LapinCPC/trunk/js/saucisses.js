@@ -33,10 +33,11 @@ class mvcSaucisse.View {
 	int y
 	int rotation
 	Image image
-	boolean visible
+	boolean visible = mvcSaucisse.VISIBLE
 	==
 	void View(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name)
 	boolean getVisibility();
+
 	__ notified __
 	void prepare(Object obj_observable)
 	void display(Object obj_observable)
@@ -76,11 +77,14 @@ class mvcSaucisse.Controller {
 	String Name = "Controller_Default"
 	Generator obj_generator
 	--
+	mvcPlayer.Model obj_model_player
 	==
 	void Controller(createjs.Stage obj_stage, createjs.LoadQueue obj_queue, String name, Generator obj_generator)
 	mvcSaucisse.View getView()
 	mvcSaucisse.Model getModel()
+	boolean isPourrie()
 	void coordonneeHasObservedBy(Object obj_observer)
+	void setCollideWith(boolean collision_state)
 	__ Collision __
 	String getCollisionId()
 	__ execution __	
@@ -112,7 +116,6 @@ participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
 participant Generator << (C,#ADD1B2) >>
-participant mvcPlayer.Controller << (C,#ADD1B2) >>
 participant Exception
 
 == Initialisation ==
@@ -151,6 +154,7 @@ activate View
 View -[#red]> Exception : throw("Parameter 'obj_stage' is not createjs.Stage instance!")
 View -[#red]> Exception : throw("Parameter 'obj_queue' is not createjs.LoadQueue instance!")
 View -[#red]> Exception : throw("Parameter 'name' is not a string literal!")
+note over View : visible = mvcSaucisse.VISIBLE
 View --> Controller : <I><< view created >></I>
 deactivate View
 
@@ -191,9 +195,9 @@ Controller -> Controller : preparer()
 activate Controller
 Controller -> Generator : iterator()
 activate Generator
-Generator --> Controller : {x,y,rotation, vitesse, pourrie}
+Generator --> Controller : {x,y,rotation, vitesse, type}
 deactivate Generator
-Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
+Controller -> Model : preparer(x, y, rotation, vitesse, type)
 activate Model
 note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 loop  coordonnee notification
@@ -216,9 +220,10 @@ loop  coordonnee notification
 		activate Model
 		Model --> View : rotation
 		deactivate Model
-		View -> Model : getSpeed()
+		View -> Model : getType()
 		activate Model
-		Model --> View : vitesse
+		Model --> View : type
+		note over View : visible = mvcSaucisse.VISIBLE
 		deactivate Model
 		View --> Observable : <I><< Bitmap displayed >></I>
 	end
@@ -245,7 +250,8 @@ participant Observable << (C,#ADD1B2) >>
 participant View << (C,#ADD1B2) >>
 endbox
 Participant Generator << (C,#ADD1B2) >>
-Participant mvcPlayer.Controller << (C,#ADD1B2) >>
+Participant mvcPlayer.Model << (C,#ADD1B2) >>
+Participant mvcCollision.Controller << (C,#ADD1B2) >>
 Participant Exception
 
 == Saucisse movements & Collision Management ==
@@ -257,9 +263,29 @@ Model --> Controller : x
 deactivate Model
 
 alt [ x > 0 ]
-	Controller -> Model : getSpeed()
-	Model --> Controller : vitesse
-	Controller -> Model : set(x-vitesse)
+	Controller -> Model : getType()
+	Model --> Controller : type
+	alt [ mvcSaucisse.MECHANTE_SAUCISSE ]
+		Controller -> Model : getY()
+		activate Model
+		Model --> Controller : y
+		deactivate Model
+		Controller -> Model : getSpeed()
+		activate Model
+		Model --> Controller : vitesse
+		deactivate Model
+		Controller -> mvcPlayer.Model : getY()
+		activate mvcPlayer.Model
+		mvcPlayer.Model --> Controller : y
+		deactivate mvcPlayer.Model
+		Controller -> Model : set(x-vitesse, y)
+	else [ mvcSaucisse.BONNE_SAUCISSE / mvcSaucisse.MAUVAISE_SAUCISSE ]
+		Controller -> Model : getSpeed()
+		activate Model
+		Model --> Controller : vitesse
+		deactivate Model
+		Controller -> Model : set(x-vitesse)
+	end
 	activate Model
 	loop  coordonnee notification
 		Model -> Observable : notify('display')
@@ -273,27 +299,24 @@ alt [ x > 0 ]
 			activate Model
 			Model --> View : x
 			deactivate Model
+			View -[#red]> Exception : throw("No getY() method is defined in 'Observable'!")
+			View -> Model : getY()
+			activate Model
+			Model --> View : y
+			deactivate Model
+			note over View : visible = mvcSaucisse.VISIBLE
 			View --> Observable : <I><< Bitmap displayed >>
 		end
 		deactivate View
 
-		Observable -> mvcPlayer.Controller: display(Model)
-		activate mvcPlayer.Controller
-		group Player Controller
-			mvcPlayer.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcPlayer.Controller -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
-			mvcPlayer.Controller --> Observable: <I><< Collision processing done >></I>
+		Observable -> mvcCollision.Controller: display(Model)
+		activate mvcCollision.Controller
+		group Collision Controller
+			mvcCollision.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
+			mvcCollision.Controller -[#red]> Exception : throw("No getX, getY() or getRotation() method is defined in 'Observable'!")
+			mvcCollision.Controller --> Observable: <I><< Collision processing done >></I>
 		end
-		deactivate mvcPlayer.Controller
-
-		Observable -> mvcFire.Controller: display(Model)
-		activate mvcFire.Controller
-		group Fire Controller
-			mvcFire.Controller -[#red]> Exception : throw("'Observable' is not a Object!")
-			mvcFire.Controller -[#red]> Exception : throw("No getX or getY() method is defined in 'Observable'!")
-			mvcFire.Controller --> Observable: <I><< Collision processing done >></I>
-		end
-		deactivate mvcFire.Controller
+		deactivate mvcCollision.Controller
 
 		Observable --> Model : <I><< notification ended >></I>
 		deactivate Observable
@@ -309,9 +332,9 @@ alt [ x > 0 ]
 		activate Controller
 		Controller -> Generator : iterator()
 		activate Generator
-		Generator --> Controller : {x,y,rotation, vitesse, pourrie}
+		Generator --> Controller : {x, y, rotation, vitesse, type}
 		deactivate Generator
-		Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
+		Controller -> Model : preparer(x, y, rotation, vitesse, type)
 		activate Model
 		note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 		loop  coordonnee notification
@@ -334,10 +357,11 @@ alt [ x > 0 ]
 				activate Model
 				Model --> View : rotation
 				deactivate Model
-				View -> Model : isPourrie()
+				View -> Model : getType()
 				activate Model
-				Model --> View : pourrie (true/false)
+				Model --> View : type
 				deactivate Model
+				note over View : visible = mvcSaucisse.VISIBLE
 				View --> Observable : <I><< Bitmap displayed >></I>
 			end	
 			deactivate View
@@ -354,9 +378,9 @@ else [ x < 0 ]
 	activate Controller
 	Controller -> Generator : iterator()
 	activate Generator
-	Generator --> Controller : {x,y,rotation, vitesse, pourrie}
+	Generator --> Controller : {x, y, rotation, vitesse, type}
 	deactivate Generator
-	Controller -> Model : preparer(x, y, rotation, vitesse, pourrie)
+	Controller -> Model : preparer(x, y, rotation, vitesse, type)
 	activate Model
 	note over Model : collision state is equal to mvcSaucisse.NO_COLLISION
 	loop  coordonnee notification
@@ -379,10 +403,11 @@ else [ x < 0 ]
 			activate Model
 			Model --> View : rotation
 			deactivate Model
-			View -> Model : isPourrie()
+			View -> Model : getType()
 			activate Model
-			Model --> View : pourrie (true/false)
+			Model --> View : type
 			deactivate Model
+			note over View : visible = mvcSaucisse.VISIBLE
 			View --> Observable : <I><< Bitmap displayed >></I>
 		end	
 		deactivate View
