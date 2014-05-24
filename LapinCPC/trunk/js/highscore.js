@@ -313,12 +313,10 @@ var mvcHighScore = {};
 // L'objet mvcScore.View s'occupe de l'affichage du Score
 // Cet objet observe l'observable Score
 // ============================================================================================================================
-;(function()
-{
+;(function() {
 	'use strict';
 
-	mvcHighScore.View = function(obj_stage, name, x, y )
-	{
+	mvcHighScore.View = function(obj_stage, name, x, y ) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.name = common.HasStringName(name, 'View_default');
 		this.x = common.HasNumberX(x,0);
@@ -329,20 +327,19 @@ var mvcHighScore = {};
 		this.obj_stage.addChild(this);
 		this.visible=true;
 		console.log(this.name + ' View is created!');
-	}
+	};
 
 	mvcHighScore.View.prototype = new createjs.Text();
 
-	mvcHighScore.View.prototype.prepare = function(obj_observable)
-	{
-		if ( common.IsObjectObservable(obj_observable) )
+	mvcHighScore.View.prototype.prepare = function(obj_observable) {
+		if ( common.IsObjectObservable(obj_observable) ) {
 			this.text = 'High Score : ' + obj_observable.getScore();
-	}
+		};
+	};
 
-	mvcHighScore.View.prototype.display = function(obj_observable)
-	{
+	mvcHighScore.View.prototype.display = function(obj_observable) {
 		this.prepare(obj_observable);
-	}
+	};
 
 }());
 
@@ -355,8 +352,7 @@ var mvcHighScore = {};
 {
 	'use strict';
 
-	mvcHighScore.Model = function(name)
-	{
+	mvcHighScore.Model = function(name) {
 
 		this.name = common.HasStringName(name, 'Model_default');
 
@@ -366,27 +362,24 @@ var mvcHighScore = {};
 		this.score_notifier = new Observable(this.name+"_notifier", this);
 	
 		console.log(this.name, ' Model is created!');
-	}
+	};
 
-
-	mvcHighScore.Model.prototype.getScore = function()
-	{
+	mvcHighScore.Model.prototype.getScore = function() {
 		return this.nb_points;
-	}
+	};
 
-	mvcHighScore.Model.prototype.set = function(nb_points)
-	{
+	mvcHighScore.Model.prototype.set = function(nb_points) {
 		this.nb_points = (nb_points === undefined) ? 0 : nb_points;
-		if (common.IsNotNumber(this.nb_points)) 
+		if (common.IsNotNumber(this.nb_points)) {
 			throw 'Parameter \'nb_points\' is not a number literal!';
+		};
 
 		this.score_notifier.notify('prepare');
-	}
+	};
 
-	mvcHighScore.Model.prototype.add = function(obj_observer)
-	{
+	mvcHighScore.Model.prototype.add = function(obj_observer) {
 		this.score_notifier.add(obj_observer);
-	}
+	};
 	
 }());
 
@@ -394,12 +387,10 @@ var mvcHighScore = {};
 // Classe Controller
 // Cette classe permet de gérer le MVC 
 // ============================================================================================================================
-;(function()
-{
+;(function() {
 	'use strict';
 
-	mvcHighScore.Controller = function(obj_stage, name, px, py)
-	{
+	mvcHighScore.Controller = function(obj_stage, name, px, py) {
 		this.obj_stage = common.HasObjectStage(obj_stage);
 		this.name = common.HasStringName(name, 'Controller_default');
 		var x = common.HasNumberX(px,0);
@@ -412,36 +403,32 @@ var mvcHighScore = {};
 		this.obj_model_highscore.add( this.obj_view_highscore );
 	
 		console.log(this.name, ' Controller is created.');
-	}
+	};
 
-	mvcHighScore.Controller.prototype.preparer = function(nb_points)
-	{
+	mvcHighScore.Controller.prototype.preparer = function(nb_points) {
 		this.obj_model_highscore.set(nb_points);
-	}
+	};
 
 	// Recoit une notification 'display' de l'objet Score du player !
 	// Traitement : Verifie que le score ne depasse pas le highscore
 	// Si oui le highscore change (Model) et la vue est notifiée du changement.
-	mvcHighScore.Controller.prototype.display = function(obj_observable)
-	{
+	mvcHighScore.Controller.prototype.display = function(obj_observable) {
 		if ( common.IsObjectObservable(obj_observable) ) {
-			if (obj_observable.getScore() > this.obj_model_highscore.getScore() )
+			if (obj_observable.getScore() > this.obj_model_highscore.getScore() ) {
 				this.obj_model_highscore.set( obj_observable.getScore() ); // envoie une notification 'display' au mvcHighScore.View via mvcHighScore.Model
-		}
-	}
+			};
+		};
+	};
 
 	// Renvoie la référence de l'observer
 	// Pour le HighScore ce n'est pas la Vue qui observe directement le score mais le controller
 	// car le controller a un traitement pour mettre à jour le highScore
-	mvcHighScore.Controller.prototype.getObserver = function()
-	{
+	mvcHighScore.Controller.prototype.getObserver = function() {
 		return this;
-	}
+	};
 
-	mvcHighScore.Controller.prototype.getScore = function()
-	{
+	mvcHighScore.Controller.prototype.getScore = function() {
 		return this.obj_model_highscore.getScore();
-	}
+	};
 	
 }());
-
