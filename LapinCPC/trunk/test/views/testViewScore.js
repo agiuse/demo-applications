@@ -4,34 +4,30 @@
 // objet simulant l'observable observé par l'objet testé mvcScore.View
 // Dans le cadre des tests, cet objet est directement un observable et ne possède pas un Model propre.
 // Comme par exemple l'observable vie ou coordonnee dans l'objet ModelPlayer
-function ObjetScore(name)
-{
+function ObjetScore(name) {
 	this.name = name;	
 	Observable.call(this, name);
 	
 	console.log(this.name, "Constructeur ObjetScore");
 	this.preparer();
-}
+};
 
 ObjetScore.prototype = new Observable();
 
-ObjetScore.prototype.preparer = function()
-{
+ObjetScore.prototype.preparer = function() {
 	this.score=10;
 	this.notify('prepare');
 }
 
-ObjetScore.prototype.run = function(valeur)
-{
+ObjetScore.prototype.run = function(valeur) {
 	this.score = valeur;
 	console.log(this.name, "ObjetScore : traitement de la nouvelle valeur = ", this.score);
 	this.notify('display');
-}
+};
 
-ObjetScore.prototype.getScore = function()
-{
+ObjetScore.prototype.getScore = function() {
 	return this.score;
-}
+};
 
 // ====================================================================
 /*
@@ -95,9 +91,9 @@ mvcScore.Controller *-- mvcScore.View
 var obj_stage;
 
 // -----------------------------------------------------------------
-function startTest()
-{
-	console.clear();
+function startTest() {
+	'use strict';
+	// console.clear();
 
 	obj_stage = new createjs.Stage(document.getElementById("gameCanvas"));
 
@@ -106,12 +102,13 @@ function startTest()
 
 	module("Controller Score");
 	test("Affichage du score avec le Controller", test2);
-}
+};
 
 
-function test1()
-{
+function test1() {
+	'use strict';
 	console.log("**** Test 1\n --------------------------------------------");
+
 	var obj_text =  new createjs.Text("Test MVC Score 1 : View Score", "24px Arial", "#00000");
 	obj_text.x = 8 ; obj_text.y = 0;
 	obj_stage.addChild( obj_text );
@@ -121,7 +118,7 @@ function test1()
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 	
 	var obj_view_score = new mvcScore.View(obj_stage, 'view_score_1',8, 26); // creer le View HighScore
-	equal(obj_view_score.text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");	
+	strictEqual(obj_view_score.text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");	
 	
 	obj_observable.add(obj_view_score ); // ajout le view score à observer l'objet Score
 	console.log("  Test1 environment is ready!");
@@ -130,29 +127,28 @@ function test1()
 	console.log("  Score Test Modem is ok!");
 	
 	obj_stage.update();
-	equal(obj_view_score.text, "Score : 30", "Check that createjs.Text attribut text contains the value 30!");	
-}
+	strictEqual(obj_view_score.text, "Score : 30", "Check that createjs.Text attribut text contains the value 30!");	
+};
 
-function test2()
-{
+function test2() {
+	'use strict';
 	console.log("Test 2\n --------------------------------------------");
 
+	var y_ref = 74;
 	var obj_text =  new createjs.Text("Test View Score 2 : Controller Score", "24px Arial", "#00000");
-	obj_text.x = 8 ; obj_text.y = 74;
+	obj_text.x = 8 ; obj_text.y = y_ref;
 	obj_stage.addChild( obj_text );
 	obj_stage.update();
 
-	var obj_controller_score = new mvcScore.Controller(obj_stage, 'controller_score_1', 8, 100);
-	equal(obj_controller_score.obj_view_score.text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");
+	var obj_controller_score = new mvcScore.Controller(obj_stage, 'controller_score_1', 8, y_ref + 26);
+	strictEqual(obj_controller_score.getView().text, "Score : 0", "Check that createjs.Text attribut text contains the value 0!");
 	var obj_observable = new ObjetScore('observable');
 	
 	console.log("value de ",obj_observable.name, " = ", obj_observable.getScore());
 
-	obj_observable.add(obj_controller_score.getObserver() );
+	obj_observable.add(obj_controller_score.getView() );
 	
 	obj_observable.run(3000);
 	obj_stage.update();
-	equal(obj_controller_score.getObserver().text, "Score : 3000", "Check that createjs.Text attribut text contains the value 3000!");
-}
-
-
+	strictEqual(obj_controller_score.getView().text, "Score : 3000", "Check that createjs.Text attribut text contains the value 3000!");
+};
