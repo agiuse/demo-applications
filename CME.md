@@ -1,0 +1,187 @@
+# Introduction #
+
+CME est une application Web écrite en Java déployable avec un package RPM.
+
+# Contexte #
+Le but est de créer un RPM qui permet d'installer Tomcat 7 et de déployer la Web app nommé `cme-ihm.war`. L'environnement d'exécution est `/home/cmeadm/tomcat`. Le choix est que le RPM installe complètement l'application avec tomcat, paramétrage système pour le démarrer/arrêter l'application.
+
+Le plugin Nexus Yum a été installé sur le Nexus et les dépôts Nexus _Releases_ et _Snapshots_ sont de type _maven2yum_.
+
+Une fois que le package RPM est généré et déployé dans Nexus, il suffit de l'installer via la commande `yum`.
+
+# RPM #
+
+## Introduction ##
+Le format RPM est le package natif de Redhat utilisé depuis par la plupart des distributions. La contrainte est que le package ne peut être installé qu'une seule fois sur le serveur dans une seule version.
+L'installation d'un package se fait à l'aide de l'outil RPM. Dans ce cas le package doit être télécharger en local sur le serveur cible. L'outil permet également de désinstaller ou de consulter le contenu d'un package.
+
+Le package RPM a un cycle de vie : installation, update, suppression. Dans les scripts d'installation/suppression, il est possible de gérer ses différents états et d'avoir des actions particulières.
+
+Yum est un outil qui permet d'installer des RPM depuis un dépôt distant. Dans l'entreprise, on peut envisager d'utiliser Nexus comme dépôt Yum.
+Yum permet également de gérer les mises à jours.
+
+Dans notre exemple, le rpm se nomme **`cme-package-<version>.rpm`**.
+
+  * Limites :
+  1. Une seule version est possible à la fois sur le serveur.
+  1. Obliger de resynchroniser le dépôt Yum local avec celui de Nexus manuellement. Problème de paramétrage.
+  1. Seul le compte `root` peut être utilisé pour les installations/suppressions. Mettre en place un sudo fin - sur le nom de l'application par exemple - si on souhaite limiter les installations à des comptes particuliers.
+
+## Commandes de bases ##
+| **Description** | **Commande** |
+|:----------------|:-------------|
+|Synchronisation entre Nexus et la base RPM local|`sudo yum clean all`|
+|Installer la dernière version|$ sudo yum install cme-package`|
+|Avoir de l'information sur le package|`sudo yum info cme-package`|
+|Mettre à jour avec la dernière version|`sudo yum install cme-package`|
+|Consulter les packages disponibles dans Nexus|`sudo yum --showduplicates list cme-package`|
+|Suppression d'un package|`sudo yum erase cme-package`|
+
+
+
+# Details des Releases #
+
+## Release 1.0 ##
+  * Subversion :
+
+> Révision : [r11](https://code.google.com/p/demo-applications/source/detail?r=11)
+
+  * Contexte :
+
+L'environnement tomcat doit être pre-installé sur le serveur.
+Un lien `~cmeadm/tomcat/webapp/cme.war` point vers le répertoire `~cmeadm/delivery/cme-ihm-${version}.war`. Le rpm installe la webapp dans ce répertoire.
+
+Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettant le lien `~cmeadm/tomcat/webapp/cme.war` sur la dernière version installée.
+
+  * Description du module package :
+
+  1. La balise `<package>` est de type RPM ; RPM devient un nouveau type Maven
+  1. Maven génère et met à disposition dans le dépôt Nexus un artifact de type RPM.
+  1. Le SPECS est décrit dans la configuration du plugin et il est généré de manière automatique par le plugin Maven RPM.
+  1. Le package RPM contient uniquement la Webapp qui sera déployé dans le répertoire `delivery/`.
+
+  * Note :
+
+  1. Le plugin ne peut etre exécuté que sur Linux car il utilise la commande `rpmbuild`. Par défaut, il le cherche dans `/usr/bin`.
+
+  * Conclusion :
+
+  1. Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
+  1. La balise `<packaging>rpm</packaging>` est limité...
+
+
+> ## Release 1.1 ##
+    * Subversion :
+
+> Révision : [r24](https://code.google.com/p/demo-applications/source/detail?r=24)
+
+  * Contexte :
+
+L'environnement tomcat doit être pre-installé sur le serveur.
+Un lien `~cmeadm/tomcat/webapp/cme.war` point vers le répertoire `~cmeadm/delivery/cme-ihm-${version}.war`. Le rpm installe la webapp dans ce répertoire.
+
+Deux scripts `sta`et `sto` permettent de démarrer/arrêter le serveur en mettant le lien `~cmeadm/tomcat/webapp/cme.war` sur la dernière version installée.
+
+  * Description du module package :
+
+  1. Mise en place de profile pour exécuter uniquement sur Unix le plugin Maven RPM
+  1. La balise `<package>` est de type POM; On utilise le goal `attached-rpm` pour créer un deuxième artifact.
+  1. Maven génère et met à disposition dans le dépôt Nexus le pom généré et l'artifact de type RPM.
+  1. Le SPECS est décrit dans la configuration du plugin et il est généré de manière automatique par le plugin Maven RPM.
+  1. Le package RPM contient uniquement la Webapp qui sera déployé dans le répertoire `delivery/`.
+  1. Les macro RPM `preinstallScriptlet` et `postinstallScriptlet` ont été ajoutées à la description pour arrêter et relancer le serveur Tomcat.
+
+
+  * Conclusion :
+
+  1. Ce mode est limité car il n'est pas possible de créer des SPECS fins et complexes.
+  1. Pourquoi utilise le goal 'attached-rpm' au lieu de 'rpm' ? En  raison de l'utilisation de profile pour exécuter ou non rpm suivant l'environnement, l'utilisation de rpm comme `<package>` n'est plus possible. Car de dernier génère un rpm quel que soit le profile et sort en erreur sur Windows.
+
+## Release 2.0 ##
+
+  * Subversion:
+
+> Révision : [r30](https://code.google.com/p/demo-applications/source/detail?r=30)
+
+  * Principe:
+
+On n'utilise plus le plugin Maven RPM. Le principe est de mettre dans Subversion la structure de travail packaging RPM pré-remplie avec un fichier SPECS que l'on souhaite.
+On utilise le plugin Maven `assembly` pour copier cette arborescence dans le répertoire TARGET lors de phase `packaging`. Ensuite, on utilise le plugin Maven `exec` pour lancer la commande `rpmbuild` en commande en ligne pour construire le RPM. Lors de phase Maven  `verify`, on utilise le plugin le goal `attach-artifact` du plugin `build-helper-maven-plugin` pour attacher le rpm au pom lors du déploiement dans Nexus (Ce plugin remplace le goal "attached-rpm" du plugin Maven `RPM`.).
+
+> Le RPM crée le compte `cmeadm` lors de la première installation, installe et configure tomcat dans le répertoire `/opt/cme_ihm`, installe webapp , configure le service de démarrage Linux, les logs, le service JMX.  Ceci est possible grâce au fichier `SPECS`.
+
+  * La gestion de paramétrage :
+
+> Le RPM contient les fichiers de paramétrage _variabilisé_ : (@@`variable`@@).
+> La valorisation s'effectue lors de l'installation du RPM. Pour l'instant, les valeurs sont contenues uniquement dans des variables RPM valorisées lors de la construction du RPM.
+
+> Il y a un deuxième niveau de variables (@`variable`@) qui sont des variables techniques. Les fichiers sont variabilisés dans Subversion. Un fichier nommé `sysconfig.skel`, géré également dans Subversion, est livré par défaut dans le RPM
+
+> Lors de l'installation, le fichier `sysconfig.skel`est installé dans `/etc/sysconfig/cme-ihm`. La valorisation s'effectue lors de lancement de l'application `cme-ihm`. Ce fichier est `sourcé` dans le fichier ìnit.d.skel :
+```
+  ...
+  # Read config file
+  if [ -r "/etc/sysconfig/@@MYAPP_APP@@" ]; then
+    . /etc/sysconfig/@@MYAPP_APP@@
+  fi
+  ...
+  ALL_VARS=$(compgen -A variable | grep APP_)
+
+  for RES_KEY in $ALL_VARS; do
+      eval RES_VAL=\$${RES_KEY}
+      XREPLACE="$XREPLACE | sed 's|@${RES_KEY}@|$RES_VAL|g'"
+  done
+
+  for XFILE in $CATALINA_HOME/conf/server.xml.skel $CATALINA_HOME/conf/jmxremote.access.skel $CATALINA_HOME/conf/jmxremote.password.skel; do
+      DXFILE=${XFILE%.skel}
+      eval "cat ${XFILE} $XREPLACE > ${DXFILE}"
+  done
+  ...
+```
+
+> Il est possible avec RPM de ne plus effacer le `/etc/sysconfig/cme-ihm` une fois installé. On peut imaginer ce fichier comme un fichier lié à l'environnement. Mais ce n'est pas le cas dans cette Release.
+
+  * Conclusion:
+
+  1. Pom package plus complexe
+  1. Maitrise complète du contenu de RPM.
+
+# Versions en développement #
+
+## Branche trunk ##
+  * Version : 3.0-SNAPSHOT
+  * Révision :
+  * Evolutions :
+  1. Version correspondant à la version 2.0 ; pas de changement
+
+## Branche branche/cme\_dev\_rpm (dernière version) ##
+
+  * Version : 2.1-SNAPSHOT
+  * Evolutions :
+
+  1. Séparation des fichiers de resources et de maven assembly.
+> > Les fichiers de resources sont mis dans le répertoire cme-conf.
+> > Le maven assembly s'occupe de les mettre dans l'arborescence `target/rpm`.
+  1. Mise en place de mécanisme de filtre Maven pour les properties propre à l'application afin de le centraliser dans un fichier unique et facilement modifiable.
+  1. Corriger des bogues d'installation de la source 6 dans le fichier .spec
+  1. Supprimer la configuration de JMX et le démarrage automatique  - fichier `systemd.skel` - qui n'est pas nécessaire pour une démo.
+  1. Créer de manière automatique le LV/FS (à implémenter)
+  1. Mettre en place le fichier `sysconfig.skel` comme non écrasable si le fichier est déjà installé. (à implémenter)
+  1. Suppression des répertoires de la suppression du package. (à implémenter)
+  1. Prévoir un package avec la possibilité d'installer dans un autre répertoire que `/opt/cme`. (à implémenter)
+  1. Mettre un profile de plus haut niveau (pom parent) pour insérer ou non le module `cme-package` pour simplifier la construire ou non du rpm en utilisant le `<package>` rpm. (à implémenter)
+
+
+## Branche branche/cme\_dev\_rpmchef ##
+
+  * Version : 3.0-SNAPSHOT
+  * Révision :
+  * Evolutions :
+
+  1. Version correspondant à la version 2.0/trunk ; pas de changement
+
+## Branche branches/cme\_dev\_add ##
+
+**Version : 4.0-SNAPSHOT**
+
+[CMEJavaDevelopment](CMEJavaDevelopment.md)
